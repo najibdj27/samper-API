@@ -1,4 +1,4 @@
-package com.unper.samper.api.service;
+package com.unper.samper.api.service.impl;
 
 import javax.transaction.Transactional;
 
