@@ -26,7 +26,7 @@ public class Auditor {
     @CreatedBy
     private String createdBy;
     
-    @Column(name = "updated_by")
+    @Column(name = "last_updated_by")
     @LastModifiedBy
-    private String updatedBy;
+    private String lastUpdatedBy;
 }
