@@ -1,4 +1,4 @@
-package com.unper.samper.api.service.impl;
+package com.unper.samper.service.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.unper.samper.api.service.AuthService;
 import com.unper.samper.config.JwtUtils;
 import com.unper.samper.domain.common.UserDetailsImpl;
 import com.unper.samper.domain.dao.User;
@@ -19,6 +18,7 @@ import com.unper.samper.domain.dto.SignInRequestDTO;
 import com.unper.samper.domain.dto.SignInResponseDTO;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.repository.UserRepository;
+import com.unper.samper.service.AuthService;
 
 public class AuthServiceImpl implements AuthService {
     @Autowired

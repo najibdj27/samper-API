@@ -3,6 +3,9 @@ package com.unper.samper.domain.dao;
 import lombok.*;
 
 import javax.persistence.*;
+
+import org.springframework.data.geo.Point;
+
 import java.time.LocalTime;
 
 @AllArgsConstructor
@@ -35,6 +38,7 @@ public class Presence {
     @Column(name = "check_out")
     private LocalTime checkOut;
 
-
+    @Column(name = "location")
+    private Point location;
 
 }

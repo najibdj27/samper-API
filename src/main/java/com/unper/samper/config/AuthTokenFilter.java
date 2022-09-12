@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.unper.samper.api.service.impl.UserDetailsServiceImpl;
+import com.unper.samper.service.impl.UserDetailsServiceImpl;
 
 
 public class AuthTokenFilter extends OncePerRequestFilter {

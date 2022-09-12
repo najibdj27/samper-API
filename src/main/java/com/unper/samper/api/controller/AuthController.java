@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.unper.samper.api.service.impl.AuthServiceImpl;
 import com.unper.samper.domain.dto.SignInRequestDTO;
 import com.unper.samper.domain.dto.SignInResponseDTO;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.helper.ResponseHandler;
+import com.unper.samper.service.impl.AuthServiceImpl;
 
 @RestController
 @RequestMapping("/api/v1/auth")

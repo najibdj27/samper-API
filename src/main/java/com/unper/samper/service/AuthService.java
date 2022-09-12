@@ -1,4 +1,4 @@
-package com.unper.samper.api.service;
+package com.unper.samper.service;
 
 
 import com.unper.samper.domain.dto.SignInRequestDTO;
