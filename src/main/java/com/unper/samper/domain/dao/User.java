@@ -18,7 +18,7 @@ import lombok.*;
 @Table(name = "user", schema = "public", uniqueConstraints = {
     @UniqueConstraint(columnNames = "username"), 
     @UniqueConstraint(columnNames = "email"), 
-    @UniqueConstraint(columnNames = "phoneNumber")
+    @UniqueConstraint(columnNames = "phone_number")
 })
 public class User extends Auditor {
     @Id

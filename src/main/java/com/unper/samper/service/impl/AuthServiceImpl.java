@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.unper.samper.config.JwtUtils;
 import com.unper.samper.domain.common.UserDetailsImpl;
@@ -20,6 +21,7 @@ import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.repository.UserRepository;
 import com.unper.samper.service.AuthService;
 
+@Service
 public class AuthServiceImpl implements AuthService {
     @Autowired
     AuthenticationManager authenticationManager;

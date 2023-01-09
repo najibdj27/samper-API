@@ -15,12 +15,12 @@ import com.unper.samper.helper.ResponseHandler;
 import com.unper.samper.service.impl.AuthServiceImpl;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
     AuthServiceImpl authService;
 
-    @GetMapping("/sign_in")
+    @GetMapping("/signin")
     public ResponseEntity<?> authentication(@RequestBody SignInRequestDTO requestDTO) throws ResourceNotFoundException{
         SignInResponseDTO response = authService.authenticate(requestDTO);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully signed in", response);
