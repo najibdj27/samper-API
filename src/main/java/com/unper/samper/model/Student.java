@@ -1,14 +1,16 @@
 package com.unper.samper.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
+import lombok.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Getter
+@Setter
+@Builder
+@Table(name = "student", schema = "public")
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
