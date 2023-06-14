@@ -14,6 +14,7 @@ import lombok.*;
 @Setter
 @Builder
 @Entity
+@Table(name = "user", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "email"), @UniqueConstraint(columnNames = "phoneNumber")})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
