@@ -6,6 +6,8 @@ import java.util.HashSet;
 
 import javax.persistence.*;
 
+import com.unper.samper.model.common.Audit;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -15,7 +17,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "user", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "email"), @UniqueConstraint(columnNames = "phoneNumber")})
-public class User {
+public class User extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

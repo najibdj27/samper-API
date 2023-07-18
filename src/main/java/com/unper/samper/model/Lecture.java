@@ -2,6 +2,8 @@ package com.unper.samper.model;
 
 import javax.persistence.*;
 
+import com.unper.samper.model.common.Audit;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -11,7 +13,7 @@ import lombok.*;
 @Setter
 @Builder
 @Table(name = "lecture", schema = "public")
-public class Lecture {
+public class Lecture extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Double NIP;
