@@ -7,5 +7,5 @@ import com.unper.samper.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    
+    Boolean existsByUsernameIgnoreCaseOrEmailIgnoreCaseOrPhoneNumber(String username, String email, Integer phoneNumber);
 }
