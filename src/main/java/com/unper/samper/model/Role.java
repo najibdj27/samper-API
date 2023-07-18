@@ -13,7 +13,7 @@ import com.unper.samper.model.constant.ERole;
 @Getter
 @Setter
 @Entity
-@Table(name = "role")
+@Table(name = "role", schema = "public")
 @NoArgsConstructor
 public class Role extends Audit{
     @Id
@@ -22,6 +22,5 @@ public class Role extends Audit{
 
     @Enumerated(EnumType.STRING)
     private ERole name;
-
 
 }
