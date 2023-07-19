@@ -1,5 +1,8 @@
 package com.unper.samper.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -32,7 +35,8 @@ public class Subject extends Audit {
 
     private String name;
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "lecture_subject", joinColumns = @JoinColumn(name = "subject_id"), inverseJoinColumns = @JoinColumn(name = "lecture_id"))
-    private Lecture lecture;
+    private Set<Lecture> lecture = new HashSet<>();
 }

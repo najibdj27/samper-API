@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> getById(Long id) throws ResourceNotFoundException {
+    public UserResponseDto getById(Long id) throws ResourceNotFoundException {
         Optional<User> user = userRepository.findById(id);
 
         // check if user with that ID not exist in DB
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
             .email(user.get().getEmail())
             .phoneNumber(user.get().getPhoneNumber())
             .build();
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
+        return responseDto;
     }
 
     @Override
