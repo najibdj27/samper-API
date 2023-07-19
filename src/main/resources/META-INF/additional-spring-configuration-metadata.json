@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "com.unper.samper.version",
+    "type": "java.lang.String",
+    "description": "A description for 'com.unper.samper.version'"
+  },
+  {
+    "name": "com.unper.samper.build",
+    "type": "java.lang.String",
+    "description": "A description for 'com.unper.samper.build'"
+  }
+]}
