@@ -5,7 +5,8 @@ public enum EResponseMessage {
     GET_DATA_NO_RESOURCE("Data not found!"),
     INSERT_DATA_SUCCESS("Data created successfully!"),
     INSERT_DATA_ALREADY_EXIST("Data already exist!"),
-    EDIT_DATA_SUCCESS("Data Successfully edited!");
+    EDIT_DATA_SUCCESS("Data Successfully edited!"),
+    PASSWORD_NOT_MATCH("Password not match!");
 
     private final String message;
 

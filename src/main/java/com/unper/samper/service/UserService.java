@@ -15,4 +15,6 @@ public interface UserService {
     ResponseEntity<?> add(AddUserRequestDto requestDto) throws ResourceAlreadyExistException;
 
     ResponseEntity<?> edit(Long id, EditUserRequestDto requestDto) throws ResourceNotFoundException;
+
+    ResponseEntity<?> changePassword(Long id, String password, String passwordValidation) throws ResourceNotFoundException, Exception;
 }

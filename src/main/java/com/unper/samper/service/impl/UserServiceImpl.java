@@ -39,14 +39,14 @@ public class UserServiceImpl implements UserService {
         List<UserResponseDto> responseDtoList = new ArrayList<>();
         users.forEach(user -> {
             UserResponseDto responseDto = UserResponseDto.builder()
-            .id(user.getId())
-            .firstName(user.getFirstName())
-            .lastName(user.getLastName())
-            .dateOfBirth(user.getDateOfBirth())
-            .username(user.getUsername())
-            .email(user.getEmail())
-            .phoneNumber(user.getPhoneNumber())
-            .build();
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .dateOfBirth(user.getDateOfBirth())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .build();
             responseDtoList.add(responseDto);
         });
         Map<String, Object> metaData = new HashMap<>();
@@ -64,28 +64,28 @@ public class UserServiceImpl implements UserService {
         }
 
         UserResponseDto responseDto = UserResponseDto.builder()
-        .id(user.get().getId())
-        .firstName(user.get().getFirstName())
-        .lastName(user.get().getLastName())
-        .dateOfBirth(user.get().getDateOfBirth())
-        .username(user.get().getUsername())
-        .email(user.get().getEmail())
-        .phoneNumber(user.get().getPhoneNumber())
-        .build();
+            .id(user.get().getId())
+            .firstName(user.get().getFirstName())
+            .lastName(user.get().getLastName())
+            .dateOfBirth(user.get().getDateOfBirth())
+            .username(user.get().getUsername())
+            .email(user.get().getEmail())
+            .phoneNumber(user.get().getPhoneNumber())
+            .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
     }
 
     @Override
     public ResponseEntity<?> add(AddUserRequestDto requestDto) throws ResourceAlreadyExistException {
         User user = User.builder()
-        .firstName(requestDto.getFirstName())
-        .lastName(requestDto.getLastName())
-        .dateOfBirth(requestDto.getDateOfBirth())
-        .username(requestDto.getUsername())
-        .email(requestDto.getEmail())
-        .phoneNumber(requestDto.getPhoneNumber())
-        .password(requestDto.getPassword())
-        .build();
+            .firstName(requestDto.getFirstName())
+            .lastName(requestDto.getLastName())
+            .dateOfBirth(requestDto.getDateOfBirth())
+            .username(requestDto.getUsername())
+            .email(requestDto.getEmail())
+            .phoneNumber(requestDto.getPhoneNumber())
+            .password(requestDto.getPassword())
+            .build();
 
         // check if username or email already exist in DB
         if(Boolean.TRUE == userRepository.existsByUsernameIgnoreCaseOrEmailIgnoreCaseOrPhoneNumber(user.getUsername(), user.getEmail(), user.getPhoneNumber())) {
@@ -99,11 +99,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> edit(Long id, EditUserRequestDto requestDto) throws ResourceNotFoundException {
         User user = User.builder()
-        .id(id)
-        .firstName(requestDto.getFirstName())
-        .lastName(requestDto.getLastName())
-        .dateOfBirth(requestDto.getDateOfBirth())
-        .build();
+            .id(id)
+            .firstName(requestDto.getFirstName())
+            .lastName(requestDto.getLastName())
+            .dateOfBirth(requestDto.getDateOfBirth())
+            .build();
 
         // check if user exists in DB
         if (Boolean.FALSE == userRepository.existsById(id)) {
@@ -112,6 +112,27 @@ public class UserServiceImpl implements UserService {
 
         User editedUser = userRepository.save(user);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.EDIT_DATA_SUCCESS.getMessage(), editedUser);
+    }
+
+    @Override
+    public ResponseEntity<?> changePassword(Long id, String password, String passwordValidation) throws ResourceNotFoundException, Exception {
+        User user = User.builder()
+            .id(id)
+            .password(password)
+            .build();
+        
+        // check if user exists in DB
+        if (Boolean.FALSE == userRepository.existsById(id)) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+
+        // check if password validation not match
+        if (password != passwordValidation) {
+            throw new Exception(EResponseMessage.PASSWORD_NOT_MATCH.getMessage());
+        }
+
+        userRepository.save(user);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.EDIT_DATA_SUCCESS.getMessage(), null);
     }
     
 }
