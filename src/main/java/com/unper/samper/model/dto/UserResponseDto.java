@@ -2,6 +2,8 @@ package com.unper.samper.model.dto;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +22,7 @@ public class UserResponseDto {
 
     private String lastName;
 
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date dateOfBirth;
     
     private String username;
@@ -27,6 +30,4 @@ public class UserResponseDto {
     private String email;
 
     private String phoneNumber;
-
-    private String password;
 }

@@ -18,7 +18,7 @@ public class Student extends Audit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Short NIM;
+    private String NIM;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "user_id")

@@ -35,6 +35,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     ClassServiceImpl classServiceImpl;
 
     @Override
+    @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
     public ResponseEntity<?> registerStudent(RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
             .firstName(requestDto.getFirstName())

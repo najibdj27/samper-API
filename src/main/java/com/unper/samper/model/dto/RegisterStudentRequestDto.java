@@ -2,6 +2,8 @@ package com.unper.samper.model.dto;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class RegisterStudentRequestDto {
-    private Short NIM;
+    private String NIM;
 
     private Long classId;
 
@@ -22,6 +24,7 @@ public class RegisterStudentRequestDto {
 
     private String lastName;
 
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date dateOfBirth;
     
     private String username;

@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class StudentResponseDto {
-    private Short NIM;
+    private String NIM;
 
     private UserResponseDto user;
 }

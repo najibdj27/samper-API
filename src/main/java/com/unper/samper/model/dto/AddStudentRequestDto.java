@@ -16,7 +16,7 @@ import com.unper.samper.model.Class;
 @Setter
 @Builder
 public class AddStudentRequestDto {
-    private Short NIM;
+    private String NIM;
 
     private User user;
 
