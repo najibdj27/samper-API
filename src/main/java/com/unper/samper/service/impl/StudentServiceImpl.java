@@ -1,17 +1,13 @@
 package com.unper.samper.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
-import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Student;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddStudentRequestDto;
@@ -29,7 +25,7 @@ public class StudentServiceImpl implements StudentService {
     StudentRepository studentRepository;
 
     @Override
-    public ResponseEntity<?> getAll() throws ResourceNotFoundException {
+    public List<StudentResponseDto> getAll() throws ResourceNotFoundException {
         List<Student> studentList = studentRepository.findAll();
 
         // check if data available
@@ -52,10 +48,7 @@ public class StudentServiceImpl implements StudentService {
             responseDtoList.add(responseDto);
         });
 
-        Map<String, Object> metaData = new HashMap<>();
-        metaData.put("_total", responseDtoList.size());
-
-        return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), metaData, responseDtoList);
+        return responseDtoList;
     }
 
     @Override
