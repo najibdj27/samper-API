@@ -69,7 +69,7 @@ public class AuthenticationController {
      * @throws ResourceNotFoundException
      */
     @Operation(summary = "Confirm OTP to get the token to reset the password")
-    @PostMapping("/confirm_otp")
+    @PostMapping("/confirmotp")
     public ResponseEntity<?> confirmOTP(@Valid @RequestBody ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException {
         return authenticationServiceImpl.confirmOTP(requestDto);
     }
