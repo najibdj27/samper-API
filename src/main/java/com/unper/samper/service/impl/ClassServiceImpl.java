@@ -3,13 +3,10 @@ package com.unper.samper.service.impl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
-import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.Lecture;
 import com.unper.samper.model.Subject;
@@ -41,7 +38,7 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public ResponseEntity<?> addClass(AddClassRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public Class addClass(AddClassRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         if (Boolean.TRUE.equals(classRepository.existsByTittle(requestDto.getTittle()))) {
             throw new ResourceAlreadyExistException(EResponseMessage.INSERT_DATA_ALREADY_EXIST.getMessage());
         }
@@ -54,8 +51,9 @@ public class ClassServiceImpl implements ClassService {
             .tittle(requestDto.getTittle())
             .build();
 
-        classRepository.save(kelas);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.INSERT_DATA_SUCCESS.getMessage(), null);
+        Class newClass = classRepository.save(kelas);
+        
+        return newClass;
     }
     
 }
