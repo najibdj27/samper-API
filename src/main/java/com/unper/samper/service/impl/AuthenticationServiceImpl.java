@@ -102,7 +102,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         String emailAddress = requestDto.getEmailAddress();
         int otp = otpService.generateOTP(emailAddress);
-        emailSender.sendOtpMessage(emailAddress, "FASHIONIST Reset Password Request", String.valueOf(otp));
+        emailSender.sendOtpMessage(emailAddress, "SAMPER Reset Password Request", String.valueOf(otp));
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been sent to your email!", null);
     }
 
