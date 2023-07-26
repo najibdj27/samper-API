@@ -65,9 +65,14 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<?> add(AddStudentRequestDto requestDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'add'");
+    public Student add(AddStudentRequestDto requestDto) {
+        Student student = Student.builder()
+            .NIM(requestDto.getNIM())
+            .kelas(requestDto.getKelas())
+            .user(requestDto.getUser())
+            .build();
+        Student newStudent = studentRepository.save(student);
+        return newStudent;
     }
 
     @Override

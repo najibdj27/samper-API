@@ -97,13 +97,10 @@ public class WebSecurityConfig {
                 .exceptionHandling(handling -> handling.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests.antMatchers(
-                    "/api/v1/auth/**",
+                    "/auth/**",
                     "/api/v1/swagger-ui/**",
                     "/api/v1/api-docs/**",
-                    "/api/v1/region/**",
-                    "/api/v1/products/search/**",
-                    "/api/v1/profile/file/**",
-                    "/api/v1/profile/file/**",
+                    "/registration/**",
                     "/js/**",
                     "/webjars/**",
                     "/v2/api-docs",

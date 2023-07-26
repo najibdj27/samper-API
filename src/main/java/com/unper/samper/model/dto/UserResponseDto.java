@@ -26,7 +26,7 @@ public class UserResponseDto {
 
     private String email;
 
-    private Integer phoneNumber;
+    private String phoneNumber;
 
     private String password;
 }

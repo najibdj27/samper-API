@@ -12,11 +12,13 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@Table(name = "lecture", schema = "public")
+@Table(name = "lecture", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "NIP")})
 public class Lecture extends Audit {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Double NIP;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long NIP;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = User.class)
     @JoinColumn(name = "user_id")

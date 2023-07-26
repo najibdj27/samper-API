@@ -3,6 +3,7 @@ package com.unper.samper.service;
 import org.springframework.http.ResponseEntity;
 
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.model.Student;
 import com.unper.samper.model.dto.AddStudentRequestDto;
 
 public interface StudentService {
@@ -10,7 +11,7 @@ public interface StudentService {
 
     ResponseEntity<?> getById(Long id);
 
-    ResponseEntity<?> add(AddStudentRequestDto requestDto);
+    Student add(AddStudentRequestDto requestDto);
 
     ResponseEntity<?> delete(Long id);
 }

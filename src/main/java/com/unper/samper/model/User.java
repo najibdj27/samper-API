@@ -32,7 +32,7 @@ public class User extends Audit {
 
     private String email;
 
-    private Integer phoneNumber;
+    private String phoneNumber;
 
     private String password;
 

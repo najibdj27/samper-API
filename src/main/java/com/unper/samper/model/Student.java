@@ -1,8 +1,5 @@
 package com.unper.samper.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.*;
 
 import com.unper.samper.model.common.Audit;
@@ -27,8 +24,7 @@ public class Student extends Audit {
     @JoinColumn(name = "user_id")
     private User user; 
 
-    @Builder.Default
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "student_class", joinColumns = @JoinColumn(name = "student_id"), inverseJoinColumns = @JoinColumn(name = "class_id"))
-    private Set<Class> kelas = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Class.class)
+    @JoinColumn(name = "class_id")
+    private Class kelas;
 }
