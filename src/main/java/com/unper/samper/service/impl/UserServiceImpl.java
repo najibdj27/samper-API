@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.model.Role;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.EditUserRequestDto;
@@ -31,6 +32,8 @@ public class UserServiceImpl implements UserService {
 
         List<UserResponseDto> responseDtoList = new ArrayList<>();
         users.forEach(user -> {
+            List<Role> roleList = new ArrayList<>();
+            roleList.addAll(user.getRoles());
             UserResponseDto responseDto = UserResponseDto.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
@@ -39,6 +42,7 @@ public class UserServiceImpl implements UserService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
+                .roles(roleList)
                 .build();
             responseDtoList.add(responseDto);
         });
@@ -55,6 +59,8 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
 
+        List<Role> roleList = new ArrayList<>();
+        roleList.addAll(user.get().getRoles());
         UserResponseDto responseDto = UserResponseDto.builder()
             .id(user.get().getId())
             .firstName(user.get().getFirstName())
@@ -63,6 +69,7 @@ public class UserServiceImpl implements UserService {
             .username(user.get().getUsername())
             .email(user.get().getEmail())
             .phoneNumber(user.get().getPhoneNumber())
+            .roles(roleList)
             .build();
         return responseDto;
     }
