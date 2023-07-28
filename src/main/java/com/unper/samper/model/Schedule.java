@@ -1,6 +1,6 @@
 package com.unper.samper.model;
 
-import java.time.LocalDateTime;
+import java.util.Calendar;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,9 +35,13 @@ public class Schedule extends Audit {
     @JoinColumn(name = "class_id")
     private Class kelas;
 
-    private LocalDateTime timeStart;
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Subject.class)
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
 
-    private LocalDateTime timeEnd;
+    private Calendar timeStart;
+
+    private Calendar timeEnd;
 
     private Boolean isActive;
 }
