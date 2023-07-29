@@ -2,10 +2,12 @@ package com.unper.samper.model.dto;
 
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.unper.samper.model.constant.ERole;
 
 import lombok.*;
 
@@ -52,4 +54,6 @@ public class SignUpRequestDto {
     @Pattern(regexp = "(?=.*[0-9].*[0-9]).+", message = "must at least have 2 numbers")
     @Pattern(regexp = "(?=.*[!@#$&*]).+", message = "must at least have 1 special character '!@#$&*'")
     private String password;
+
+    private List<ERole> roles;
 }

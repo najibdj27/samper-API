@@ -1,5 +1,8 @@
 package com.unper.samper.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +15,13 @@ import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.User;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.constant.ERole;
 import com.unper.samper.model.dto.AddLectureRequestDto;
 import com.unper.samper.model.dto.AddStudentRequestDto;
 import com.unper.samper.model.dto.RegisterLectureRequestDto;
 import com.unper.samper.model.dto.RegisterStudentRequestDto;
 import com.unper.samper.model.dto.SignUpRequestDto;
+import com.unper.samper.repository.RoleRepository;
 import com.unper.samper.service.RegistrationService;
 
 @Service
@@ -24,6 +29,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     AuthenticationServiceImpl authenticationServiceImpl;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Autowired
     StudentServiceImpl studentServiceImpl;
@@ -37,6 +45,8 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
     public ResponseEntity<?> registerStudent(RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+        List<ERole> eRoleList = new ArrayList<>();
+        eRoleList.add(ERole.ROLE_STUDENT);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
             .firstName(requestDto.getFirstName())
             .lastName(requestDto.getLastName())
@@ -45,6 +55,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             .email(requestDto.getEmail())
             .phoneNumber(requestDto.getPhoneNumber())
             .password(requestDto.getPassword())
+            .roles(eRoleList)
             .build();
         User newUser = authenticationServiceImpl.registerUser(signUpRequestDto);
 
@@ -62,6 +73,8 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
     public ResponseEntity<?> registerLecture(RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+        List<ERole> eRoleList = new ArrayList<>();
+        eRoleList.add(ERole.ROLE_LECTURE);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
             .firstName(requestDto.getFirstName())
             .lastName(requestDto.getLastName())
@@ -70,6 +83,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             .email(requestDto.getEmail())
             .phoneNumber(requestDto.getPhoneNumber())
             .password(requestDto.getPassword())
+            .roles(eRoleList)
             .build();
         User newUser = authenticationServiceImpl.registerUser(signUpRequestDto);
 

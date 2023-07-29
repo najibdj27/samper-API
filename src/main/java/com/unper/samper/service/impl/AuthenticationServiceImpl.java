@@ -38,7 +38,6 @@ import com.unper.samper.model.Role;
 import com.unper.samper.model.User;
 import com.unper.samper.model.common.UserDetailsImpl;
 import com.unper.samper.model.constant.EResponseMessage;
-import com.unper.samper.model.constant.ERole;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
 import com.unper.samper.model.dto.ForgetPasswordRequestDto;
@@ -172,10 +171,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .phoneNumber(requestDto.getPhoneNumber())
             .password(encoder.encode(requestDto.getPassword()))
             .build();
-        Set<Role> roles = new HashSet<>();
-        Role customer = roleRepository.findByName(ERole.ROLE_LECTURE).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.ROLE_NOT_FOUND.getMessage()));
-        roles.add(customer);
-        user.setRoles(roles);
+        Set<Role> roleSet = new HashSet<>();
+        requestDto.getRoles().forEach(role -> {
+            Role roles = new Role();
+            try {
+                roles = roleRepository.findByName(role).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.ROLE_NOT_FOUND.getMessage()));
+            } catch (ResourceNotFoundException e) {
+                e.printStackTrace();
+            }
+            roleSet.add(roles);
+        });
+        user.setRoles(roleSet);
         userRepository.save(user);
         return user;
     }
