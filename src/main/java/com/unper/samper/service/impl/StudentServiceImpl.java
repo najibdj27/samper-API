@@ -37,7 +37,7 @@ public class StudentServiceImpl implements StudentService {
         studentList.forEach(student -> {
             UserResponseDto userResponseDto = new UserResponseDto();
             try {
-                userResponseDto = userServiceImpl.getById(student.getId());
+                userResponseDto = userServiceImpl.getById(student.getUser().getId());
             } catch (ResourceNotFoundException e) {
                 e.printStackTrace();
             }
