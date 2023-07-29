@@ -14,7 +14,5 @@ import lombok.Setter;
 public class AddClassRequestDto {
     private Long lectureId;
 
-    private Long subjectId;
-
     private String tittle;
 }

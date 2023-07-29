@@ -9,7 +9,6 @@ import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.Lecture;
-import com.unper.samper.model.Subject;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddClassRequestDto;
 import com.unper.samper.repository.ClassRepository;
@@ -22,9 +21,6 @@ public class ClassServiceImpl implements ClassService {
 
     @Autowired
     LectureServiceImpl lectureServiceImpl;
-
-    @Autowired
-    SubjectServiceImpl subjectServiceImpl;
 
     @Override
     public Class getById(Long id) throws ResourceNotFoundException {
@@ -44,10 +40,8 @@ public class ClassServiceImpl implements ClassService {
         }
 
         Lecture lecture = lectureServiceImpl.getById(requestDto.getLectureId());
-        Subject subject = subjectServiceImpl.getById(requestDto.getSubjectId());
         Class kelas = Class.builder()
             .lecture(lecture)
-            .subject(subject)
             .tittle(requestDto.getTittle())
             .build();
 

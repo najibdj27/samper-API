@@ -33,9 +33,5 @@ public class Class extends Audit {
     @JoinColumn(name = "lecture_id")
     private Lecture lecture;
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Subject.class)
-    @JoinColumn(name = "subject_id")
-    private Subject subject;
-
     private String tittle;
 }
