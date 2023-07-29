@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
@@ -81,10 +82,11 @@ public class AuthenticationController {
      * @return
      * @throws PasswordNotMatchException
      * @throws ResourceNotFoundException
+     * @throws ExpiredTokenException
      */
     @Operation(summary = "Reset the password")
     @PatchMapping("/reset_password")
-    public ResponseEntity<?> resetPassword(@RequestParam("token") UUID token, @Valid @RequestBody ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException {
+    public ResponseEntity<?> resetPassword(@RequestParam("token") UUID token, @Valid @RequestBody ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
         return authenticationServiceImpl.resetPassword(token, requestDto);
     }
 }

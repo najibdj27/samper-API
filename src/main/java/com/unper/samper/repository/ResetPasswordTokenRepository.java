@@ -1,5 +1,6 @@
 package com.unper.samper.repository;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,4 +19,7 @@ public interface ResetPasswordTokenRepository extends JpaRepository<ResetPasswor
     void deleteByEmailAddress(@Param("emailAddress") String emailAddress);
 
     Optional<ResetPasswordToken> findByToken(UUID token);
+
+    @Query("SELECT count(r)>0 FROM ResetPasswordToken r WHERE r.id = :id and r.expiredDate <= :date")
+    Boolean isExpired(@Param("id") Integer id, @Param("date") Date date);
 }

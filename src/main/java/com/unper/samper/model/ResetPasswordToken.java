@@ -3,6 +3,8 @@ package com.unper.samper.model;
 import lombok.*;
 
 import javax.persistence.*;
+
+import java.util.Date;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -21,6 +23,8 @@ public class ResetPasswordToken {
 
     @Column(nullable = false, unique = true)
     private UUID token;
+
+    private Date expiredDate;
 
     @PrePersist
     void onCreate(){

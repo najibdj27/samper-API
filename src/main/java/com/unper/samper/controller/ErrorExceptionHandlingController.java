@@ -18,6 +18,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
@@ -109,4 +110,14 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
         logger.error(loggerLine);
         return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
     }
+    
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<?> handleExpiredTokenException(ExpiredTokenException e) {
+        var error = EErrorCode.TOKEN_INVALID;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
 }

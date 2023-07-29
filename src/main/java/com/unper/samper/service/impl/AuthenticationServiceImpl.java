@@ -1,5 +1,7 @@
 package com.unper.samper.service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -22,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.config.JwtUtils;
+import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
@@ -114,15 +118,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new WrongOTPException("Wrong OTP!");
         }
         resetPasswordTokenRepository.deleteByEmailAddress(requestDto.getEmailAddress());
-        ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.save(ResetPasswordToken.builder().emailAddress(requestDto.getEmailAddress()).build());
+        Date now = Calendar.getInstance().getTime();
+        ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.save(ResetPasswordToken.builder()
+            .emailAddress(requestDto.getEmailAddress())
+            .expiredDate(DateUtils.addMinutes(now, 5))
+            .build());
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been confirmed!", new ConfirmOTPResponseDto(resetPasswordToken.getToken().toString()));
     }
 
     @Override
-    public ResponseEntity<?> resetPassword(UUID token , ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException {
+    public ResponseEntity<?> resetPassword(UUID token , ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
+        Date now = Calendar.getInstance().getTime();
         Optional<ResetPasswordToken> resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
         if (resetPasswordToken.isEmpty()) {
             throw new ResourceNotFoundException("Token is not valid!");
+        }
+        if (Boolean.TRUE.equals(resetPasswordTokenRepository.isExpired(resetPasswordToken.get().getId(), now))) {
+            throw new ExpiredTokenException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
         Optional<User> optionalUser = userRepository.findByEmail(resetPasswordToken.get().getEmailAddress());
         User user = optionalUser.get();

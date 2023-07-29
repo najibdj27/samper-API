@@ -6,6 +6,7 @@ import javax.mail.MessagingException;
 
 import org.springframework.http.ResponseEntity;
 
+import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
@@ -25,7 +26,7 @@ public interface AuthenticationService {
     
     ResponseEntity<?> confirmOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException;
     
-    ResponseEntity<?> resetPassword(UUID token, ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException;
+    ResponseEntity<?> resetPassword(UUID token, ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException;
     
     User registerUser(SignUpRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException;
 
