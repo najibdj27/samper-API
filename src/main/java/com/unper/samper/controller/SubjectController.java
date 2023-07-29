@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +30,7 @@ public class SubjectController {
     @Operation(summary = "Create a new subject")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_LECTURE')")
     @PostMapping("/add")
-    public ResponseEntity<?> add(AddSubjectrequestDto requestDto) throws ResourceAlreadyExistException{
+    public ResponseEntity<?> add(@RequestBody AddSubjectrequestDto requestDto) throws ResourceAlreadyExistException{
         subjectServiceImpl.addSubject(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.INSERT_DATA_SUCCESS.getMessage(), null);
     }

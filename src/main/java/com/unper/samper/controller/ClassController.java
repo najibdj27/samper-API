@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +31,7 @@ public class ClassController {
     @Operation(summary = "Add new class")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_LECTURE')")
     @PostMapping("/add")
-    public ResponseEntity<?> add(AddClassRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public ResponseEntity<?> add(@RequestBody AddClassRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         classServiceImpl.addClass(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.INSERT_DATA_SUCCESS.getMessage(), null);
     }
