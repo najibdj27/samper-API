@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -177,6 +178,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setRoles(roles);
         userRepository.save(user);
         return user;
+    }
+
+    @Override
+    @Scheduled(cron = "0 15 12 1/1 * *")
+    public void deleteExpiredToken() throws ResourceNotFoundException {
+        List<ResetPasswordToken> resetPasswordTokenList = resetPasswordTokenRepository.findExpiredToken();
+        if (resetPasswordTokenList.isEmpty()) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+        resetPasswordTokenRepository.deleteAll(resetPasswordTokenList);
+        System.out.println(String.valueOf(resetPasswordTokenList.size()) + " Token successfully deleted");
     }
 }
 
