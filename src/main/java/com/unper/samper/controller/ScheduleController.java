@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unper.samper.exception.IllegalAccessException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.ScheduleUnavailableException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.constant.EResponseMessage;
@@ -41,7 +42,7 @@ public class ScheduleController {
     @Operation(summary = "Activate schedule")
     @PreAuthorize("hasAuthority('ROLE_LECTURE')")
     @PostMapping("/activate")
-    public ResponseEntity<?> activate(Long id) throws ResourceNotFoundException, IllegalAccessException {
+    public ResponseEntity<?> activate(Long id) throws ResourceNotFoundException, IllegalAccessException, ScheduleUnavailableException {
         Schedule schedule = scheduleServiceImpl.activate(id);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.ACTIVATE_SCHEDULE_SUCCESS.getMessage(), schedule);
     }
@@ -49,7 +50,7 @@ public class ScheduleController {
     @Operation(summary = "Deactivate shedule")
     @PreAuthorize("hasAuthority('ROLE_LECTURE')")
     @PostMapping("/deactivate")
-    public ResponseEntity<?> deactivate(Long id) throws ResourceNotFoundException, IllegalAccessException {
+    public ResponseEntity<?> deactivate(Long id) throws ResourceNotFoundException, IllegalAccessException, ScheduleUnavailableException {
         Schedule schedule = scheduleServiceImpl.activate(id);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.DEACTIVATE_SCHEDULE.getMessage(), schedule);
     }

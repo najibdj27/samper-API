@@ -12,6 +12,7 @@ import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.exception.IllegalAccessException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.ScheduleUnavailableException;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.Lecture;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
@@ -86,10 +87,13 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     }
 
     @Override
-    public Schedule activate(Long id) throws ResourceNotFoundException, IllegalAccessException {
+    public Schedule activate(Long id) throws ResourceNotFoundException, IllegalAccessException, ScheduleUnavailableException {
         Lecture lecture = lectureServiceImpl.getCurrentLecture();
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
         schedule.setIsActive(Boolean.TRUE);
+        if (Boolean.FALSE.equals(scheduleRepository.isAvailable(id))) {
+            throw new ScheduleUnavailableException(EResponseMessage.SCHEDULE_UNAVAILABLE.getMessage());
+        }
         if (schedule.getKelas().getLecture() != lecture) {
             throw new IllegalAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
         }

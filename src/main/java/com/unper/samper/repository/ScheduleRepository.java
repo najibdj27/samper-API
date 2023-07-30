@@ -10,6 +10,9 @@ import com.unper.samper.model.Class;
 import com.unper.samper.model.Schedule;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long>{
-    @Query("select count(s)>0 from Schedule s where s.kelas = :kelas and ((s.timeStart between :timeStart and :timeEnd) or (s.timeEnd between :timeStart and :timeEnd))")
+    @Query("SELECT count(s)>0 FROM Schedule s WHERE s.kelas = :kelas AND ((s.timeStart BETWEEN :timeStart AND :timeEnd) or (s.timeEnd BETWEEN :timeStart AND :timeEnd))")
     Boolean existsByTime(@Param("kelas") Class kelas, @Param("timeStart") Calendar timeStart, @Param("timeEnd") Calendar timeEnd);
+
+    @Query("SELECT count(s)>0 FROM Schedule s WHERE s.id = :id AND (CURRENT_DATE BETWEEN s.timeStart AND s.timeEnd)")
+    Boolean isAvailable(@Param("id") Long id);
 }
