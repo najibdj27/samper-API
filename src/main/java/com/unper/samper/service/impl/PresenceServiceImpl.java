@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.ResourceNotFoundException;
@@ -17,6 +18,7 @@ import com.unper.samper.model.dto.PresenceCheckOutRequestDto;
 import com.unper.samper.repository.PresenceRepository;
 import com.unper.samper.service.PresenceService;
 
+@Service
 public class PresenceServiceImpl implements PresenceService {
     @Autowired
     ScheduleServiceImpl scheduleServiceImpl;
