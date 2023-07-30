@@ -11,7 +11,9 @@ public enum EResponseMessage {
     USERNAME_ALREADY_TAKEN("Username is already exists!"),
     EMAIL_ALREADY_EXIST("Email is already exists!"),
     PHONE_NUMBER_ALREADY_EXIST("Phone number is already exists!"),
-    REGISTRATION_SUCCESS("Registration success!");
+    REGISTRATION_SUCCESS("Registration success!"),
+    PRESENCE_DIFFERENT_CLASS("Can't present in other class!"),
+    PRESENCE_SUCCESS("Your presence successfully recorded!");
 
     private final String message;
 

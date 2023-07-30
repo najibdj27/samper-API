@@ -39,19 +39,17 @@ public class Presence extends Audit {
     @JoinColumn(name = "student_id")
     private Student student;
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Class.class)
-    @JoinColumn(name = "class_id")
-    private Class kelas;
-
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Schedule.class)
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime checkin;
+    private LocalDateTime checkIn;
 
-    private LocalDateTime checkout;
+    private LocalDateTime checkOut;
 
-    private Point location;
+    private Point checkInLocation;
+
+    private Point checkOutLocation;
 }

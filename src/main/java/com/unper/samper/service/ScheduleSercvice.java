@@ -11,7 +11,7 @@ import com.unper.samper.model.dto.ScheduleResponseDto;
 public interface ScheduleSercvice {
     List<ScheduleResponseDto> getAll();
 
-    ScheduleResponseDto getById(Long id);
+    Schedule getById(Long id);
 
     Schedule add(AddScheduleRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException;
 

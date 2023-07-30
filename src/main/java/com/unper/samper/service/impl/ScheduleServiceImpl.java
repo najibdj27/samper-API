@@ -36,7 +36,7 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     }
 
     @Override
-    public ScheduleResponseDto getById(Long id) {
+    public Schedule getById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }

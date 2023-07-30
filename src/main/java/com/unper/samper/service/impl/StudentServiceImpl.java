@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.Student;
+import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddStudentRequestDto;
 import com.unper.samper.model.dto.StudentResponseDto;
@@ -52,9 +53,15 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public ResponseEntity<?> getById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'add'");
+    public Student getById(Long id) throws ResourceNotFoundException {
+        Student student = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+        return student;
+    }
+
+    @Override
+    public Student getByUser(User user) throws ResourceNotFoundException {
+        Student student = studentRepository.findByUser().orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+        return student;
     }
 
     @Override
