@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.ScheduleNotActiveException;
 import com.unper.samper.model.Presence;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.Student;
@@ -48,10 +49,14 @@ public class PresenceServiceImpl implements PresenceService {
     }
 
     @Override
-    public Presence checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException {
+    public Presence checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException {
         User user = authenticationServiceImpl.getCurrentUser();
         Schedule schedule = scheduleServiceImpl.getById(requestDto.getScheduleId());
         Student student = studentServiceImpl.getByUser(user);
+
+        if (Boolean.FALSE.equals(schedule.getIsActive())) {
+            throw new ScheduleNotActiveException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
 
         if (schedule.getKelas() != student.getKelas()) {
             throw new DifferentClassException(EResponseMessage.PRESENCE_DIFFERENT_CLASS.getMessage());
@@ -68,13 +73,15 @@ public class PresenceServiceImpl implements PresenceService {
     }
 
     @Override
-    public Presence checkOut(PresenceCheckOutRequestDto requestDto) throws ResourceNotFoundException {
-        getById(requestDto.getId());
-        Presence presence = Presence.builder()
-            .id(requestDto.getId())
-            .checkOut(LocalDateTime.now())
-            .checkOutLocation(requestDto.getLocation())
-            .build();
+    public Presence checkOut(PresenceCheckOutRequestDto requestDto) throws ScheduleNotActiveException, ResourceNotFoundException {
+        Presence presence = getById(requestDto.getId());
+        if (Boolean.FALSE.equals(presence.getSchedule().getIsActive())) {
+            throw new ScheduleNotActiveException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+        
+        presence.setCheckOut(LocalDateTime.now());
+        presence.setCheckOutLocation(requestDto.getLocation());
+        
         Presence newPresence = presenceRepository.save(presence);
 
         return newPresence;

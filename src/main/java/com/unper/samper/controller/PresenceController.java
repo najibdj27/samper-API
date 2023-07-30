@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.ScheduleNotActiveException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Presence;
 import com.unper.samper.model.constant.EResponseMessage;
@@ -45,14 +46,14 @@ public class PresenceController {
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     @Operation(summary = "Record check in presence")
     @PostMapping("/checkin")
-    public ResponseEntity<?> checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException{
+    public ResponseEntity<?> checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException{
         Presence presence = presenceServiceImpl.checkIn(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.PRESENCE_SUCCESS.getMessage(), presence);
     }
 
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     @Operation(summary = "Record check out presence")
-    public ResponseEntity<?> checkOut(PresenceCheckOutRequestDto requestDto) throws ResourceNotFoundException {
+    public ResponseEntity<?> checkOut(PresenceCheckOutRequestDto requestDto) throws ResourceNotFoundException, ScheduleNotActiveException {
         Presence presence = presenceServiceImpl.checkOut(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.PRESENCE_SUCCESS.getMessage(), presence);
     }
