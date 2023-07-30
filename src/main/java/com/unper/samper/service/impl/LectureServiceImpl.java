@@ -1,14 +1,15 @@
 package com.unper.samper.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.Lecture;
+import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddLectureRequestDto;
 import com.unper.samper.repository.LectureRepository;
@@ -17,12 +18,18 @@ import com.unper.samper.service.LectureService;
 @Service
 public class LectureServiceImpl implements LectureService {
     @Autowired
+    AuthenticationServiceImpl authenticationServiceImpl;
+
+    @Autowired
     LectureRepository lectureRepository;
 
     @Override
-    public ResponseEntity<?> getAll() throws ResourceNotFoundException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAll'");
+    public List<Lecture> getAll() throws ResourceNotFoundException {
+        List<Lecture> lectureList = lectureRepository.findAll();
+        if (lectureList.isEmpty()) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+        return lectureList;
     }
 
     @Override
@@ -33,6 +40,12 @@ public class LectureServiceImpl implements LectureService {
         }
 
         return lecture.get();
+    }
+
+    @Override
+    public Lecture getByUser(User user) throws ResourceNotFoundException {
+        Lecture lecture = lectureRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+        return lecture;
     }
 
     @Override
@@ -52,9 +65,16 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
-    public ResponseEntity<?> delete(Long id) {
+    public void delete(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    }
+
+    @Override
+    public Lecture getCurrentLecture() throws ResourceNotFoundException {
+        User user = authenticationServiceImpl.getCurrentUser();
+        Lecture lecture = getByUser(user);
+        return lecture;
     }
 
 }

@@ -60,7 +60,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student getByUser(User user) throws ResourceNotFoundException {
-        Student student = studentRepository.findByUser().orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+        Student student = studentRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
         return student;
     }
 

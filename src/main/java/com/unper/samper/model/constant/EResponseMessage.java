@@ -13,7 +13,10 @@ public enum EResponseMessage {
     PHONE_NUMBER_ALREADY_EXIST("Phone number is already exists!"),
     REGISTRATION_SUCCESS("Registration success!"),
     PRESENCE_DIFFERENT_CLASS("Can't present in other class!"),
-    PRESENCE_SUCCESS("Your presence successfully recorded!");
+    PRESENCE_SUCCESS("Your presence successfully recorded!"),
+    ILLEGAL_ACCESS("You are not allowed to do this action!"),
+    ACTIVATE_SCHEDULE_SUCCESS("Schedule is activated!"),
+    DEACTIVATE_SCHEDULE("Schedule is deactivated!");
 
     private final String message;
 
