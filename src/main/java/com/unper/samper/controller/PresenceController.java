@@ -53,6 +53,7 @@ public class PresenceController {
 
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     @Operation(summary = "Record check out presence")
+    @PostMapping("/checkout")
     public ResponseEntity<?> checkOut(PresenceCheckOutRequestDto requestDto) throws ResourceNotFoundException, ScheduleNotActiveException {
         Presence presence = presenceServiceImpl.checkOut(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.PRESENCE_SUCCESS.getMessage(), presence);
