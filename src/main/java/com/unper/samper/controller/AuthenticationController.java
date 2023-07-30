@@ -6,6 +6,7 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,8 +21,11 @@ import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
 import com.unper.samper.exception.WrongOTPException;
+import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
+import com.unper.samper.model.dto.ConfirmOTPResponseDto;
 import com.unper.samper.model.dto.ForgetPasswordRequestDto;
+import com.unper.samper.model.dto.JwtResponseDto;
 import com.unper.samper.model.dto.ResetPasswordRequestDto;
 import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.service.impl.AuthenticationServiceImpl;
@@ -46,7 +50,8 @@ public class AuthenticationController {
     @Operation(summary = "Sign in and get the token for access")
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDto requestDto) throws SignInFailException {
-        return authenticationServiceImpl.authenticateUser(requestDto);
+        JwtResponseDto responseDto = authenticationServiceImpl.authenticateUser(requestDto);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully login!", responseDto);
     }
 
     /***
@@ -59,7 +64,8 @@ public class AuthenticationController {
     @Operation(summary = "Get OTP to reset password")
     @PostMapping("/forgetpassword")
     public ResponseEntity<?> forgetPassword(@Valid @RequestBody ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
-        return authenticationServiceImpl.changePassword(requestDto);
+        authenticationServiceImpl.changePassword(requestDto);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been sent to your email!", null);
     }
 
     /***
@@ -72,7 +78,8 @@ public class AuthenticationController {
     @Operation(summary = "Confirm OTP to get the token to reset the password")
     @PostMapping("/confirmotp")
     public ResponseEntity<?> confirmOTP(@Valid @RequestBody ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException {
-        return authenticationServiceImpl.confirmOTP(requestDto);
+        ConfirmOTPResponseDto responseDto = authenticationServiceImpl.confirmOTP(requestDto);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been confirmed!", responseDto);
     }
 
     /***
@@ -87,6 +94,7 @@ public class AuthenticationController {
     @Operation(summary = "Reset the password")
     @PatchMapping("/reset_password")
     public ResponseEntity<?> resetPassword(@RequestParam("token") UUID token, @Valid @RequestBody ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
-        return authenticationServiceImpl.resetPassword(token, requestDto);
+        authenticationServiceImpl.resetPassword(token, requestDto);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Password has been reset successfully!", null);
     }
 }

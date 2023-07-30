@@ -1,6 +1,7 @@
 package com.unper.samper.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.handler.ResponseHandler;
+import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.RegisterLectureRequestDto;
 import com.unper.samper.model.dto.RegisterStudentRequestDto;
 import com.unper.samper.service.impl.RegistrationServiceImpl;
@@ -26,12 +29,14 @@ public class RegistrationController {
     @Operation(summary = "Register new student")
     @PostMapping("/registerstudent")
     public ResponseEntity<?> registerStudent(@RequestBody RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException{
-        return registrationServiceImpl.registerStudent(requestDto);
+        registrationServiceImpl.registerStudent(requestDto);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }
     
     @Operation(summary = "Register new lecture")
     @PostMapping("/registerlecture")
     public ResponseEntity<?> registerLecture(@RequestBody RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException{
-        return registrationServiceImpl.registerLecture(requestDto);
+        registrationServiceImpl.registerLecture(requestDto);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }
 }

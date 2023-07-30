@@ -4,17 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
-import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.User;
 import com.unper.samper.model.Class;
-import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.constant.ERole;
 import com.unper.samper.model.dto.AddLectureRequestDto;
 import com.unper.samper.model.dto.AddStudentRequestDto;
@@ -44,7 +40,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public ResponseEntity<?> registerStudent(RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public void registerStudent(RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.ROLE_STUDENT);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
@@ -66,13 +62,11 @@ public class RegistrationServiceImpl implements RegistrationService {
             .NIM(requestDto.getNIM())
             .build();
         studentServiceImpl.add(addStudentRequestDto);
-
-        return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public ResponseEntity<?> registerLecture(RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public void registerLecture(RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.ROLE_LECTURE);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
@@ -92,8 +86,6 @@ public class RegistrationServiceImpl implements RegistrationService {
             .user(newUser)
             .build();
         lectureServiceImpl.add(addLectureRequestDto);
-
-        return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }
     
 }

@@ -15,8 +15,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,7 +30,6 @@ import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
 import com.unper.samper.exception.WrongOTPException;
-import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.ResetPasswordToken;
 import com.unper.samper.model.Role;
 import com.unper.samper.model.User;
@@ -82,7 +79,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     String domain;
 
     @Override
-    public ResponseEntity<?> authenticateUser(SignInRequestDto requestDto) throws SignInFailException {
+    public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException {
         User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
         Boolean isPasswordCorrect = encoder.matches(requestDto.getPassword(), user.getPassword());
         if (Boolean.FALSE.equals(userRepository.existsByUsername(requestDto.getUsername()))) {
@@ -96,22 +93,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully login!", new JwtResponseDto(jwt, userDetails.getUsername(), roles));
+        return new JwtResponseDto(jwt, userDetails.getUsername(), roles);
     }
 
     @Override
-    public ResponseEntity<?> changePassword(ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
+    public void changePassword(ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
         if (!userRepository.existsByEmail(requestDto.getEmailAddress())) {
             throw new ResourceNotFoundException("User with email " + requestDto.getEmailAddress() + " does not exist!");
         }
         String emailAddress = requestDto.getEmailAddress();
         int otp = otpService.generateOTP(emailAddress);
         emailSender.sendOtpMessage(emailAddress, "SAMPER Reset Password Request", String.valueOf(otp));
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been sent to your email!", null);
     }
 
     @Override
-    public ResponseEntity<?> confirmOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException{
+    public ConfirmOTPResponseDto confirmOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException{
         if (otpService.getOTP(requestDto.getEmailAddress()) == 0) {
             throw new ResourceNotFoundException("You have not generated OTP!");
         }else if (otpService.getOTP(requestDto.getEmailAddress()) != requestDto.getOtp()) {
@@ -123,11 +119,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .emailAddress(requestDto.getEmailAddress())
             .expiredDate(DateUtils.addMinutes(now, 5))
             .build());
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been confirmed!", new ConfirmOTPResponseDto(resetPasswordToken.getToken().toString()));
+        return new ConfirmOTPResponseDto(resetPasswordToken.getToken().toString());
+        
     }
 
     @Override
-    public ResponseEntity<?> resetPassword(UUID token , ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
+    public void resetPassword(UUID token , ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
         Date now = Calendar.getInstance().getTime();
         Optional<ResetPasswordToken> resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
         if (resetPasswordToken.isEmpty()) {
@@ -141,7 +138,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setPassword(encoder.encode(requestDto.getNewPassword()));
         userRepository.save(user);
         resetPasswordTokenRepository.deleteByEmailAddress(resetPasswordToken.get().getEmailAddress());
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Password has been reset successfully!", null);
     }
 
     @Override
