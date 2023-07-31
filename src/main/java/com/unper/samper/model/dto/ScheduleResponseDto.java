@@ -1,6 +1,6 @@
 package com.unper.samper.model.dto;
 
-import java.time.LocalDateTime;
+import java.util.Calendar;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +18,9 @@ public class ScheduleResponseDto {
 
     private Long subjectId;
 
-    private LocalDateTime timeStart;
+    private Calendar timeStart;
 
-    private LocalDateTime timeEnd;
+    private Calendar timeEnd;
 
     private Boolean isActive;
 }

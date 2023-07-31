@@ -13,6 +13,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>{
     @Query("SELECT count(s)>0 FROM Schedule s WHERE s.kelas = :kelas AND ((s.timeStart BETWEEN :timeStart AND :timeEnd) or (s.timeEnd BETWEEN :timeStart AND :timeEnd))")
     Boolean existsByTime(@Param("kelas") Class kelas, @Param("timeStart") Calendar timeStart, @Param("timeEnd") Calendar timeEnd);
 
-    @Query("SELECT count(s)>0 FROM Schedule s WHERE s.id = :id AND (CURRENT_DATE BETWEEN s.timeStart AND s.timeEnd)")
+    @Query("SELECT count(s)>0 FROM Schedule s WHERE s.id = :id AND (CURRENT_TIMESTAMP BETWEEN s.timeStart AND s.timeEnd)")
     Boolean isAvailable(@Param("id") Long id);
 }

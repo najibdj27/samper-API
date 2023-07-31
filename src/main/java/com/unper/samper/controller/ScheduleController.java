@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
+import com.unper.samper.model.dto.ScheduleResponseDto;
 import com.unper.samper.service.impl.ScheduleServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,17 +43,33 @@ public class ScheduleController {
 
     @Operation(summary = "Activate schedule")
     @PreAuthorize("hasAuthority('ROLE_LECTURE')")
-    @PostMapping("/activate")
+    @PatchMapping("/activate")
     public ResponseEntity<?> activate(Long id) throws ResourceNotFoundException, IllegalAccessException, ScheduleUnavailableException {
         Schedule schedule = scheduleServiceImpl.activate(id);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.ACTIVATE_SCHEDULE_SUCCESS.getMessage(), schedule);
+        ScheduleResponseDto responseDto = ScheduleResponseDto.builder()
+            .id(schedule.getId())
+            .classId(schedule.getKelas().getId())
+            .subjectId(schedule.getSubject().getId())
+            .timeStart(schedule.getTimeStart())
+            .timeEnd(schedule.getTimeEnd())
+            .isActive(schedule.getIsActive())
+            .build();
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.ACTIVATE_SCHEDULE_SUCCESS.getMessage(), responseDto);
     }
 
     @Operation(summary = "Deactivate shedule")
     @PreAuthorize("hasAuthority('ROLE_LECTURE')")
-    @PostMapping("/deactivate")
+    @PatchMapping("/deactivate")
     public ResponseEntity<?> deactivate(Long id) throws ResourceNotFoundException, IllegalAccessException, ScheduleUnavailableException {
-        Schedule schedule = scheduleServiceImpl.activate(id);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.DEACTIVATE_SCHEDULE.getMessage(), schedule);
+        Schedule schedule = scheduleServiceImpl.deactivate(id);
+        ScheduleResponseDto responseDto = ScheduleResponseDto.builder()
+            .id(schedule.getId())
+            .classId(schedule.getKelas().getId())
+            .subjectId(schedule.getSubject().getId())
+            .timeStart(schedule.getTimeStart())
+            .timeEnd(schedule.getTimeEnd())
+            .isActive(schedule.getIsActive())
+            .build();
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.DEACTIVATE_SCHEDULE.getMessage(), responseDto);
     }
 }

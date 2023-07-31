@@ -141,9 +141,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public User getCurrentUser() {
+    public User getCurrentUser() throws ResourceNotFoundException {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.getReferenceById(userDetails.getId());
+        User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
         return user;
     }
 

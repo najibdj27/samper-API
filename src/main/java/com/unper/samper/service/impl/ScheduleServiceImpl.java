@@ -41,9 +41,9 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     }
 
     @Override
-    public Schedule getById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+    public Schedule getById(Long id) throws ResourceNotFoundException {
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+        return schedule;
     }
 
     @Override
@@ -90,18 +90,18 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     public Schedule activate(Long id) throws ResourceNotFoundException, IllegalAccessException, ScheduleUnavailableException {
         Lecture lecture = lectureServiceImpl.getCurrentLecture();
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
-        schedule.setIsActive(Boolean.TRUE);
-        if (Boolean.FALSE.equals(scheduleRepository.isAvailable(id))) {
-            throw new ScheduleUnavailableException(EResponseMessage.SCHEDULE_UNAVAILABLE.getMessage());
-        }
-        if (schedule.getKelas().getLecture() != lecture) {
+        if (schedule.getKelas().getLecture().equals(lecture)) {
             throw new IllegalAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
+        }
+        if (Boolean.FALSE == scheduleRepository.isAvailable(id)) {
+            throw new ScheduleUnavailableException(EResponseMessage.SCHEDULE_UNAVAILABLE.getMessage());
         }
         if (Boolean.TRUE.equals(schedule.getIsActive())) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
-        
+        schedule.setIsActive(Boolean.TRUE);
         Schedule activatedSchedule = scheduleRepository.save(schedule);
+        
         return activatedSchedule;
     }
 
@@ -109,14 +109,13 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     public Schedule deactivate(Long id) throws IllegalAccessException, ResourceNotFoundException {
         Lecture lecture = lectureServiceImpl.getCurrentLecture();
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
-        schedule.setIsActive(Boolean.FALSE);
-        if (schedule.getKelas().getLecture() != lecture) {
+        if (schedule.getKelas().getLecture().equals(lecture)) {
             throw new IllegalAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
         }
-        if (Boolean.TRUE.equals(schedule.getIsActive())) {
+        if (Boolean.FALSE.equals(schedule.getIsActive())) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
-        
+        schedule.setIsActive(Boolean.FALSE);
         Schedule deactivatedSchedule = scheduleRepository.save(schedule);
         return deactivatedSchedule;
     }

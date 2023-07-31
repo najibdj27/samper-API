@@ -30,7 +30,7 @@ public interface AuthenticationService {
     
     User registerUser(SignUpRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException;
 
-    User getCurrentUser();
+    User getCurrentUser() throws ResourceNotFoundException;
 
     void deleteExpiredToken() throws ResourceNotFoundException;
 }

@@ -18,9 +18,12 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.ScheduleNotActiveException;
+import com.unper.samper.exception.ScheduleUnavailableException;
 import com.unper.samper.exception.SignInFailException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.handler.ResponseHandler;
@@ -114,6 +117,42 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     @ExceptionHandler(ExpiredTokenException.class)
     public ResponseEntity<?> handleExpiredTokenException(ExpiredTokenException e) {
         var error = EErrorCode.TOKEN_INVALID;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
+    @ExceptionHandler(ScheduleNotActiveException.class)
+    public ResponseEntity<?> handleScheduleNotActiveException(ScheduleNotActiveException e) {
+        var error = EErrorCode.SCHEDULE_NOT_ACTIVE;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
+    @ExceptionHandler(ScheduleUnavailableException.class)
+    public ResponseEntity<?> handleScheduleUnavailableException(ScheduleUnavailableException e) {
+        var error = EErrorCode.SCHEDULE_UNAVAILABLE;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
+    @ExceptionHandler(DifferentClassException.class)
+    public ResponseEntity<?> handleDifferentClassException(DifferentClassException e) {
+        var error = EErrorCode.DIFFERENT_CLASS;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
+    @ExceptionHandler(IllegalAccessException.class)
+    public ResponseEntity<?> handleIllegalAccessException(IllegalAccessException e) {
+        var error = EErrorCode.UNAUTHORIZED;
         logger.error(loggerLine);
         logger.error(error.getDescription());
         logger.error(loggerLine);

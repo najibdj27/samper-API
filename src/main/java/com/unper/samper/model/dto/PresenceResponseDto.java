@@ -4,9 +4,6 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.geo.Point;
 
-import com.unper.samper.model.Student;
-import com.unper.samper.model.Class;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,15 +16,15 @@ import lombok.NoArgsConstructor;
 public class PresenceResponseDto {
     private Long id;
 
-    private Student student;
+    private Long studentId;
 
-    private Class kelas;
+    private Long scheduleId;
 
-    private ScheduleResponseDto schedule;
+    private LocalDateTime checkIn;
 
-    private LocalDateTime checkin;
+    private LocalDateTime checkOut;
 
-    private LocalDateTime checkout;
+    private Point checkInLocation;
 
-    private Point location;
+    private Point checkOutLocation;
 }

@@ -22,7 +22,10 @@ public enum EErrorCode {
     WRONG_OTP(1305, "Wrong OTP value"),
     INVALIND_REQUEST(1306, "Invalid request"),
     FILE_NOT_EXIST(1307, "File not exist"),
-    FILE_TOO_LARGE(1308, "File too large");
+    FILE_TOO_LARGE(1308, "File too large"),
+    DIFFERENT_CLASS(1400, "Not allowed"),
+    SCHEDULE_NOT_ACTIVE(1401, "Schedule not active"),
+    SCHEDULE_UNAVAILABLE(1402, "Schedule unavailable");
 
 
     private final int code;
