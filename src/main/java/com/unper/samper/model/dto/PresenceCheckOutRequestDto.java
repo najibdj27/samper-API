@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PresenceCheckOutRequestDto {
     private Long id;
-    
-    private Long scheduleId;
 
-    private Point location;
+    private Point checkOutLocation;
 }

@@ -25,7 +25,8 @@ public enum EErrorCode {
     FILE_TOO_LARGE(1308, "File too large"),
     DIFFERENT_CLASS(1400, "Not allowed"),
     SCHEDULE_NOT_ACTIVE(1401, "Schedule not active"),
-    SCHEDULE_UNAVAILABLE(1402, "Schedule unavailable");
+    SCHEDULE_UNAVAILABLE(1402, "Schedule unavailable"),
+    ON_SCHEDULE(1402, "Student on schedule");
 
 
     private final int code;

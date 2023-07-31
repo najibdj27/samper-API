@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.DifferentClassException;
+import com.unper.samper.exception.OnScheduleException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleNotActiveException;
 import com.unper.samper.model.Presence;
@@ -49,23 +50,28 @@ public class PresenceServiceImpl implements PresenceService {
     }
 
     @Override
-    public Presence checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException {
+    public Presence checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException {
         User user = authenticationServiceImpl.getCurrentUser();
         Schedule schedule = scheduleServiceImpl.getById(requestDto.getScheduleId());
         Student student = studentServiceImpl.getByUser(user);
-
+        
+        if (schedule.getKelas() != student.getKelas()) {
+            throw new DifferentClassException(EResponseMessage.PRESENCE_DIFFERENT_CLASS.getMessage());
+        }
+        
         if (Boolean.FALSE.equals(schedule.getIsActive())) {
             throw new ScheduleNotActiveException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
 
-        if (schedule.getKelas() != student.getKelas()) {
-            throw new DifferentClassException(EResponseMessage.PRESENCE_DIFFERENT_CLASS.getMessage());
+        if (Boolean.TRUE.equals(presenceRepository.isOnSchedule(student))) {
+            throw new OnScheduleException(EResponseMessage.ON_SCHEDULE.getMessage());
         }
         Presence presence = Presence.builder()
+            .student(student)
             .schedule(schedule)
             .checkIn(LocalDateTime.now())
             .student(student)
-            .checkInLocation(requestDto.getLocation())
+            .checkInLocation(requestDto.getCehckInLocation())
             .build();
         Presence newPresence = presenceRepository.save(presence);
 
@@ -78,9 +84,13 @@ public class PresenceServiceImpl implements PresenceService {
         if (Boolean.FALSE.equals(presence.getSchedule().getIsActive())) {
             throw new ScheduleNotActiveException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
+
+        if (!presence.getCheckOut().equals(null) && !presence.getCheckOutLocation().equals(null)) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
         
         presence.setCheckOut(LocalDateTime.now());
-        presence.setCheckOutLocation(requestDto.getLocation());
+        presence.setCheckOutLocation(requestDto.getCheckOutLocation());
         
         Presence newPresence = presenceRepository.save(presence);
 

@@ -3,6 +3,7 @@ package com.unper.samper.service;
 import java.util.List;
 
 import com.unper.samper.exception.DifferentClassException;
+import com.unper.samper.exception.OnScheduleException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleNotActiveException;
 import com.unper.samper.model.Presence;
@@ -14,7 +15,7 @@ public interface PresenceService {
 
     Presence getById(Long id) throws ResourceNotFoundException;
 
-    Presence checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException;
+    Presence checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException;
 
     Presence checkOut(PresenceCheckOutRequestDto requestDto) throws ResourceNotFoundException, ScheduleNotActiveException;
 }

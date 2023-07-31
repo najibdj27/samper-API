@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.ExpiredTokenException;
+import com.unper.samper.exception.OnScheduleException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleNotActiveException;
@@ -153,6 +154,15 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     @ExceptionHandler(IllegalAccessException.class)
     public ResponseEntity<?> handleIllegalAccessException(IllegalAccessException e) {
         var error = EErrorCode.UNAUTHORIZED;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
+    @ExceptionHandler(OnScheduleException.class)
+    public ResponseEntity<?> handleOnScheduleException(OnScheduleException e) {
+        var error = EErrorCode.ON_SCHEDULE;
         logger.error(loggerLine);
         logger.error(error.getDescription());
         logger.error(loggerLine);

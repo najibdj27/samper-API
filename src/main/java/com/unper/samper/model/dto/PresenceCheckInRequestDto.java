@@ -15,5 +15,5 @@ public class PresenceCheckInRequestDto {
 
     private Long scheduleId;
 
-    private Point location;
+    private Point cehckInLocation;
 }

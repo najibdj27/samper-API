@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.DifferentClassException;
+import com.unper.samper.exception.OnScheduleException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleNotActiveException;
 import com.unper.samper.handler.ResponseHandler;
@@ -20,6 +23,7 @@ import com.unper.samper.model.Presence;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.PresenceCheckInRequestDto;
 import com.unper.samper.model.dto.PresenceCheckOutRequestDto;
+import com.unper.samper.model.dto.PresenceResponseDto;
 import com.unper.samper.service.impl.PresenceServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,16 +50,32 @@ public class PresenceController {
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     @Operation(summary = "Record check in presence")
     @PostMapping("/checkin")
-    public ResponseEntity<?> checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException{
+    public ResponseEntity<?> checkIn(@RequestBody PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException{
         Presence presence = presenceServiceImpl.checkIn(requestDto);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.PRESENCE_SUCCESS.getMessage(), presence);
+        PresenceResponseDto responseDto = PresenceResponseDto.builder()
+            .id(presence.getId())
+            .studentId(presence.getStudent().getId())
+            .scheduleId(presence.getSchedule().getId())
+            .checkInLocation(presence.getCheckInLocation())
+            .checkIn(presence.getCheckIn())
+            .build();
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.PRESENCE_SUCCESS.getMessage(), responseDto);
     }
 
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
     @Operation(summary = "Record check out presence")
-    @PostMapping("/checkout")
-    public ResponseEntity<?> checkOut(PresenceCheckOutRequestDto requestDto) throws ResourceNotFoundException, ScheduleNotActiveException {
+    @PatchMapping("/checkout")
+    public ResponseEntity<?> checkOut(@RequestBody PresenceCheckOutRequestDto requestDto) throws ResourceNotFoundException, ScheduleNotActiveException {
         Presence presence = presenceServiceImpl.checkOut(requestDto);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.PRESENCE_SUCCESS.getMessage(), presence);
+        PresenceResponseDto responseDto = PresenceResponseDto.builder()
+            .id(presence.getId())
+            .studentId(presence.getStudent().getId())
+            .scheduleId(presence.getSchedule().getId())
+            .checkIn(presence.getCheckIn())
+            .checkInLocation(presence.getCheckInLocation())
+            .checkOut(presence.getCheckOut())
+            .checkOutLocation(presence.getCheckOutLocation())
+            .build();
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.PRESENCE_SUCCESS.getMessage(), responseDto);
     }
 }

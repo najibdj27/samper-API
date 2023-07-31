@@ -17,7 +17,8 @@ public enum EResponseMessage {
     ILLEGAL_ACCESS("You are not allowed to do this action!"),
     ACTIVATE_SCHEDULE_SUCCESS("Schedule is activated!"),
     DEACTIVATE_SCHEDULE("Schedule is deactivated!"),
-    SCHEDULE_UNAVAILABLE("Your schedule is not available at current time!");
+    SCHEDULE_UNAVAILABLE("Your schedule is not available at current time!"),
+    ON_SCHEDULE("You are on the other schedule!");
 
     private final String message;
 
