@@ -19,6 +19,9 @@ import com.unper.samper.service.StudentService;
 @Service
 public class StudentServiceImpl implements StudentService {
     @Autowired
+    AuthenticationServiceImpl authenticationServiceImpl;
+
+    @Autowired
     UserServiceImpl userServiceImpl;
 
     @Autowired
@@ -64,6 +67,13 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public Student getCurrentStudent() throws ResourceNotFoundException {
+        User user = authenticationServiceImpl.getCurrentUser();
+        Student student = getByUser(user);
+        return student;
+    }
+
+    @Override
     public Student add(AddStudentRequestDto requestDto) {
         Student student = Student.builder()
             .NIM(requestDto.getNIM())
@@ -79,5 +89,5 @@ public class StudentServiceImpl implements StudentService {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
-    
+
 }
