@@ -10,6 +10,7 @@ import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.OnScheduleException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleNotActiveException;
+import com.unper.samper.model.Lecture;
 import com.unper.samper.model.Presence;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.Student;
@@ -28,11 +29,15 @@ public class PresenceServiceImpl implements PresenceService {
     StudentServiceImpl studentServiceImpl;
 
     @Autowired
+    LectureServiceImpl lectureServiceImpl;
+
+    @Autowired
     PresenceRepository presenceRepository;
 
     @Override
-    public List<Presence> getAll() throws ResourceNotFoundException {
-        List<Presence> presenceList = presenceRepository.findAll();
+    public List<Presence> getAllByLecture() throws ResourceNotFoundException {
+        Lecture lecture = lectureServiceImpl.getCurrentLecture();
+        List<Presence> presenceList = presenceRepository.findByLecture(lecture);
         if (presenceList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }

@@ -11,7 +11,7 @@ import com.unper.samper.model.dto.PresenceCheckInRequestDto;
 import com.unper.samper.model.dto.PresenceCheckOutRequestDto;
 
 public interface PresenceService {
-    List<Presence> getAll() throws ResourceNotFoundException;
+    List<Presence> getAllByLecture() throws ResourceNotFoundException;
 
     Presence getById(Long id) throws ResourceNotFoundException;
 

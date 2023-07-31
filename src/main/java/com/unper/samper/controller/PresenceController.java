@@ -1,5 +1,6 @@
 package com.unper.samper.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,13 +40,27 @@ public class PresenceController {
     @Autowired
     PresenceServiceImpl presenceServiceImpl;
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_LECTURE') or hasAuthority('ROLE_STUDENT')")
-    @Operation(summary = "Get all presence data")
-    public ResponseEntity<?> getAll() throws ResourceNotFoundException {
-        List<Presence> presenceList = presenceServiceImpl.getAll();
+    @PreAuthorize("hasAuthority('ROLE_LECTURE')")
+    @Operation(summary = "Get all presence data by current lecture")
+    @GetMapping("/getallbylecture")
+    public ResponseEntity<?> getAllByLecture() throws ResourceNotFoundException {
+        List<Presence> presenceList = presenceServiceImpl.getAllByLecture();
+        List<PresenceResponseDto> responseDtoList = new ArrayList<>();
+        presenceList.forEach(presence -> {
+            PresenceResponseDto responseDto = PresenceResponseDto.builder()
+                .id(presence.getId())
+                .studentId(presence.getStudent().getId())
+                .scheduleId(presence.getSchedule().getId())
+                .checkIn(presence.getCheckIn())
+                .checkInLocation(presence.getCheckInLocation())
+                .checkOut(presence.getCheckOut())
+                .checkOutLocation(presence.getCheckOutLocation())
+                .build();
+            responseDtoList.add(responseDto);
+        });
         Map<String, Integer> metaData = new HashMap<>();
         metaData.put("_total", presenceList.size());   
-        return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), metaData, presenceList);
+        return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList, metaData);
     }
 
     @PreAuthorize("hasAuthority('ROLE_STUDENT')")
