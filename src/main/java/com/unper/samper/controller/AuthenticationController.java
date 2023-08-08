@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,8 @@ import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.handler.ResponseHandler;
+import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.dto.CheckExpiredJwtTokenResponseDto;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
 import com.unper.samper.model.dto.ForgetPasswordRequestDto;
@@ -96,5 +99,13 @@ public class AuthenticationController {
     public ResponseEntity<?> resetPassword(@RequestParam("token") UUID token, @Valid @RequestBody ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
         authenticationServiceImpl.resetPassword(token, requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Password has been reset successfully!", null);
+    }
+
+    @Operation(summary = "Check your token is expired")
+    @GetMapping("/checktoken")
+    public ResponseEntity<?> checkExpiredJwtToken(@RequestParam("token") String token) {
+        Boolean isActive = authenticationServiceImpl.checkTokenExpiration(token);
+        CheckExpiredJwtTokenResponseDto responseDto = CheckExpiredJwtTokenResponseDto.builder().isActive(isActive).build();
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
     }
 }

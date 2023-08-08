@@ -192,5 +192,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         resetPasswordTokenRepository.deleteAll(resetPasswordTokenList);
         System.out.println(String.valueOf(resetPasswordTokenList.size()) + " Token successfully deleted");
     }
+
+    @Override
+    public Boolean checkTokenExpiration(String token) {
+        return jwtUtils.validateJwtToken(token);
+    }
 }
 

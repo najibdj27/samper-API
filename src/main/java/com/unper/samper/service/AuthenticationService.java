@@ -32,5 +32,7 @@ public interface AuthenticationService {
 
     User getCurrentUser() throws ResourceNotFoundException;
 
+    Boolean checkTokenExpiration(String token);
+
     void deleteExpiredToken() throws ResourceNotFoundException;
 }
