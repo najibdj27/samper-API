@@ -12,8 +12,10 @@ import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.User;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.constant.ERole;
+import com.unper.samper.model.dto.AddAdminRequestDto;
 import com.unper.samper.model.dto.AddLectureRequestDto;
 import com.unper.samper.model.dto.AddStudentRequestDto;
+import com.unper.samper.model.dto.RegisterAdminRequestDto;
 import com.unper.samper.model.dto.RegisterLectureRequestDto;
 import com.unper.samper.model.dto.RegisterStudentRequestDto;
 import com.unper.samper.model.dto.SignUpRequestDto;
@@ -34,6 +36,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     LectureServiceImpl lectureServiceImpl;
+
+    @Autowired
+    AdminServiceImpl adminServiceImpl;
 
     @Autowired
     ClassServiceImpl classServiceImpl;
@@ -86,6 +91,30 @@ public class RegistrationServiceImpl implements RegistrationService {
             .user(newUser)
             .build();
         lectureServiceImpl.add(addLectureRequestDto);
+    }
+
+    @Override
+    public void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+        List<ERole> eRoleList = new ArrayList<>();
+        eRoleList.add(ERole.ROLE_ADMIN);
+        SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
+            .firstName(requestDto.getFirstName())
+            .lastName(requestDto.getLastName())
+            .dateOfBirth(requestDto.getDateOfBirth())
+            .username(requestDto.getUsername())
+            .email(requestDto.getEmail())
+            .phoneNumber(requestDto.getPhoneNumber())
+            .password(requestDto.getPassword())
+            .roles(eRoleList)
+            .build();
+        User newUser = authenticationServiceImpl.registerUser(signUpRequestDto);
+
+        AddAdminRequestDto addAdminRequestDto = AddAdminRequestDto.builder()
+            .user(newUser)
+            .NIP(requestDto.getNIP())
+            .previllagesId(requestDto.getPrevillages())
+            .build();
+        adminServiceImpl.add(addAdminRequestDto);
     }
     
 }

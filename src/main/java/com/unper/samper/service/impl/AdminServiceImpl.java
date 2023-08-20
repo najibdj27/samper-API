@@ -9,6 +9,7 @@ import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.Admin;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.dto.AddAdminRequestDto;
 import com.unper.samper.repository.AdminRepository;
 import com.unper.samper.service.AdminService;
 
@@ -37,5 +38,15 @@ public class AdminServiceImpl implements AdminService {
 
         return admin;
     }
-    
+
+    @Override
+    public Admin add(AddAdminRequestDto requestDto) {
+        Admin admin = Admin.builder()
+            .user(requestDto.getUser())
+            .NIP(requestDto.getNIP())
+            .previllages(requestDto.getPrevillagesId())
+            .build();
+        Admin newAdmin = adminRepository.save(admin);
+        return newAdmin;
+    }
 }
