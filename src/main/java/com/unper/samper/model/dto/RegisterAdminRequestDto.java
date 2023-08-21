@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.unper.samper.model.Previllage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class RegisterAdminRequestDto {
     private String NIP;
 
-    private Set<Previllage> previllages; 
+    private Set<Integer> previllages; 
 
     private String firstName;
 

@@ -2,7 +2,6 @@ package com.unper.samper.model.dto;
 
 import java.util.Set;
 
-import com.unper.samper.model.Previllage;
 import com.unper.samper.model.User;
 
 import lombok.AllArgsConstructor;
@@ -19,5 +18,5 @@ public class AddAdminRequestDto {
     
     private String NIP;
 
-    private Set<Previllage> previllagesId;
+    private Set<Integer> previllagesId;
 }

@@ -11,5 +11,5 @@ public interface AdminService {
 
     Admin getCurrentAdmin() throws ResourceNotFoundException;
 
-    Admin add(AddAdminRequestDto requestDto);
+    Admin add(AddAdminRequestDto requestDto) throws ResourceNotFoundException;
 }

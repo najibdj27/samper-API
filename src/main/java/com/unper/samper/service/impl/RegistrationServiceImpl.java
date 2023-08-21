@@ -94,6 +94,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
+    @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
     public void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.ROLE_ADMIN);
