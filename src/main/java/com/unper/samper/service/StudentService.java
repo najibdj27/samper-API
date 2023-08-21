@@ -6,10 +6,9 @@ import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.Student;
 import com.unper.samper.model.User;
 import com.unper.samper.model.dto.AddStudentRequestDto;
-import com.unper.samper.model.dto.StudentResponseDto;
 
 public interface StudentService {
-    List<StudentResponseDto> getAll() throws ResourceNotFoundException;
+    List<Student> getAll() throws ResourceNotFoundException;
 
     Student getById(Long id) throws ResourceNotFoundException;
 

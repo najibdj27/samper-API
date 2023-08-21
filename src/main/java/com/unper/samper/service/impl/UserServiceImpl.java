@@ -32,8 +32,10 @@ public class UserServiceImpl implements UserService {
 
         List<UserResponseDto> responseDtoList = new ArrayList<>();
         users.forEach(user -> {
-            List<Role> roleList = new ArrayList<>();
-            roleList.addAll(user.getRoles());
+            List<String> roleList = new ArrayList<>();
+            for (Role role : user.getRoles()) {
+                roleList.add(role.getName().toString());
+            }
             UserResponseDto responseDto = UserResponseDto.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
@@ -59,8 +61,10 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
 
-        List<Role> roleList = new ArrayList<>();
-        roleList.addAll(user.get().getRoles());
+        List<String> roleList = new ArrayList<>();
+            user.get().getRoles().forEach((role) -> {
+                roleList.add(role.getName().toString());
+            });
         UserResponseDto responseDto = UserResponseDto.builder()
             .id(user.get().getId())
             .firstName(user.get().getFirstName())

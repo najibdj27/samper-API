@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.unper.samper.model.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,5 +32,5 @@ public class UserResponseDto {
 
     private String phoneNumber;
 
-    private List<Role> roles;
+    private List<String> roles;
 }

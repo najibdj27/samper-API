@@ -1,6 +1,5 @@
 package com.unper.samper.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,6 @@ import com.unper.samper.model.Student;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddStudentRequestDto;
-import com.unper.samper.model.dto.StudentResponseDto;
-import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.repository.StudentRepository;
 import com.unper.samper.service.StudentService;
 
@@ -28,7 +25,7 @@ public class StudentServiceImpl implements StudentService {
     StudentRepository studentRepository;
 
     @Override
-    public List<StudentResponseDto> getAll() throws ResourceNotFoundException {
+    public List<Student> getAll() throws ResourceNotFoundException {
         List<Student> studentList = studentRepository.findAll();
 
         // check if data available
@@ -36,22 +33,9 @@ public class StudentServiceImpl implements StudentService {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
 
-        List<StudentResponseDto> responseDtoList = new ArrayList<>();
-        studentList.forEach(student -> {
-            UserResponseDto userResponseDto = new UserResponseDto();
-            try {
-                userResponseDto = userServiceImpl.getById(student.getUser().getId());
-            } catch (ResourceNotFoundException e) {
-                e.printStackTrace();
-            }
-            StudentResponseDto responseDto = StudentResponseDto.builder()
-                .NIM(student.getNIM())
-                .user(userResponseDto)
-                .build();
-            responseDtoList.add(responseDto);
-        });
+        
 
-        return responseDtoList;
+        return studentList;
     }
 
     @Override
