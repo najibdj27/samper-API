@@ -39,7 +39,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Admin getCurrentAdmin() throws ResourceNotFoundException {
         User currentUser = authenticationServiceImpl.getCurrentUser();
-        Admin admin = adminRepository.findById(currentUser.getId()).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+        Admin admin = adminRepository.findByUser(currentUser).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
 
         return admin;
     }
