@@ -27,6 +27,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+
 @Builder
 @Entity
 @Table(name = "admin", schema = "public")
