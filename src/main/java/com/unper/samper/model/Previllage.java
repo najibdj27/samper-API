@@ -38,7 +38,7 @@ public class Previllage extends Audit {
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = BasePrevillage.class)
     @JoinColumn(name = "base_previllage_id")
-    private BasePrevillage BasePrevillage;
+    private BasePrevillage basePrevillage;
 
     private String url;
 
