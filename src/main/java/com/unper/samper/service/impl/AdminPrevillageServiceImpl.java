@@ -2,6 +2,7 @@ package com.unper.samper.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,14 +18,20 @@ public class AdminPrevillageServiceImpl implements AdminPrevillageService {
     AdminServiceImpl adminServiceImpl;
 
     @Override
-    public List<Previllage> getAllByCurrentAdmin() throws ResourceNotFoundException {
+    public List<Previllage> getAllByCurrentAdmin(String name) throws ResourceNotFoundException {
         List<Previllage> previllageList = new ArrayList<>();
         Admin currentAdmin = adminServiceImpl.getCurrentAdmin();
         currentAdmin.getPrevillages().forEach((previllage) -> {
             previllageList.add(previllage);
         });
 
-        return previllageList;
+        if (name != null) {
+            List<Previllage> previllageListFiltered = previllageList.stream().filter(p -> p.getBasePrevillage().getNameDb().equals(name)).collect(Collectors.toList());
+            return previllageListFiltered;
+        }else{
+            return previllageList;
+        }
+
     }
     
 }

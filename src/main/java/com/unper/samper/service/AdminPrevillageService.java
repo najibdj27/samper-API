@@ -6,5 +6,5 @@ import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.Previllage;
 
 public interface AdminPrevillageService {
-    List<Previllage> getAllByCurrentAdmin() throws ResourceNotFoundException;
+    List<Previllage> getAllByCurrentAdmin(String name) throws ResourceNotFoundException;
 }

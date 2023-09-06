@@ -70,6 +70,6 @@ public class StudentController {
 
         Map<String, Object> metaData = new HashMap<>();
         metaData.put("_total", responseDtoList.size());
-        return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), metaData, responseDtoList);
+        return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList, metaData);
     }
 }

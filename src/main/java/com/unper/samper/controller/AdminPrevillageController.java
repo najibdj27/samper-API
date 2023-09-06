@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.ResourceNotFoundException;
@@ -33,8 +34,8 @@ public class AdminPrevillageController {
     
     @GetMapping("/getbycurrentadmin")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> getAllByCurrentAdmin() throws ResourceNotFoundException {
-        List<Previllage> previllageList = adminPrevillageServiceImpl.getAllByCurrentAdmin();
+    public ResponseEntity<?> getAllByCurrentAdmin(@RequestParam(value = "name", required = false) String name) throws ResourceNotFoundException {
+        List<Previllage> previllageList = adminPrevillageServiceImpl.getAllByCurrentAdmin(name);
         List<GetAllPrevillageByAdminResponseDto> responseDtoList = new ArrayList<>();
         previllageList.forEach(previllage -> {
             Set<String> previllageNameSet = new HashSet<>();
