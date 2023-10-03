@@ -1,6 +1,7 @@
 package com.unper.samper.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,6 +59,9 @@ public class AdminPrevillageController {
                     responseDtoList.add(responseDto);
                 }
             }
+        });
+        Collections.sort(responseDtoList, (r1, r2) -> {
+            return r1.getName().compareTo(r2.getName());
         });
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList);
     }
