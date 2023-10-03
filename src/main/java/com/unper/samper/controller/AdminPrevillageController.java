@@ -33,7 +33,7 @@ public class AdminPrevillageController {
     AdminPrevillageServiceImpl adminPrevillageServiceImpl;
     
     @GetMapping("/getbycurrentadmin")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> getAllByCurrentAdmin(@RequestParam(value = "name", required = false) String name) throws ResourceNotFoundException {
         List<Previllage> previllageList = adminPrevillageServiceImpl.getAllByCurrentAdmin(name);
         List<GetAllPrevillageByAdminResponseDto> responseDtoList = new ArrayList<>();
