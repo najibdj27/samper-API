@@ -39,7 +39,7 @@ public class StudentController {
      * @throws ResourceNotFoundException
      */
     @Operation(summary = "Get data of all student")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_LECTURE')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
     @GetMapping("/all")
     public ResponseEntity<?> getAll() throws ResourceNotFoundException {
         List<Student> studentList = studentServiceImpl.getAll();

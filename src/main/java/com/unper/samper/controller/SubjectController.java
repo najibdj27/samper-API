@@ -28,7 +28,7 @@ public class SubjectController {
     SubjectServiceImpl subjectServiceImpl;
 
     @Operation(summary = "Create a new subject")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_LECTURE')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody AddSubjectrequestDto requestDto) throws ResourceAlreadyExistException{
         subjectServiceImpl.addSubject(requestDto);

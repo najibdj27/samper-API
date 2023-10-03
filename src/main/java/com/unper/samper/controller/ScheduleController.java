@@ -34,7 +34,7 @@ public class ScheduleController {
     ScheduleServiceImpl scheduleServiceImpl;
 
     @Operation(summary = "Add new schedule")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_LECTURE')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody AddScheduleRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException {
         scheduleServiceImpl.add(requestDto);
@@ -42,7 +42,7 @@ public class ScheduleController {
     }
 
     @Operation(summary = "Activate schedule")
-    @PreAuthorize("hasAuthority('ROLE_LECTURE')")
+    @PreAuthorize("hasAuthority('LECTURE')")
     @PatchMapping("/activate")
     public ResponseEntity<?> activate(Long id) throws ResourceNotFoundException, IllegalAccessException, ScheduleUnavailableException {
         Schedule schedule = scheduleServiceImpl.activate(id);
@@ -58,7 +58,7 @@ public class ScheduleController {
     }
 
     @Operation(summary = "Deactivate shedule")
-    @PreAuthorize("hasAuthority('ROLE_LECTURE')")
+    @PreAuthorize("hasAuthority('LECTURE')")
     @PatchMapping("/deactivate")
     public ResponseEntity<?> deactivate(Long id) throws ResourceNotFoundException, IllegalAccessException, ScheduleUnavailableException {
         Schedule schedule = scheduleServiceImpl.deactivate(id);

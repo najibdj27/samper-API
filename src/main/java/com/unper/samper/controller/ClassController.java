@@ -29,7 +29,7 @@ public class ClassController {
     ClassServiceImpl classServiceImpl;
 
     @Operation(summary = "Add new class")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_LECTURE')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody AddClassRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         classServiceImpl.addClass(requestDto);

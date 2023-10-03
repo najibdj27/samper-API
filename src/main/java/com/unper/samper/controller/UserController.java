@@ -36,7 +36,7 @@ public class UserController {
      * @throws ResourceNotFoundException
      */
     @Operation(summary = "Get all data of user")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_LECTURE') or hasAuthority('ROLE_STUDENT')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE') or hasAuthority('STUDENT')")
     @GetMapping("/all")
     public ResponseEntity<?> getAll() throws ResourceNotFoundException {
         List<UserResponseDto> responseDtoList = userServiceImpl.getAll();
