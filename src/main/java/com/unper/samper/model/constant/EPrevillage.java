@@ -4,5 +4,6 @@ public enum EPrevillage {
     CREATE,
     READ,
     UPDATE,
-    DELETE
+    DELETE,
+    UNREGISTER
 }

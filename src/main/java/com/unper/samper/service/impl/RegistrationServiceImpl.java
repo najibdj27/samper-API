@@ -47,7 +47,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
     public void registerStudent(RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         List<ERole> eRoleList = new ArrayList<>();
-        eRoleList.add(ERole.ROLE_STUDENT);
+        eRoleList.add(ERole.STUDENT);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
             .firstName(requestDto.getFirstName())
             .lastName(requestDto.getLastName())
@@ -73,7 +73,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
     public void registerLecture(RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         List<ERole> eRoleList = new ArrayList<>();
-        eRoleList.add(ERole.ROLE_LECTURE);
+        eRoleList.add(ERole.LECTURE);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
             .firstName(requestDto.getFirstName())
             .lastName(requestDto.getLastName())
@@ -97,7 +97,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
     public void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         List<ERole> eRoleList = new ArrayList<>();
-        eRoleList.add(ERole.ROLE_ADMIN);
+        eRoleList.add(ERole.ADMIN);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
             .firstName(requestDto.getFirstName())
             .lastName(requestDto.getLastName())
