@@ -1,5 +1,6 @@
 package com.unper.samper.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,16 @@ public class ClassServiceImpl implements ClassService {
 
     @Autowired
     LectureServiceImpl lectureServiceImpl;
+
+    @Override
+    public List<Class> getAll() throws ResourceNotFoundException {
+        List<Class> classlList = classRepository.findAll();
+        if (classlList.isEmpty()) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+
+        return classlList;
+    }
 
     @Override
     public Class getById(Long id) throws ResourceNotFoundException {
@@ -49,5 +60,5 @@ public class ClassServiceImpl implements ClassService {
         
         return newClass;
     }
-    
+
 }
