@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "6. Class Controller")
+@Tag(name = "Class Controller")
 @RestController
 @RequestMapping("/class")
 public class ClassController {
@@ -70,6 +71,14 @@ public class ClassController {
             responseDtoList.add(responseDto);
         });
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList);
+    }
+
+    @Operation(summary = "Get class by id")
+    @PreAuthorize("hasAthority('ADMIN') or hasAuthority('LECTURE') or hasAuthority('STUDENT')")
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> getById(@PathVariable("id") Long id) throws ResourceNotFoundException {   
+        Class kelas = classServiceImpl.getById(id);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), kelas);
     }
 
     @Operation(summary = "Add new class")
