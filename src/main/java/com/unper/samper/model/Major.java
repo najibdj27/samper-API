@@ -2,7 +2,6 @@ package com.unper.samper.model;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -36,7 +35,7 @@ public class Major extends Audit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private UUID majorCode;
+    private String majorCode;
 
     private String name;
 
