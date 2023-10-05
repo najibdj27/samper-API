@@ -41,6 +41,7 @@ public class Subject extends Audit {
     private Set<Lecture> lecture = new HashSet<>();
 
     @Builder.Default
-    @ManyToMany(mappedBy = "subjects")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "subject_major", joinColumns = @JoinColumn(name = "subject_id"), inverseJoinColumns = @JoinColumn(name = "major_id"))
     private Set<Major> majors = new HashSet<>();
 }

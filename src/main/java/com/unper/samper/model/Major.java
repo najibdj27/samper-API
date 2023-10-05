@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -46,7 +45,6 @@ public class Major extends Audit {
     private Lecture majorHead;
 
     @Builder.Default
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "major_subject", joinColumns = @JoinColumn(name = "major_id"), inverseJoinColumns = @JoinColumn(name = "subject_id"))
+    @ManyToMany(mappedBy = "majors")
     private Set<Subject> subjects = new HashSet<>();
 } 
