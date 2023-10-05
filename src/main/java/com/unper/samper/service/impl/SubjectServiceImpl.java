@@ -1,5 +1,6 @@
 package com.unper.samper.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,16 @@ import com.unper.samper.service.SubjectService;
 public class SubjectServiceImpl implements SubjectService {
     @Autowired
     SubjectRepository subjectRepository;
+
+    @Override
+    public List<Subject> getAll() throws ResourceNotFoundException {
+        List<Subject> subjectList = subjectRepository.findAll();
+        if (subjectList.isEmpty()) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+
+        return subjectList;
+    }
 
     @Override
     public Subject getById(Long id) throws ResourceNotFoundException {
@@ -44,5 +55,5 @@ public class SubjectServiceImpl implements SubjectService {
 
         return newSubject;
     }
-    
+
 }
