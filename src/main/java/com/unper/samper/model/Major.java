@@ -15,6 +15,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
+
 import com.unper.samper.model.common.Audit;
 
 import lombok.AllArgsConstructor;
@@ -30,6 +35,9 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "major", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "majorCode"), @UniqueConstraint(columnNames = "majorHead")})
+@SQLDelete(sql = "UPDATE public.major SET is_deleted = true WHERE id=?")
+@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
+@Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
 public class Major extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,4 +54,7 @@ public class Major extends Audit {
     @Builder.Default
     @ManyToMany(mappedBy = "majors")
     private Set<Subject> subjects = new HashSet<>();
+
+    @Builder.Default
+    private Boolean isDeleted = Boolean.FALSE;
 } 

@@ -6,6 +6,11 @@ import java.util.HashSet;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
+
 import com.unper.samper.model.common.Audit;
 
 import lombok.*;
@@ -17,6 +22,9 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "user", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "email"), @UniqueConstraint(columnNames = "phoneNumber")})
+@SQLDelete(sql = "UPDATE public.user SET is_deleted = true WHERE id=?")
+@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
+@Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
 public class User extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,5 +48,7 @@ public class User extends Audit {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-
+    
+    @Builder.Default
+    private Boolean isDeleted = Boolean.FALSE;
 }

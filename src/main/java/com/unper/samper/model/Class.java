@@ -9,6 +9,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
+
 import com.unper.samper.model.common.Audit;
 
 import lombok.AllArgsConstructor;
@@ -24,6 +29,9 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "class", schema = "public")
+@SQLDelete(sql = "UPDATE pyblic.class SET is_deleted = true WHERE id=?")
+@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
+@Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
 public class Class extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,4 +42,7 @@ public class Class extends Audit {
     private Lecture lecture;
 
     private String tittle;
+
+    @Builder.Default
+    private Boolean isDeleted = Boolean.FALSE;
 }

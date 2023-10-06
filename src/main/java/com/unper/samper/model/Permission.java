@@ -11,6 +11,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
+
 import com.unper.samper.model.common.Audit;
 import com.unper.samper.model.constant.EPermissionReason;
 import com.unper.samper.model.constant.EPermissionStatus;
@@ -28,6 +33,9 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "permission", schema = "public")
+@SQLDelete(sql = "UPDATE public.permission SET is_deleted = true WHERE id=?")
+@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
+@Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
 public class Permission extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,4 +54,7 @@ public class Permission extends Audit {
 
     @Enumerated(EnumType.STRING)
     private EPermissionStatus status;
+
+    @Builder.Default
+    private Boolean isDeleted = Boolean.FALSE;
 }
