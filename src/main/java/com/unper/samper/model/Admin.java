@@ -15,11 +15,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-import org.hibernate.annotations.SQLDelete;
-
 import com.unper.samper.model.common.Audit;
 
 import lombok.AllArgsConstructor;
@@ -35,9 +30,6 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "admin", schema = "public")
-@SQLDelete(sql = "UPDATE public.admin SET is_deleted = true WHERE id=?")
-@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
-@Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
 public class Admin extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,7 +45,4 @@ public class Admin extends Audit {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "admin_previllage", joinColumns = @JoinColumn(name = "admin_id"), inverseJoinColumns = @JoinColumn(name = "previllage_id"))
     private Set<Previllage> previllages = new HashSet<>();
-
-    @Builder.Default
-    private Boolean isDeleted = Boolean.FALSE;
 }
