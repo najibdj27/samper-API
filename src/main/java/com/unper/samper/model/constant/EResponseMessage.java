@@ -18,7 +18,9 @@ public enum EResponseMessage {
     ACTIVATE_SCHEDULE_SUCCESS("Schedule is activated!"),
     DEACTIVATE_SCHEDULE("Schedule is deactivated!"),
     SCHEDULE_UNAVAILABLE("Your schedule is not available at current time!"),
-    ON_SCHEDULE("You are on the other schedule!");
+    ON_SCHEDULE("You are on the other schedule!"),
+    DELETE_SUCCESS("Data deleted successfully!"),
+    DELETE_NO_RESOURCE("Can't delete data!");
 
     private final String message;
 
