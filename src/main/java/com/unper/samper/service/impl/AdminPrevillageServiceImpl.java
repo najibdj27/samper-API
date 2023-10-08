@@ -33,5 +33,16 @@ public class AdminPrevillageServiceImpl implements AdminPrevillageService {
         }
 
     }
+
+    @Override
+    public List<Previllage> getAllByAdmin(Long adminId) throws ResourceNotFoundException {
+        List<Previllage> previllageList = new ArrayList<>();
+        Admin admin = adminServiceImpl.getById(adminId);
+        admin.getPrevillages().forEach((previllage) -> {
+            previllageList.add(previllage);
+        });
+
+        return previllageList;
+    }
     
 }
