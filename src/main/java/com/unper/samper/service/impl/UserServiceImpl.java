@@ -1,14 +1,11 @@
 package com.unper.samper.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
-import com.unper.samper.model.Role;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.EditUserRequestDto;
@@ -22,60 +19,24 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Override
-    public List<UserResponseDto> getAll() throws ResourceNotFoundException {
-        List<User> users = userRepository.findAll();
+    public List<User> getAll() throws ResourceNotFoundException {
+        List<User> userList = userRepository.findAll();
 
         // check if list of User is empty
-        if (users.isEmpty()) {
+        if (userList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
 
-        List<UserResponseDto> responseDtoList = new ArrayList<>();
-        users.forEach(user -> {
-            List<String> roleList = new ArrayList<>();
-            for (Role role : user.getRoles()) {
-                roleList.add(role.getName().toString());
-            }
-            UserResponseDto responseDto = UserResponseDto.builder()
-                .id(user.getId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .dateOfBirth(user.getDateOfBirth())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
-                .roles(roleList)
-                .build();
-            responseDtoList.add(responseDto);
-        });
         
-        return responseDtoList;
+        
+        return userList;
     }
 
     @Override
-    public UserResponseDto getById(Long id) throws ResourceNotFoundException {
-        Optional<User> user = userRepository.findById(id);
-
-        // check if user with that ID not exist in DB
-        if (user.isEmpty()){
-            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
-        }
-
-        List<String> roleList = new ArrayList<>();
-            user.get().getRoles().forEach((role) -> {
-                roleList.add(role.getName().toString());
-            });
-        UserResponseDto responseDto = UserResponseDto.builder()
-            .id(user.get().getId())
-            .firstName(user.get().getFirstName())
-            .lastName(user.get().getLastName())
-            .dateOfBirth(user.get().getDateOfBirth())
-            .username(user.get().getUsername())
-            .email(user.get().getEmail())
-            .phoneNumber(user.get().getPhoneNumber())
-            .roles(roleList)
-            .build();
-        return responseDto;
+    public User getById(Long id) throws ResourceNotFoundException {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+        
+        return user;
     }
 
     @Override
@@ -104,6 +65,12 @@ public class UserServiceImpl implements UserService {
             .phoneNumber(editedUser.getPhoneNumber())
             .build();
         return responseDto;
+    }
+
+    @Override
+    public void delete(Long id) throws ResourceNotFoundException {
+        User user = getById(id);
+        userRepository.delete(user);
     }
     
 }

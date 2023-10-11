@@ -1,5 +1,6 @@
 package com.unper.samper.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.handler.ResponseHandler;
+import com.unper.samper.model.Role;
+import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.impl.UserServiceImpl;
@@ -39,7 +42,25 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE') or hasAuthority('STUDENT')")
     @GetMapping("/all")
     public ResponseEntity<?> getAll() throws ResourceNotFoundException {
-        List<UserResponseDto> responseDtoList = userServiceImpl.getAll();
+        List<User> userList = userServiceImpl.getAll();
+        List<UserResponseDto> responseDtoList = new ArrayList<>();
+        userList.forEach(user -> {
+            List<String> roleList = new ArrayList<>();
+            for (Role role : user.getRoles()) {
+                roleList.add(role.getName().toString());
+            }
+            UserResponseDto responseDto = UserResponseDto.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .dateOfBirth(user.getDateOfBirth())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .roles(roleList)
+                .build();
+            responseDtoList.add(responseDto);
+        });
 
         // meta data
         Map<String, Object> metaData = new HashMap<>();
