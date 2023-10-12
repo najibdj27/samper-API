@@ -67,6 +67,7 @@ public class ClassController {
             ClassResponseDto responseDto = ClassResponseDto.builder()
                 .Id(kelas.getId())
                 .lecture(lectureResponseDto)
+                .name(kelas.getName())
                 .build();
             responseDtoList.add(responseDto);
         });

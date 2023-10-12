@@ -41,7 +41,7 @@ public class Class extends Audit {
     @JoinColumn(name = "lecture_id")
     private Lecture lecture;
 
-    private String tittle;
+    private String name;
 
     @Builder.Default
     private Boolean isDeleted = Boolean.FALSE;
