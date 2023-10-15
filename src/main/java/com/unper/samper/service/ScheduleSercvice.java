@@ -8,10 +8,9 @@ import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleUnavailableException;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
-import com.unper.samper.model.dto.ScheduleResponseDto;
 
 public interface ScheduleSercvice {
-    List<ScheduleResponseDto> getAll();
+    List<Schedule> getAll() throws ResourceNotFoundException;
 
     Schedule getById(Long id) throws ResourceNotFoundException;
 
@@ -22,4 +21,6 @@ public interface ScheduleSercvice {
     Schedule activate(Long id) throws ResourceNotFoundException, IllegalAccessException, ScheduleUnavailableException;
 
     Schedule deactivate(Long id) throws IllegalAccessException, ResourceNotFoundException;
+
+    void delete(Long id) throws ResourceNotFoundException;
 }

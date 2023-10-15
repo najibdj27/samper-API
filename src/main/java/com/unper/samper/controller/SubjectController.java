@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -120,5 +121,13 @@ public class SubjectController {
     public ResponseEntity<?> add(@RequestBody AddSubjectrequestDto requestDto) throws ResourceAlreadyExistException{
         subjectServiceImpl.addSubject(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.INSERT_DATA_SUCCESS.getMessage(), null);
+    }
+
+    @Operation(summary = "Soft delete a subject")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PatchMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) throws ResourceNotFoundException { 
+        subjectServiceImpl.delete(id);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.DELETE_SUCCESS.getMessage(), null);
     }
 }

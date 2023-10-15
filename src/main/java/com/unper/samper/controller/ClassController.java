@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,7 +75,7 @@ public class ClassController {
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList);
     }
 
-    @Operation(summary = "Get class by id")
+    @Operation(summary = "Get a class by id")
     @PreAuthorize("hasAthority('ADMIN') or hasAuthority('LECTURE') or hasAuthority('STUDENT')")
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getById(@PathVariable("id") Long id) throws ResourceNotFoundException {   
@@ -82,11 +83,19 @@ public class ClassController {
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), kelas);
     }
 
-    @Operation(summary = "Add new class")
+    @Operation(summary = "Add a new class")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody AddClassRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
         classServiceImpl.addClass(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.INSERT_DATA_SUCCESS.getMessage(), null);
+    }
+
+    @Operation(summary = "Soft delete a class")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PatchMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) throws ResourceNotFoundException {
+        classServiceImpl.delete(id);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.DELETE_SUCCESS.getMessage(), id);
     }
 }

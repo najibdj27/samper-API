@@ -9,7 +9,10 @@ import com.unper.samper.model.dto.AddSubjectrequestDto;
 
 public interface SubjectService {
     List<Subject> getAll() throws ResourceNotFoundException;
+
     Subject getById(Long id) throws ResourceNotFoundException;
 
     Subject addSubject(AddSubjectrequestDto requestDto) throws ResourceAlreadyExistException;
+
+    void delete(Long id) throws ResourceNotFoundException;
 }

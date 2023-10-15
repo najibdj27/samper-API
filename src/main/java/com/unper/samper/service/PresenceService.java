@@ -18,4 +18,6 @@ public interface PresenceService {
     Presence checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException;
 
     Presence checkOut(PresenceCheckOutRequestDto requestDto) throws ResourceNotFoundException, ScheduleNotActiveException;
+
+    void delete(Long id) throws ResourceNotFoundException;
 }

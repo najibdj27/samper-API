@@ -18,5 +18,5 @@ public interface StudentService {
 
     Student add(AddStudentRequestDto requestDto);
 
-    void delete(Long id);
+    void delete(Long id) throws ResourceNotFoundException;
 }

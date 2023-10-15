@@ -16,7 +16,6 @@ import com.unper.samper.exception.ScheduleUnavailableException;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.Lecture;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
-import com.unper.samper.model.dto.ScheduleResponseDto;
 import com.unper.samper.repository.ScheduleRepository;
 import com.unper.samper.service.ScheduleSercvice;
 
@@ -35,9 +34,12 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     LectureServiceImpl lectureServiceImpl;
 
     @Override
-    public List<ScheduleResponseDto> getAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAll'");
+    public List<Schedule> getAll() throws ResourceNotFoundException {
+        List<Schedule> scheduleList = scheduleRepository.findAll();
+        if (scheduleList.isEmpty()) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+        return scheduleList;
     }
 
     @Override
@@ -118,5 +120,11 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
         schedule.setIsActive(Boolean.FALSE);
         Schedule deactivatedSchedule = scheduleRepository.save(schedule);
         return deactivatedSchedule;
+    }
+
+    @Override
+    public void delete(Long id) throws ResourceNotFoundException {
+        Schedule schedule = getById(id);
+        scheduleRepository.delete(schedule);
     }
 }

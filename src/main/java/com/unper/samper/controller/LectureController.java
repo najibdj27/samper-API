@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,5 +62,38 @@ public class LectureController {
             lectureResponseDtoList.add(responseDto);
         });
         return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), null, null);
+    }
+
+    @Operation(summary = "Get lecture data by id")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE') or hasAuthority('STUDENT')")
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> getById(@PathVariable("id") Long id) throws ResourceNotFoundException {
+        Lecture lecture = lectureServiceImpl.getById(id);
+        List<String> roleList = new ArrayList<>();
+        for (Role role : lecture.getUser().getRoles()) {
+            roleList.add(role.getName().toString());
+        }
+        UserResponseDto userResponseDto = UserResponseDto.builder()
+            .id(lecture.getUser().getId())
+            .firstName(lecture.getUser().getFirstName())
+            .lastName(lecture.getUser().getLastName())
+            .dateOfBirth(lecture.getUser().getDateOfBirth())
+            .username(lecture.getUser().getUsername())
+            .email(lecture.getUser().getEmail())
+            .phoneNumber(lecture.getUser().getPhoneNumber())
+            .roles(roleList)
+            .build();
+        LectureResponseDto responseDto = LectureResponseDto.builder()
+            .id(lecture.getId())
+            .NIP(lecture.getNIP())
+            .user(userResponseDto)
+            .build();
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
+    }
+
+    @Operation(summary = "Soft delete a lecture")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) throws ResourceNotFoundException {
+        lectureServiceImpl.delete(id);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.DELETE_SUCCESS.getMessage(), null);
     }
 }

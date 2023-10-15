@@ -96,5 +96,11 @@ public class PresenceServiceImpl implements PresenceService {
 
         return newPresence;
     }
+
+    @Override
+    public void delete(Long id) throws ResourceNotFoundException {
+        Presence presence = getById(id);
+        presenceRepository.delete(presence);
+    }
     
 }

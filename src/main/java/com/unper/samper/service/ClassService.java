@@ -13,4 +13,6 @@ public interface ClassService {
     Class getById(Long id) throws ResourceNotFoundException;
 
     Class addClass(AddClassRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException;
+
+    void delete(Long id) throws ResourceNotFoundException;
 }

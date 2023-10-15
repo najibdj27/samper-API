@@ -69,9 +69,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    public void delete(Long id) throws ResourceNotFoundException {
+        Student student = getById(id);
+        userServiceImpl.delete(student.getUser().getId());
     }
-
 }

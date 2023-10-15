@@ -23,6 +23,9 @@ public class LectureServiceImpl implements LectureService {
     @Autowired
     LectureRepository lectureRepository;
 
+    @Autowired
+    UserServiceImpl userServiceImpl;
+
     @Override
     public List<Lecture> getAll() throws ResourceNotFoundException {
         List<Lecture> lectureList = lectureRepository.findAll();
@@ -54,7 +57,7 @@ public class LectureServiceImpl implements LectureService {
             .NIP(requestDto.getNIP())
             .user(requestDto.getUser())
             .build();
-        
+
         // check if NIP already exist
         if (Boolean.TRUE.equals(lectureRepository.existsByNIP(requestDto.getNIP()))) {
             throw new ResourceAlreadyExistException(EResponseMessage.INSERT_DATA_ALREADY_EXIST.getMessage());
@@ -65,9 +68,9 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
-    public void delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    public void delete(Long id) throws ResourceNotFoundException {
+        Lecture lecture = getById(id);
+        userServiceImpl.delete(lecture.getUser().getId());
     }
 
     @Override

@@ -53,12 +53,18 @@ public class ClassServiceImpl implements ClassService {
         Lecture lecture = lectureServiceImpl.getById(requestDto.getLectureId());
         Class kelas = Class.builder()
             .lecture(lecture)
-            .tittle(requestDto.getTittle())
+            .name(requestDto.getTittle())
             .build();
 
         Class newClass = classRepository.save(kelas);
         
         return newClass;
+    }
+
+    @Override
+    public void delete(Long id) throws ResourceNotFoundException {
+        Class kelas = getById(id);
+        classRepository.delete(kelas);
     }
 
 }

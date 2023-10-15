@@ -55,4 +55,18 @@ public class AdminServiceImpl implements AdminService {
         Admin newAdmin = adminRepository.save(admin);
         return newAdmin;
     }
+
+    @Override
+    public Admin getById(Long id) throws ResourceNotFoundException {
+        Admin admin = adminRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+        return admin;
+    }
+
+    @Override
+    public void delete(Long id) throws ResourceNotFoundException {
+        if (Boolean.FALSE.equals(adminRepository.existsById(id))) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+        
+    }
 }

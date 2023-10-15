@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 public class ScheduleResponseDto {
     private Long id;
 
-    private Long classId;
+    private ClassResponseDto kelas;
 
-    private Long subjectId;
+    private SubjectResponseDto subject;
 
     private Calendar timeStart;
 

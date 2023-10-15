@@ -25,7 +25,6 @@ public class SubjectServiceImpl implements SubjectService {
         if (subjectList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
-
         return subjectList;
     }
 
@@ -54,6 +53,12 @@ public class SubjectServiceImpl implements SubjectService {
         Subject newSubject = subjectRepository.save(subject);
 
         return newSubject;
+    }
+
+    @Override
+    public void delete(Long id) throws ResourceNotFoundException {
+        Subject subject = getById(id);
+        subjectRepository.delete(subject);
     }
 
 }
