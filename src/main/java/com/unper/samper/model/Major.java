@@ -19,6 +19,7 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 import com.unper.samper.model.common.Audit;
 
@@ -30,11 +31,12 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@EnableAutoConfiguration
 @Getter
 @Setter
 @Builder
 @Entity
-@Table(name = "major", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "majorCode"), @UniqueConstraint(columnNames = "majorHead")})
+@Table(name = "major", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "majorCode")})
 @SQLDelete(sql = "UPDATE public.major SET is_deleted = true WHERE id=?")
 @FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
 @Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
@@ -48,7 +50,7 @@ public class Major extends Audit {
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = Lecture.class)
-    @JoinColumn(name = "lecture_id")
+    @JoinColumn(name = "major_id")
     private Lecture majorHead;
 
     @Builder.Default

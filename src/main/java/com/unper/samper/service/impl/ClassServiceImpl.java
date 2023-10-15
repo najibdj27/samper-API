@@ -46,14 +46,14 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     public Class addClass(AddClassRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
-        if (Boolean.TRUE.equals(classRepository.existsByTittle(requestDto.getTittle()))) {
+        if (Boolean.TRUE.equals(classRepository.existsByName(requestDto.getName()))) {
             throw new ResourceAlreadyExistException(EResponseMessage.INSERT_DATA_ALREADY_EXIST.getMessage());
         }
 
         Lecture lecture = lectureServiceImpl.getById(requestDto.getLectureId());
         Class kelas = Class.builder()
             .lecture(lecture)
-            .name(requestDto.getTittle())
+            .name(requestDto.getName())
             .build();
 
         Class newClass = classRepository.save(kelas);
