@@ -43,6 +43,10 @@ public class Class extends Audit {
 
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Major.class)
+    @JoinColumn(name = "major_id")
+    private Major major;
+
     @Builder.Default
     private Boolean isDeleted = Boolean.FALSE;
 }
