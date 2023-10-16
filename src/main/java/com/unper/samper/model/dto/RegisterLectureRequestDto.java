@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class RegisterLectureRequestDto {
-    private Long NIP;
+    private String NIP;
 
     private String firstName;
 

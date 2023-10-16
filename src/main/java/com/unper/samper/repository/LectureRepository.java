@@ -8,7 +8,7 @@ import com.unper.samper.model.Lecture;
 import com.unper.samper.model.User;
 
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
-    Boolean existsByNIP(Long NIP);
+    Boolean existsByNIP(String NIP);
 
     Optional<Lecture> findByUser(User user);
 }

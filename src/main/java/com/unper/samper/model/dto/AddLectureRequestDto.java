@@ -16,5 +16,5 @@ import lombok.Setter;
 public class AddLectureRequestDto {
     private User user;
 
-    private Long NIP;
+    private String NIP;
 }

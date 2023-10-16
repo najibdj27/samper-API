@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class LectureResponseDto {
     private Long id;
 
-    private Long NIP;
+    private String NIP;
 
     private UserResponseDto user;
 }
