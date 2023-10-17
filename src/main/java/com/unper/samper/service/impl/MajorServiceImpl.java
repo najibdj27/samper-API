@@ -44,7 +44,7 @@ public class MajorServiceImpl implements MajorService {
         Lecture majorHead = lectureServiceImpl.getById(requestDto.getMajorHeadId());
         Major major = Major.builder()
             .majorCode(requestDto.getMajorCode())
-            .name(requestDto.getMajorName())
+            .name(requestDto.getName())
             .majorHead(majorHead)
             .build();
         if (Boolean.TRUE.equals(majorRepository.existsByMajorCode(requestDto.getMajorCode()))){
@@ -55,15 +55,24 @@ public class MajorServiceImpl implements MajorService {
     }
 
     @Override
-    public Major update(UpdateMajorRequestDto requestDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public Major update(UpdateMajorRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException {
+        Lecture majorHead = lectureServiceImpl.getById(requestDto.getMajorHeadId());
+        Major major = Major.builder()
+            .id(requestDto.getId())
+            .majorCode(requestDto.getMajorCode())
+            .name(requestDto.getName())
+            .majorHead(majorHead)
+            .build();
+        if (Boolean.TRUE.equals(majorRepository.existsByMajorCode(requestDto.getMajorCode()))){
+            throw new ResourceAlreadyExistException(EResponseMessage.INSERT_DATA_ALREADY_EXIST.getMessage());
+        }
+        Major newMajor = majorRepository.save(major);
+        return newMajor;
     }
 
     @Override
-    public void delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    public void delete(Long id) throws ResourceNotFoundException {
+        Major major = getById(id);
+        majorRepository.delete(major);
     }
-    
 }

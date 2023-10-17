@@ -15,7 +15,7 @@ public interface MajorService {
 
     Major add(AddMajorRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException;
     
-    Major update(UpdateMajorRequestDto requestDto);
+    Major update(UpdateMajorRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException;
     
-    void delete(Long id);
+    void delete(Long id) throws ResourceNotFoundException;
 }

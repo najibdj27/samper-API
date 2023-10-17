@@ -12,6 +12,8 @@ public interface SubjectService {
 
     Subject getById(Long id) throws ResourceNotFoundException;
 
+    List<Subject> getByMajor(Long majorId) throws ResourceNotFoundException;
+
     Subject addSubject(AddSubjectrequestDto requestDto) throws ResourceAlreadyExistException;
 
     void delete(Long id) throws ResourceNotFoundException;

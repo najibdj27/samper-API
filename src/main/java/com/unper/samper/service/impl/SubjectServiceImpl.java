@@ -40,6 +40,15 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
+    public List<Subject> getByMajor(Long majorId) throws ResourceNotFoundException {
+        List<Subject> subjectList = subjectRepository.findAllByMajor(majorId);
+        if(subjectList.isEmpty()){
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+        return subjectList;
+    }
+
+    @Override
     public Subject addSubject(AddSubjectrequestDto requestDto) throws ResourceAlreadyExistException {
         
         if (Boolean.TRUE.equals(subjectRepository.existsByName(requestDto.getName()))) {

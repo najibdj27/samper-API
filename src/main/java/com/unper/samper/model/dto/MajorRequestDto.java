@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class UpdateMajorRequestDto {
+public class MajorRequestDto {
     private Long id;
 
     private String majorCode;
@@ -17,4 +17,5 @@ public class UpdateMajorRequestDto {
     private String name;
 
     private Long majorHeadId;
+
 }

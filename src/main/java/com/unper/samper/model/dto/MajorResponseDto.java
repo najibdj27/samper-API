@@ -1,5 +1,7 @@
 package com.unper.samper.model.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,12 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class UpdateMajorRequestDto {
+public class MajorResponseDto {
     private Long id;
 
     private String majorCode;
 
     private String name;
 
-    private Long majorHeadId;
+    private LectureResponseDto majorHead;
+
+    private List<SubjectResponseDto> subjects;
 }

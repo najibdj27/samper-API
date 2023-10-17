@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class AddMajorRequestDto {
     private String majorCode;
 
-    private String majorName;
+    private String name;
 
     private Long majorHeadId;
 }
