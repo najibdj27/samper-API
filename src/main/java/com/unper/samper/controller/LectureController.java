@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -92,6 +93,8 @@ public class LectureController {
     }
 
     @Operation(summary = "Soft delete a lecture")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PatchMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) throws ResourceNotFoundException {
         lectureServiceImpl.delete(id);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.DELETE_SUCCESS.getMessage(), null);

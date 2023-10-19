@@ -28,7 +28,7 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     public List<Lecture> getAll() throws ResourceNotFoundException {
-        List<Lecture> lectureList = lectureRepository.findAll();
+        List<Lecture> lectureList = lectureRepository.findAllAvailable();
         if (lectureList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
@@ -78,6 +78,11 @@ public class LectureServiceImpl implements LectureService {
         User user = authenticationServiceImpl.getCurrentUser();
         Lecture lecture = getByUser(user);
         return lecture;
+    }
+
+    @Override
+    public void softDeleteUser(Long id) throws ResourceNotFoundException {
+        userServiceImpl.delete(id);
     }
 
 }

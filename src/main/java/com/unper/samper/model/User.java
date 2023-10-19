@@ -6,10 +6,8 @@ import java.util.HashSet;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import com.unper.samper.model.common.Audit;
 
@@ -23,8 +21,7 @@ import lombok.*;
 @Entity
 @Table(name = "user", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "username"), @UniqueConstraint(columnNames = "email"), @UniqueConstraint(columnNames = "phoneNumber")})
 @SQLDelete(sql = "UPDATE public.user SET is_deleted = true WHERE id=?")
-@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
-@Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
+@Where(clause = "is_deleted = false")
 public class User extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

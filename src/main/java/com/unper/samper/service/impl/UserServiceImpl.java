@@ -69,8 +69,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) throws ResourceNotFoundException {
-        User user = getById(id);
-        userRepository.delete(user);
+        // User user = getById(id);
+        // userRepository.delete(user);
+        userRepository.softDelete(id);
     }
     
 }

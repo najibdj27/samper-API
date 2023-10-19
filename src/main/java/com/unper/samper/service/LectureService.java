@@ -20,4 +20,6 @@ public interface LectureService {
     Lecture add(AddLectureRequestDto requestDto) throws ResourceAlreadyExistException;
 
     void delete(Long id) throws ResourceNotFoundException;
+
+    void softDeleteUser(Long id) throws ResourceNotFoundException;
 }

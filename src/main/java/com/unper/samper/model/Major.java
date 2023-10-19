@@ -15,10 +15,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 import com.unper.samper.model.common.Audit;
@@ -38,8 +36,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "major", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "majorCode")})
 @SQLDelete(sql = "UPDATE public.major SET is_deleted = true WHERE id=?")
-@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
-@Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
+@Where(clause = "is_deleted = false")
 public class Major extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
