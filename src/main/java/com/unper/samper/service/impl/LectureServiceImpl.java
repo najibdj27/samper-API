@@ -28,7 +28,7 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     public List<Lecture> getAll() throws ResourceNotFoundException {
-        List<Lecture> lectureList = lectureRepository.findAllAvailable();
+        List<Lecture> lectureList = lectureRepository.findAll();
         if (lectureList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }

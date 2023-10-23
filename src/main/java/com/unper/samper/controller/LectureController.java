@@ -62,7 +62,7 @@ public class LectureController {
                 .build();
             lectureResponseDtoList.add(responseDto);
         });
-        return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), null, null);
+        return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), lectureResponseDtoList, null);
     }
 
     @Operation(summary = "Get lecture data by id")
