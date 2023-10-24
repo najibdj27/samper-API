@@ -46,6 +46,15 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
+    public List<Lecture> getAllById(List<Long> id) throws ResourceNotFoundException {
+        List<Lecture> lectureList = lectureRepository.findAllById(id);
+        if (lectureList.isEmpty()) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+        return lectureList;
+    }
+
+    @Override
     public Lecture getByUser(User user) throws ResourceNotFoundException {
         Lecture lecture = lectureRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
         return lecture;

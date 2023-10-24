@@ -13,6 +13,8 @@ public interface LectureService {
 
     Lecture getById(Long id) throws ResourceNotFoundException;
 
+    List<Lecture> getAllById(List<Long> id) throws ResourceNotFoundException;
+
     Lecture getByUser(User user) throws ResourceNotFoundException;
 
     Lecture getCurrentLecture() throws ResourceNotFoundException;
