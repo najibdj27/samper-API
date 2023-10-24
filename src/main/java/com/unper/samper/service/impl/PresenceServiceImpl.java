@@ -99,8 +99,8 @@ public class PresenceServiceImpl implements PresenceService {
 
     @Override
     public void delete(Long id) throws ResourceNotFoundException {
-        Presence presence = getById(id);
-        presenceRepository.delete(presence);
+        getById(id);
+        presenceRepository.deleteById(id);
     }
     
 }

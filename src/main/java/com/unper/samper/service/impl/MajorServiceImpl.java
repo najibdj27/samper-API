@@ -72,7 +72,7 @@ public class MajorServiceImpl implements MajorService {
 
     @Override
     public void delete(Long id) throws ResourceNotFoundException {
-        Major major = getById(id);
-        majorRepository.delete(major);
+        getById(id);
+        majorRepository.deleteById(id);
     }
 }

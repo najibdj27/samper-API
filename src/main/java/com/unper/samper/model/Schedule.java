@@ -11,11 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-import org.hibernate.annotations.SQLDelete;
-
 import com.unper.samper.model.common.Audit;
 
 import lombok.AllArgsConstructor;
@@ -31,9 +26,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "schedule", schema = "public")
-@SQLDelete(sql = "UPDATE public.schedule SET is_deleted = true WHERE id=?")
-@FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
-@Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
 public class Schedule extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

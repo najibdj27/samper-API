@@ -15,8 +15,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 import com.unper.samper.model.common.Audit;
@@ -35,8 +33,6 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name = "major", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "majorCode")})
-@SQLDelete(sql = "UPDATE public.major SET is_deleted = true WHERE id=?")
-@Where(clause = "is_deleted = false")
 public class Major extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

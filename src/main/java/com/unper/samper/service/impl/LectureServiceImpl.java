@@ -79,10 +79,4 @@ public class LectureServiceImpl implements LectureService {
         Lecture lecture = getByUser(user);
         return lecture;
     }
-
-    @Override
-    public void softDeleteUser(Long id) throws ResourceNotFoundException {
-        userServiceImpl.delete(id);
-    }
-
 }

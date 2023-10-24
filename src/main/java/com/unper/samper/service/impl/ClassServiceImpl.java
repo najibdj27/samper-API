@@ -69,8 +69,8 @@ public class ClassServiceImpl implements ClassService {
 
     @Override
     public void delete(Long id) throws ResourceNotFoundException {
-        Class kelas = getById(id);
-        classRepository.delete(kelas);
+        getById(id);
+        classRepository.deleteById(id);
     }
 
 }

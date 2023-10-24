@@ -26,6 +26,9 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     AuthenticationServiceImpl authenticationServiceImpl;
 
+    @Autowired
+    UserServiceImpl userServiceImpl;
+
     @Override
     public List<Admin> getAll() throws ResourceNotFoundException {
         List<Admin> adminList = adminRepository.findAll();
@@ -64,9 +67,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void delete(Long id) throws ResourceNotFoundException {
-        if (Boolean.FALSE.equals(adminRepository.existsById(id))) {
-            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
-        }
-        
+        Admin admin = getById(id);
+        userServiceImpl.delete(admin.getUser().getId());
     }
 }

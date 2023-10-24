@@ -25,8 +25,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
+    @Override
     @Modifying
     @Transactional
     @Query(value = "UPDATE public.user SET is_deleted = true WHERE id = :id", nativeQuery = true)
-    void softDelete(@Param("id")Long id);
+    void deleteById(@Param("id")Long id);
 }

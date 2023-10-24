@@ -124,7 +124,7 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
 
     @Override
     public void delete(Long id) throws ResourceNotFoundException {
-        Schedule schedule = getById(id);
-        scheduleRepository.delete(schedule);
+        getById(id);
+        scheduleRepository.deleteById(id);
     }
 }
