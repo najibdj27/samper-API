@@ -19,16 +19,16 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> findAllByMajor(@Param("majorId") Long majorId);
 
     @Override
-    @Query(value = "SELECT * FROM public.subject WHERE is_deleted = fasle", nativeQuery = true)
+    @Query(value = "SELECT * FROM public.subject WHERE is_deleted = false", nativeQuery = true)
     List<Subject> findAll();
 
     @Override
-    @Query(value = "SELECT * FROM public.subject WHERE is_deleted = false AND id = :id")
+    @Query(value = "SELECT * FROM public.subject WHERE is_deleted = false AND id = :id", nativeQuery = true)
     Optional<Subject> findById(@Param("id") Long id);
 
     @Override
     @Modifying
     @Transactional
-    @Query(value = "UPDATE public.subject SET is_deleted = true WHERE id = :id")
+    @Query(value = "UPDATE public.subject SET is_deleted = true WHERE id = :id", nativeQuery = true)
     void deleteById(@Param("id") Long id);
 }

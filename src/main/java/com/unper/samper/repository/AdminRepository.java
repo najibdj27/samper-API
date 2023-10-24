@@ -14,10 +14,10 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
     Optional<Admin> findByUser(User user);
 
     @Override
-    @Query(value = "SELECT * FROM public.admin a JOIN public.user u ON a.user_id = u.id WHERE u.is_deleted = false", nativeQuery = false)
+    @Query(value = "SELECT a.* FROM public.admin a JOIN public.user u ON a.user_id = u.id WHERE u.is_deleted = false", nativeQuery = true)
     List<Admin> findAll();
 
     @Override
-    @Query(value = "SELECT * FROM public.admin a JOIN public.user u ON a.user_id = u.id WHERE u.is_deleted = false AND a.id = :id")
+    @Query(value = "SELECT a.* FROM public.admin a JOIN public.user u ON a.user_id = u.id WHERE u.is_deleted = false AND a.id = :id", nativeQuery = true)
     Optional<Admin> findById(@Param("id") Long id);
 }
