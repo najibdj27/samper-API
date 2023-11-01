@@ -37,7 +37,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Schedule Controller")
+@Tag(name = "Schedule")
 @RestController
 @RequestMapping("/schedule")
 public class ScheduleController {

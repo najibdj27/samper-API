@@ -32,7 +32,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @SecurityRequirement(name = "bearer-key")
-@Tag(name = "Class Controller")
+@Tag(name = "Class")
 @RestController
 @RequestMapping("/class")
 public class ClassController {

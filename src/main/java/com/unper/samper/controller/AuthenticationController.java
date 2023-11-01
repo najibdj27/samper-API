@@ -36,7 +36,7 @@ import com.unper.samper.service.impl.AuthenticationServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "1. Auth Controller")
+@Tag(name = "Authentication")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
