@@ -14,5 +14,7 @@ public class ClassResponseDto {
 
     private LectureResponseDto lecture;
 
+    private MajorResponseDto major;
+
     private String name;
 }

@@ -24,6 +24,7 @@ import com.unper.samper.model.Class;
 import com.unper.samper.model.Role;
 import com.unper.samper.model.dto.ClassResponseDto;
 import com.unper.samper.model.dto.LectureResponseDto;
+import com.unper.samper.model.dto.MajorResponseDto;
 import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.impl.ClassServiceImpl;
 
@@ -65,10 +66,18 @@ public class ClassController {
                 .NIP(kelas.getLecture().getNIP())
                 .user(userResponseDto)
                 .build();
+            MajorResponseDto majorResponseDto = MajorResponseDto.builder()
+                .id(kelas.getMajor().getId())
+                .majorCode(kelas.getMajor().getMajorCode())
+                .name(kelas.getMajor().getName())
+                .majorHead(null)
+                .subjects(null)
+                .build();
             ClassResponseDto responseDto = ClassResponseDto.builder()
                 .Id(kelas.getId())
                 .lecture(lectureResponseDto)
                 .name(kelas.getName())
+                .major(majorResponseDto)
                 .build();
             responseDtoList.add(responseDto);
         });
