@@ -85,7 +85,7 @@ public class PresenceServiceImpl implements PresenceService {
             throw new ScheduleNotActiveException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
 
-        if (!presence.getCheckOut().equals(null) && !presence.getCheckOutLocation().equals(null)) {
+        if (presence.getCheckOut() != null && presence.getCheckOutLocation() != null) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
         
