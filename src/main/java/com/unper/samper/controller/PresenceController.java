@@ -41,7 +41,7 @@ public class PresenceController {
     @Autowired
     PresenceServiceImpl presenceServiceImpl;
 
-    @PreAuthorize("hasAuthority('ROLE_LECTURE')")
+    @PreAuthorize("hasAuthority('LECTURE')")
     @Operation(summary = "Get all presence data by current lecture")
     @GetMapping("/getallbylecture")
     public ResponseEntity<?> getAllByLecture() throws ResourceNotFoundException {
@@ -64,7 +64,7 @@ public class PresenceController {
         return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList, metaData);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
+    @PreAuthorize("hasAuthority('STUDENT')")
     @Operation(summary = "Record check in presence")
     @PostMapping("/checkin")
     public ResponseEntity<?> checkIn(@RequestBody PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException{
@@ -79,7 +79,7 @@ public class PresenceController {
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.PRESENCE_SUCCESS.getMessage(), responseDto);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_STUDENT')")
+    @PreAuthorize("hasAuthority('STUDENT')")
     @Operation(summary = "Record check out presence")
     @PatchMapping("/checkout")
     public ResponseEntity<?> checkOut(@RequestBody PresenceCheckOutRequestDto requestDto) throws ResourceNotFoundException, ScheduleNotActiveException {

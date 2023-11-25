@@ -89,7 +89,7 @@ public class ScheduleController {
     }
 
     @Operation(summary = "Add new schedule")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
+    @PreAuthorize("hasAuthority('LECTURE')")
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody AddScheduleRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException {
         scheduleServiceImpl.add(requestDto);

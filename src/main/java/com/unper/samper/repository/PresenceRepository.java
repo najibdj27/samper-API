@@ -26,7 +26,7 @@ public interface PresenceRepository extends JpaRepository<Presence, Long> {
     List<Presence> findAll();
 
     @Override
-    @Query(value = "SELECT * FROM public.presence WHERE is_deleted = true AND id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM public.presence WHERE is_deleted = false AND id = :id", nativeQuery = true)
     Optional<Presence> findById(@Param("id") Long id);
 
     @Override
