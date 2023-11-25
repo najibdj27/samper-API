@@ -32,9 +32,7 @@ public class StudentServiceImpl implements StudentService {
         if (studentList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
-
         
-
         return studentList;
     }
 
