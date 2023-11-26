@@ -94,9 +94,10 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
 
     @Override
     public Schedule activate(Long id) throws ResourceNotFoundException, NoAccessException, ScheduleUnavailableException {
-        Lecture lecture = lectureServiceImpl.getCurrentLecture();
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
-        if (schedule.getKelas().getLecture().equals(lecture)) {
+        Lecture lecture = schedule.getKelas().getLecture();
+        Lecture currentLecture = lectureServiceImpl.getCurrentLecture();
+        if (!currentLecture.equals(lecture)) {
             throw new NoAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
         }
         if (Boolean.FALSE == scheduleRepository.isAvailable(id)) {
@@ -113,9 +114,10 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
 
     @Override
     public Schedule deactivate(Long id) throws NoAccessException, ResourceNotFoundException {
-        Lecture lecture = lectureServiceImpl.getCurrentLecture();
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
-        if (schedule.getKelas().getLecture().equals(lecture)) {
+        Lecture lecture = schedule.getKelas().getLecture();
+        Lecture currentLecture = lectureServiceImpl.getCurrentLecture();
+        if (!currentLecture.equals(lecture)) {
             throw new NoAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
         }
         if (Boolean.FALSE.equals(schedule.getIsActive())) {
