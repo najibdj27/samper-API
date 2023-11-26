@@ -9,13 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.Subject;
 import com.unper.samper.model.constant.EResponseMessage;
-import com.unper.samper.exception.IllegalAccessException;
+import com.unper.samper.exception.NoAccessException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleUnavailableException;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.Lecture;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
+import com.unper.samper.model.dto.RescheduleRequestDto;
 import com.unper.samper.repository.ScheduleRepository;
 import com.unper.samper.service.ScheduleSercvice;
 
@@ -32,6 +33,9 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
 
     @Autowired
     LectureServiceImpl lectureServiceImpl;
+
+    @Autowired
+    AuthenticationServiceImpl authenticationServiceImpl;
 
     @Override
     public List<Schedule> getAll() throws ResourceNotFoundException {
@@ -89,11 +93,11 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     }
 
     @Override
-    public Schedule activate(Long id) throws ResourceNotFoundException, IllegalAccessException, ScheduleUnavailableException {
+    public Schedule activate(Long id) throws ResourceNotFoundException, NoAccessException, ScheduleUnavailableException {
         Lecture lecture = lectureServiceImpl.getCurrentLecture();
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
         if (schedule.getKelas().getLecture().equals(lecture)) {
-            throw new IllegalAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
+            throw new NoAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
         }
         if (Boolean.FALSE == scheduleRepository.isAvailable(id)) {
             throw new ScheduleUnavailableException(EResponseMessage.SCHEDULE_UNAVAILABLE.getMessage());
@@ -108,11 +112,11 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     }
 
     @Override
-    public Schedule deactivate(Long id) throws IllegalAccessException, ResourceNotFoundException {
+    public Schedule deactivate(Long id) throws NoAccessException, ResourceNotFoundException {
         Lecture lecture = lectureServiceImpl.getCurrentLecture();
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
         if (schedule.getKelas().getLecture().equals(lecture)) {
-            throw new IllegalAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
+            throw new NoAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
         }
         if (Boolean.FALSE.equals(schedule.getIsActive())) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
@@ -123,8 +127,29 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     }
 
     @Override
+    public Schedule reschedule(RescheduleRequestDto requestDto) throws ResourceNotFoundException, ScheduleUnavailableException, NoAccessException {
+        Schedule schedule = getById(requestDto.getId());
+        Lecture lecture = schedule.getKelas().getLecture();
+        Lecture currentLecture = lectureServiceImpl.getCurrentLecture();
+
+        if (Boolean.TRUE.equals(schedule.getIsActive())) {
+            throw new ScheduleUnavailableException(EResponseMessage.SCHEDULE_UNAVAILABLE.getMessage());
+        }
+        if (!currentLecture.equals(lecture)) {
+            throw new NoAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
+        }
+
+        schedule.setTimeStart(requestDto.getTimeStart());
+        schedule.setTimeEnd(requestDto.getTimeEnd());
+
+        Schedule newSchedule = scheduleRepository.save(schedule);
+        return newSchedule;
+    }
+
+    @Override
     public void delete(Long id) throws ResourceNotFoundException {
         getById(id);
         scheduleRepository.deleteById(id);
     }
+
 }
