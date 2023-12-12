@@ -1,6 +1,5 @@
 package com.unper.samper.service.impl;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Service;
@@ -27,8 +26,7 @@ public class OTPServiceImpl implements OTPService{
 
     @Override
     public int generateOTP(String key) {
-        Random random = new Random();
-        int otp = 100000 + random.nextInt(900000);
+        int otp =  (int)(Math.random()*9000)+1000;
         otpCache.put(key, otp);
         return otp;
     }
