@@ -1,5 +1,6 @@
 package com.unper.samper.service.impl;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.unper.samper.model.Schedule;
+import com.unper.samper.model.Student;
 import com.unper.samper.model.Subject;
+import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.exception.NoAccessException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
@@ -35,11 +38,31 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     LectureServiceImpl lectureServiceImpl;
 
     @Autowired
+    StudentServiceImpl studentServiceImpl;
+
+    @Autowired
+    UserServiceImpl userServiceImpl;
+
+    @Autowired
     AuthenticationServiceImpl authenticationServiceImpl;
 
     @Override
-    public List<Schedule> getAll() throws ResourceNotFoundException {
-        List<Schedule> scheduleList = scheduleRepository.findAll();
+    public List<Schedule> getAll(LocalDate filterDateFrom, LocalDate filterDateTo, Long classId) throws ResourceNotFoundException {
+        String dateFrom = filterDateFrom.toString();
+        String dateTo = filterDateTo.toString();
+        List<Schedule> scheduleList = scheduleRepository.findAllWithFilter(dateFrom, dateTo, classId);
+        if (scheduleList.isEmpty()) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+        return scheduleList;
+    }
+
+    @Override
+    public List<Schedule> getAllByUserClass(String filterDateFrom, String filterDateTo, Long userId) throws ResourceNotFoundException {
+        User user = userServiceImpl.getById(userId);
+        Student student = studentServiceImpl.getByUser(user);
+        Long classId = student.getKelas().getId();
+        List<Schedule> scheduleList = scheduleRepository.findAllWithFilter(filterDateFrom, filterDateTo, classId);
         if (scheduleList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }

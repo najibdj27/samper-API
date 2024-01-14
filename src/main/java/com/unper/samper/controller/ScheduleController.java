@@ -1,5 +1,6 @@
 package com.unper.samper.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.NoAccessException;
@@ -54,8 +56,11 @@ public class ScheduleController {
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/all")
-    public ResponseEntity<?> getAll() throws ResourceNotFoundException {
-        List<Schedule> scheduleList = scheduleServiceImpl.getAll();
+    public ResponseEntity<?> getAll(
+        @RequestParam(value = "dateFrom", required = false) LocalDate filterDateFrom, 
+        @RequestParam(value = "dateTo", required = false) LocalDate filterDateTo, 
+        @RequestParam(value = "classId", required = false) Long classId) throws ResourceNotFoundException {
+        List<Schedule> scheduleList = scheduleServiceImpl.getAll(filterDateFrom, filterDateTo, classId);
         List<ScheduleResponseDto> responseDtoList = new ArrayList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
@@ -86,7 +91,48 @@ public class ScheduleController {
                 .build();
             responseDtoList.add(scheduleResponseDto);
         });
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), scheduleServiceImpl);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList);
+    }
+
+    @Operation(summary = "Get all data of schedules")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT')")
+    @GetMapping("/allbycurrentuserclass")
+    public ResponseEntity<?> getAllByCurrentUserClass(
+        @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
+        @RequestParam(value = "dateTo", required = false) String filterDateTo,
+        @RequestParam(value = "userId", required = false) Long userId) throws ResourceNotFoundException {
+        List<Schedule> scheduleList = scheduleServiceImpl.getAllByUserClass(filterDateFrom, filterDateTo, userId);
+        List<ScheduleResponseDto> responseDtoList = new ArrayList<>();
+        scheduleList.forEach(schedule -> {
+            Class kelas = new Class();
+            try {
+                kelas = classServiceImpl.getById(schedule.getKelas().getId());
+            } catch (ResourceNotFoundException e) {}
+            ClassResponseDto classResponseDto = ClassResponseDto.builder()
+                .Id(kelas.getId())
+                .lecture(null)
+                .name(kelas.getName())
+                .build(); 
+            Subject subject = new Subject();
+            try {
+                subject = subjectServiceImpl.getById(schedule.getSubject().getId());
+            } catch (ResourceNotFoundException e) {}
+            SubjectResponseDto subjectResponseDto = SubjectResponseDto.builder()
+                .id(subject.getId())
+                .lecture(null)
+                .name(subject.getName())
+                .build();
+            ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
+                .id(schedule.getId())
+                .kelas(classResponseDto)
+                .subject(subjectResponseDto)
+                .timeStart(schedule.getTimeStart())
+                .timeEnd(schedule.getTimeEnd())
+                .isActive(schedule.getIsActive())
+                .build();
+            responseDtoList.add(scheduleResponseDto);
+        });
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList); 
     }
 
     @Operation(summary = "Add new schedule")
