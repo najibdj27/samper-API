@@ -2,6 +2,8 @@ package com.unper.samper.service.impl;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nonnull;
+
 import org.springframework.stereotype.Service;
 
 import com.google.common.cache.CacheBuilder;
@@ -18,7 +20,7 @@ public class OTPServiceImpl implements OTPService{
     public OTPServiceImpl() {
         super();
         otpCache = CacheBuilder.newBuilder().expireAfterWrite(EXPIRE_MINS, TimeUnit.MINUTES).build(new CacheLoader<String, Integer>() {
-            public Integer load(String key) {
+            public Integer load(@Nonnull String key) {
                 return 0;
             }
         });
