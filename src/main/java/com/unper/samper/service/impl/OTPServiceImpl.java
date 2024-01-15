@@ -11,6 +11,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.unper.samper.service.OTPService;
 
+import lombok.NonNull;
+
 @Service
 public class OTPServiceImpl implements OTPService{
     private static final Integer EXPIRE_MINS = 5;
@@ -20,6 +22,7 @@ public class OTPServiceImpl implements OTPService{
     public OTPServiceImpl() {
         super();
         otpCache = CacheBuilder.newBuilder().expireAfterWrite(EXPIRE_MINS, TimeUnit.MINUTES).build(new CacheLoader<String, Integer>() {
+            @Override
             public Integer load(@Nonnull String key) {
                 return 0;
             }
@@ -27,14 +30,14 @@ public class OTPServiceImpl implements OTPService{
     }
 
     @Override
-    public int generateOTP(String key) {
+    public int generateOTP(@NonNull String key) {
         int otp =  (int)(Math.random()*9000)+1000;
         otpCache.put(key, otp);
         return otp;
     }
 
     @Override
-    public int getOTP(String key) {
+    public int getOTP(@NonNull String key) {
         try {
             return otpCache.get(key);
         } catch (Exception e) {
@@ -43,7 +46,7 @@ public class OTPServiceImpl implements OTPService{
     }
 
     @Override
-    public void clearOTP(String key) {
+    public void clearOTP(@NonNull String key) {
         otpCache.invalidate(key);
     }
 }
