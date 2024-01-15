@@ -25,13 +25,18 @@ import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.Subject;
 import com.unper.samper.model.Class;
+import com.unper.samper.model.LectureSubject;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
 import com.unper.samper.model.dto.ClassResponseDto;
+import com.unper.samper.model.dto.LectureResponseDto;
 import com.unper.samper.model.dto.RescheduleRequestDto;
 import com.unper.samper.model.dto.ScheduleResponseDto;
 import com.unper.samper.model.dto.SubjectResponseDto;
+import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.impl.ClassServiceImpl;
+import com.unper.samper.service.impl.LectureServiceImpl;
+import com.unper.samper.service.impl.LectureSubjectServiceImpl;
 import com.unper.samper.service.impl.ScheduleServiceImpl;
 import com.unper.samper.service.impl.SubjectServiceImpl;
 
@@ -51,7 +56,13 @@ public class ScheduleController {
     ClassServiceImpl classServiceImpl;
 
     @Autowired
+    LectureServiceImpl lectureServiceImpl;
+
+    @Autowired
     SubjectServiceImpl subjectServiceImpl;
+
+    @Autowired
+    LectureSubjectServiceImpl lectureSubjectServiceImpl;
 
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -72,6 +83,29 @@ public class ScheduleController {
                 .lecture(null)
                 .name(kelas.getName())
                 .build(); 
+            
+            LectureSubject lectureSubject = new LectureSubject();
+            try {
+                lectureSubject = lectureSubjectServiceImpl.getLectureSubjectBySubjectAndClass(schedule.getSubject(), schedule.getKelas());
+            } catch (ResourceNotFoundException e) {}
+
+            UserResponseDto userResponseDto = UserResponseDto.builder()
+                .id(lectureSubject.getLecture().getUser().getId())
+                .firstName(lectureSubject.getLecture().getUser().getFirstName())
+                .lastName(lectureSubject.getLecture().getUser().getLastName())
+                .dateOfBirth(lectureSubject.getLecture().getUser().getDateOfBirth())
+                .username(lectureSubject.getLecture().getUser().getUsername())
+                .email(lectureSubject.getLecture().getUser().getEmail())
+                .phoneNumber(lectureSubject.getLecture().getUser().getPhoneNumber())
+                .roles(null)
+                .build();
+
+            LectureResponseDto lectureResponseDto = LectureResponseDto.builder()
+                .id(lectureSubject.getLecture().getId())
+                .NIP(lectureSubject.getLecture().getNIP())
+                .user(userResponseDto)
+                .build();
+            
             Subject subject = new Subject();
             try {
                 subject = subjectServiceImpl.getById(schedule.getSubject().getId());
@@ -85,6 +119,7 @@ public class ScheduleController {
                 .id(schedule.getId())
                 .kelas(classResponseDto)
                 .subject(subjectResponseDto)
+                .lecture(lectureResponseDto)
                 .timeStart(schedule.getTimeStart())
                 .timeEnd(schedule.getTimeEnd())
                 .isActive(schedule.getIsActive())
@@ -113,6 +148,28 @@ public class ScheduleController {
                 .lecture(null)
                 .name(kelas.getName())
                 .build(); 
+
+            LectureSubject lectureSubject = new LectureSubject();
+            try {
+                lectureSubject = lectureSubjectServiceImpl.getLectureSubjectBySubjectAndClass(schedule.getSubject(), schedule.getKelas());
+            } catch (ResourceNotFoundException e) {}
+            UserResponseDto userResponseDto = UserResponseDto.builder()
+                .id(lectureSubject.getLecture().getUser().getId())
+                .firstName(lectureSubject.getLecture().getUser().getFirstName())
+                .lastName(lectureSubject.getLecture().getUser().getLastName())
+                .dateOfBirth(lectureSubject.getLecture().getUser().getDateOfBirth())
+                .username(lectureSubject.getLecture().getUser().getUsername())
+                .email(lectureSubject.getLecture().getUser().getEmail())
+                .phoneNumber(lectureSubject.getLecture().getUser().getPhoneNumber())
+                .roles(null)
+                .build();
+
+            LectureResponseDto lectureResponseDto = LectureResponseDto.builder()
+                .id(lectureSubject.getLecture().getId())
+                .NIP(lectureSubject.getLecture().getNIP())
+                .user(userResponseDto)
+                .build();
+            
             Subject subject = new Subject();
             try {
                 subject = subjectServiceImpl.getById(schedule.getSubject().getId());
@@ -122,10 +179,12 @@ public class ScheduleController {
                 .lecture(null)
                 .name(subject.getName())
                 .build();
+
             ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
                 .id(schedule.getId())
                 .kelas(classResponseDto)
                 .subject(subjectResponseDto)
+                .lecture(lectureResponseDto)
                 .timeStart(schedule.getTimeStart())
                 .timeEnd(schedule.getTimeEnd())
                 .isActive(schedule.getIsActive())

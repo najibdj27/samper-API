@@ -18,6 +18,8 @@ public class ScheduleResponseDto {
 
     private SubjectResponseDto subject;
 
+    private LectureResponseDto lecture;
+
     private Calendar timeStart;
 
     private Calendar timeEnd;

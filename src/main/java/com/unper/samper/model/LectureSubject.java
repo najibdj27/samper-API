@@ -3,6 +3,7 @@ package com.unper.samper.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -43,7 +44,7 @@ public class LectureSubject extends Audit {
     private Subject subject;
 
     @Builder.Default
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "LectureSubjectClass", joinColumns = @JoinColumn(name = "lecture_subject_id"), inverseJoinColumns = @JoinColumn(name = "class_id"))
     private Set<Class> classes = new HashSet<>();
 }
