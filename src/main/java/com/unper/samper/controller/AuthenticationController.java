@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.ExpiredTokenException;
+import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
@@ -29,6 +30,8 @@ import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
 import com.unper.samper.model.dto.ForgetPasswordRequestDto;
 import com.unper.samper.model.dto.JwtResponseDto;
+import com.unper.samper.model.dto.RefreshTokenRequestDto;
+import com.unper.samper.model.dto.RefreshTokenResponseDto;
 import com.unper.samper.model.dto.ResetPasswordRequestDto;
 import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.service.impl.AuthenticationServiceImpl;
@@ -49,14 +52,29 @@ public class AuthenticationController {
      * @param signInRequest
      * @return
      * @throws SignInFailException
+     * @throws ResourceNotFoundException 
      */
     @Operation(summary = "Sign in and get the token for access")
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDto requestDto) throws SignInFailException {
+    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException {
         JwtResponseDto responseDto = authenticationServiceImpl.authenticateUser(requestDto);
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully login!", responseDto);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully generate token!", responseDto);
     }
-
+    
+    /***
+     * Refresh access token
+     * @param requestDto
+     * @return
+     * @throws ResourceNotFoundException
+     * @throws InvalidTokenException
+     */
+    @Operation(summary = "Refresh access token")
+    @PostMapping("/refreshtoken")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequestDto requestDto) throws ResourceNotFoundException, InvalidTokenException{
+        RefreshTokenResponseDto responseDto = authenticationServiceImpl.refreshAuthToken(requestDto);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully refresh token!", responseDto);
+    }
+    
     /***
      * Forget password
      * @param forgetPasswordRequestDTO
