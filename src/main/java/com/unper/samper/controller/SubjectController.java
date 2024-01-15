@@ -18,14 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.handler.ResponseHandler;
-import com.unper.samper.model.Role;
 import com.unper.samper.model.Subject;
 import com.unper.samper.model.constant.EResponseMessage;
-import com.unper.samper.model.dto.AddSubjectLecturesRequestDto;
 import com.unper.samper.model.dto.AddSubjectrequestDto;
 import com.unper.samper.model.dto.LectureResponseDto;
 import com.unper.samper.model.dto.SubjectResponseDto;
-import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.impl.SubjectServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,28 +45,6 @@ public class SubjectController {
         List<SubjectResponseDto> responseDtoList = new ArrayList<>();
         subjectList.forEach(subject -> {
             List<LectureResponseDto> lectureResponseDtoList = new ArrayList<>();
-            subject.getLectures().forEach(lecture -> {
-                List<String> roleList = new ArrayList<>();
-                for (Role role : lecture.getUser().getRoles()) {
-                    roleList.add(role.getName().toString());
-                }
-                UserResponseDto userResponseDto = UserResponseDto.builder()
-                    .id(lecture.getUser().getId())
-                    .firstName(lecture.getUser().getFirstName())
-                    .lastName(lecture.getUser().getLastName())
-                    .dateOfBirth(lecture.getUser().getDateOfBirth())
-                    .username(lecture.getUser().getUsername())
-                    .email(lecture.getUser().getEmail())
-                    .phoneNumber(lecture.getUser().getPhoneNumber())
-                    .roles(roleList)
-                    .build();
-                LectureResponseDto lectureResponseDto = LectureResponseDto.builder()
-                    .id(lecture.getId())
-                    .NIP(lecture.getNIP())
-                    .user(userResponseDto)
-                    .build();
-                lectureResponseDtoList.add(lectureResponseDto);
-            });
             SubjectResponseDto responseDto = SubjectResponseDto.builder()
                 .id(subject.getId())
                 .name(subject.getName())
@@ -85,33 +60,9 @@ public class SubjectController {
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getById(@PathVariable("id") Long id) throws ResourceNotFoundException {
         Subject subject = subjectServiceImpl.getById(id);
-        List<LectureResponseDto> lectureResponseDtoList = new ArrayList<>();
-        subject.getLectures().forEach(lecture -> {
-            List<String> roleList = new ArrayList<>();
-            for (Role role : lecture.getUser().getRoles()) {
-                roleList.add(role.getName().toString());
-            }
-            UserResponseDto userResponseDto = UserResponseDto.builder()
-                .id(lecture.getUser().getId())
-                .firstName(lecture.getUser().getFirstName())
-                .lastName(lecture.getUser().getLastName())
-                .dateOfBirth(lecture.getUser().getDateOfBirth())
-                .username(lecture.getUser().getUsername())
-                .email(lecture.getUser().getEmail())
-                .phoneNumber(lecture.getUser().getPhoneNumber())
-                .roles(roleList)
-                .build();
-            LectureResponseDto lectureResponseDto = LectureResponseDto.builder()
-                .id(lecture.getId())
-                .NIP(lecture.getNIP())
-                .user(userResponseDto)
-                .build();
-            lectureResponseDtoList.add(lectureResponseDto);
-        });
         SubjectResponseDto responseDto = SubjectResponseDto.builder()
             .id(subject.getId())
             .name(subject.getName())
-            .lecture(lectureResponseDtoList)
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
     }
@@ -122,42 +73,6 @@ public class SubjectController {
     public ResponseEntity<?> add(@RequestBody AddSubjectrequestDto requestDto) throws ResourceAlreadyExistException{
         subjectServiceImpl.addSubject(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.INSERT_DATA_SUCCESS.getMessage(), null);
-    }
-
-    @Operation(summary = "Add lectures data of a subject")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PatchMapping("/add/lectures")
-    public ResponseEntity<?> addSubjectLectures(@RequestBody AddSubjectLecturesRequestDto requestDto) throws ResourceNotFoundException{
-        Subject newSubject = subjectServiceImpl.addSubjectLecture(requestDto);
-        List<LectureResponseDto> lectureResponseDtoList = new ArrayList<>();
-        newSubject.getLectures().forEach(lecture -> {
-            List<String> roleList = new ArrayList<>();
-            for (Role role : lecture.getUser().getRoles()) {
-                roleList.add(role.getName().toString());
-            }
-            UserResponseDto userResponseDto = UserResponseDto.builder()
-                .id(lecture.getUser().getId())
-                .firstName(lecture.getUser().getFirstName())
-                .lastName(lecture.getUser().getLastName())
-                .dateOfBirth(lecture.getUser().getDateOfBirth())
-                .username(lecture.getUser().getUsername())
-                .email(lecture.getUser().getEmail())
-                .phoneNumber(lecture.getUser().getPhoneNumber())
-                .roles(roleList)
-                .build();
-            LectureResponseDto lectureResponseDto = LectureResponseDto.builder()
-                .id(lecture.getId())
-                .NIP(lecture.getNIP())
-                .user(userResponseDto)
-                .build();
-            lectureResponseDtoList.add(lectureResponseDto);
-        });
-        SubjectResponseDto responseDto = SubjectResponseDto.builder()
-            .id(newSubject.getId())
-            .name(newSubject.getName())
-            .lecture(lectureResponseDtoList)
-            .build();
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.EDIT_DATA_SUCCESS.getMessage(), responseDto);
     }
 
     @Operation(summary = "Soft delete a subject")

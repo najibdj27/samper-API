@@ -1,5 +1,6 @@
 package com.unper.samper.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.unper.samper.exception.NoAccessException;
@@ -11,7 +12,9 @@ import com.unper.samper.model.dto.AddScheduleRequestDto;
 import com.unper.samper.model.dto.RescheduleRequestDto;
 
 public interface ScheduleSercvice {
-    List<Schedule> getAll() throws ResourceNotFoundException;
+    List<Schedule> getAll(LocalDate filterDateFrom, LocalDate filterDateTo, Long classId) throws ResourceNotFoundException;
+
+    List<Schedule> getAllByUserClass(String filterDateFrom, String filterDateTo, Long userId) throws ResourceNotFoundException;
 
     Schedule getById(Long id) throws ResourceNotFoundException;
 

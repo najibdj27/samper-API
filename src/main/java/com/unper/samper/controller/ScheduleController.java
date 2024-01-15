@@ -1,5 +1,6 @@
 package com.unper.samper.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.NoAccessException;
@@ -23,13 +25,18 @@ import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.Subject;
 import com.unper.samper.model.Class;
+import com.unper.samper.model.LectureSubject;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
 import com.unper.samper.model.dto.ClassResponseDto;
+import com.unper.samper.model.dto.LectureResponseDto;
 import com.unper.samper.model.dto.RescheduleRequestDto;
 import com.unper.samper.model.dto.ScheduleResponseDto;
 import com.unper.samper.model.dto.SubjectResponseDto;
+import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.impl.ClassServiceImpl;
+import com.unper.samper.service.impl.LectureServiceImpl;
+import com.unper.samper.service.impl.LectureSubjectServiceImpl;
 import com.unper.samper.service.impl.ScheduleServiceImpl;
 import com.unper.samper.service.impl.SubjectServiceImpl;
 
@@ -49,13 +56,22 @@ public class ScheduleController {
     ClassServiceImpl classServiceImpl;
 
     @Autowired
+    LectureServiceImpl lectureServiceImpl;
+
+    @Autowired
     SubjectServiceImpl subjectServiceImpl;
+
+    @Autowired
+    LectureSubjectServiceImpl lectureSubjectServiceImpl;
 
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/all")
-    public ResponseEntity<?> getAll() throws ResourceNotFoundException {
-        List<Schedule> scheduleList = scheduleServiceImpl.getAll();
+    public ResponseEntity<?> getAll(
+        @RequestParam(value = "dateFrom", required = false) LocalDate filterDateFrom, 
+        @RequestParam(value = "dateTo", required = false) LocalDate filterDateTo, 
+        @RequestParam(value = "classId", required = false) Long classId) throws ResourceNotFoundException {
+        List<Schedule> scheduleList = scheduleServiceImpl.getAll(filterDateFrom, filterDateTo, classId);
         List<ScheduleResponseDto> responseDtoList = new ArrayList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
@@ -67,6 +83,29 @@ public class ScheduleController {
                 .lecture(null)
                 .name(kelas.getName())
                 .build(); 
+            
+            LectureSubject lectureSubject = new LectureSubject();
+            try {
+                lectureSubject = lectureSubjectServiceImpl.getLectureSubjectBySubjectAndClass(schedule.getSubject(), schedule.getKelas());
+            } catch (ResourceNotFoundException e) {}
+
+            UserResponseDto userResponseDto = UserResponseDto.builder()
+                .id(lectureSubject.getLecture().getUser().getId())
+                .firstName(lectureSubject.getLecture().getUser().getFirstName())
+                .lastName(lectureSubject.getLecture().getUser().getLastName())
+                .dateOfBirth(lectureSubject.getLecture().getUser().getDateOfBirth())
+                .username(lectureSubject.getLecture().getUser().getUsername())
+                .email(lectureSubject.getLecture().getUser().getEmail())
+                .phoneNumber(lectureSubject.getLecture().getUser().getPhoneNumber())
+                .roles(null)
+                .build();
+
+            LectureResponseDto lectureResponseDto = LectureResponseDto.builder()
+                .id(lectureSubject.getLecture().getId())
+                .NIP(lectureSubject.getLecture().getNIP())
+                .user(userResponseDto)
+                .build();
+            
             Subject subject = new Subject();
             try {
                 subject = subjectServiceImpl.getById(schedule.getSubject().getId());
@@ -80,13 +119,79 @@ public class ScheduleController {
                 .id(schedule.getId())
                 .kelas(classResponseDto)
                 .subject(subjectResponseDto)
+                .lecture(lectureResponseDto)
                 .timeStart(schedule.getTimeStart())
                 .timeEnd(schedule.getTimeEnd())
                 .isActive(schedule.getIsActive())
                 .build();
             responseDtoList.add(scheduleResponseDto);
         });
-        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), scheduleServiceImpl);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList);
+    }
+
+    @Operation(summary = "Get all data of schedules")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT')")
+    @GetMapping("/allbycurrentuserclass")
+    public ResponseEntity<?> getAllByCurrentUserClass(
+        @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
+        @RequestParam(value = "dateTo", required = false) String filterDateTo,
+        @RequestParam(value = "userId", required = false) Long userId) throws ResourceNotFoundException {
+        List<Schedule> scheduleList = scheduleServiceImpl.getAllByUserClass(filterDateFrom, filterDateTo, userId);
+        List<ScheduleResponseDto> responseDtoList = new ArrayList<>();
+        scheduleList.forEach(schedule -> {
+            Class kelas = new Class();
+            try {
+                kelas = classServiceImpl.getById(schedule.getKelas().getId());
+            } catch (ResourceNotFoundException e) {}
+            ClassResponseDto classResponseDto = ClassResponseDto.builder()
+                .Id(kelas.getId())
+                .lecture(null)
+                .name(kelas.getName())
+                .build(); 
+
+            LectureSubject lectureSubject = new LectureSubject();
+            try {
+                lectureSubject = lectureSubjectServiceImpl.getLectureSubjectBySubjectAndClass(schedule.getSubject(), schedule.getKelas());
+            } catch (ResourceNotFoundException e) {}
+            UserResponseDto userResponseDto = UserResponseDto.builder()
+                .id(lectureSubject.getLecture().getUser().getId())
+                .firstName(lectureSubject.getLecture().getUser().getFirstName())
+                .lastName(lectureSubject.getLecture().getUser().getLastName())
+                .dateOfBirth(lectureSubject.getLecture().getUser().getDateOfBirth())
+                .username(lectureSubject.getLecture().getUser().getUsername())
+                .email(lectureSubject.getLecture().getUser().getEmail())
+                .phoneNumber(lectureSubject.getLecture().getUser().getPhoneNumber())
+                .roles(null)
+                .build();
+
+            LectureResponseDto lectureResponseDto = LectureResponseDto.builder()
+                .id(lectureSubject.getLecture().getId())
+                .NIP(lectureSubject.getLecture().getNIP())
+                .user(userResponseDto)
+                .build();
+            
+            Subject subject = new Subject();
+            try {
+                subject = subjectServiceImpl.getById(schedule.getSubject().getId());
+            } catch (ResourceNotFoundException e) {}
+            SubjectResponseDto subjectResponseDto = SubjectResponseDto.builder()
+                .id(subject.getId())
+                .lecture(null)
+                .name(subject.getName())
+                .build();
+
+            ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
+                .id(schedule.getId())
+                .kelas(classResponseDto)
+                .subject(subjectResponseDto)
+                .lecture(lectureResponseDto)
+                .timeStart(schedule.getTimeStart())
+                .timeEnd(schedule.getTimeEnd())
+                .isActive(schedule.getIsActive())
+                .build();
+            responseDtoList.add(scheduleResponseDto);
+        });
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList); 
     }
 
     @Operation(summary = "Add new schedule")
