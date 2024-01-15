@@ -20,7 +20,9 @@ public enum EResponseMessage {
     SCHEDULE_UNAVAILABLE("Your schedule is not available at current time!"),
     ON_SCHEDULE("You are on the other schedule!"),
     DELETE_SUCCESS("Data deleted successfully!"),
-    DELETE_NO_RESOURCE("Can't delete data!");
+    DELETE_NO_RESOURCE("Can't delete data!"),
+    REFRESH_TOKEN_NOT_EXIST("Refresh token is not found!"),
+    REFRESH_TOKEN_EXPIRED("Refresh token is expired!");
 
     private final String message;
 
