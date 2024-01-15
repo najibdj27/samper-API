@@ -20,7 +20,7 @@ import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.model.dto.SignUpRequestDto;
 
 public interface AuthenticationService {
-    JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException;
+    JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException;
 
     void changePassword(ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException;
     

@@ -30,6 +30,7 @@ import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
 import com.unper.samper.exception.WrongOTPException;
+import com.unper.samper.model.RefreshToken;
 import com.unper.samper.model.ResetPasswordToken;
 import com.unper.samper.model.Role;
 import com.unper.samper.model.User;
@@ -67,6 +68,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     PasswordEncoder encoder;
 
     @Autowired
+    RefreshTokenServiceImpl refreshTokenServiceImpl;
+
+    @Autowired
     JwtUtils jwtUtils;
 
     @Autowired
@@ -79,7 +83,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     String domain;
 
     @Override
-    public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException {
+    public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException {
         User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
         Boolean isPasswordCorrect = encoder.matches(requestDto.getPassword(), user.getPassword());
         if (Boolean.FALSE.equals(userRepository.existsByUsername(requestDto.getUsername()))) {
@@ -91,9 +95,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestDto.getUsername(), requestDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
+        RefreshToken refreshToken = refreshTokenServiceImpl.createRefreshToken(user.getId());
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-        return new JwtResponseDto(jwt, userDetails.getUsername(), roles);
+        return new JwtResponseDto(jwt, refreshToken.getToken(), userDetails.getUsername(), roles);
     }
 
     @Override

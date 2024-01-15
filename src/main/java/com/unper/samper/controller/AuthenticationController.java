@@ -49,10 +49,11 @@ public class AuthenticationController {
      * @param signInRequest
      * @return
      * @throws SignInFailException
+     * @throws ResourceNotFoundException 
      */
     @Operation(summary = "Sign in and get the token for access")
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDto requestDto) throws SignInFailException {
+    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException {
         JwtResponseDto responseDto = authenticationServiceImpl.authenticateUser(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully login!", responseDto);
     }
