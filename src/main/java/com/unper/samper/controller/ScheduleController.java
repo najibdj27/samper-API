@@ -135,6 +135,7 @@ public class ScheduleController {
                 .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
                 .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
                 .creditAmount(schedule.getCreditAmount())
+                .meetingOrder(schedule.getMeetingOrder())
                 .isActive(schedule.getIsActive())
                 .build();
             responseDtoList.add(scheduleResponseDto);
@@ -203,6 +204,7 @@ public class ScheduleController {
                 .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
                 .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
                 .creditAmount(schedule.getCreditAmount())
+                .meetingOrder(schedule.getMeetingOrder())
                 .isActive(schedule.getIsActive())
                 .build();
             responseDtoList.add(scheduleResponseDto);
@@ -286,6 +288,7 @@ public class ScheduleController {
                         .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
                         .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
                         .creditAmount(schedule.getCreditAmount())
+                        .meetingOrder(schedule.getMeetingOrder())
                         .isActive(schedule.getIsActive())
                         .build();
                     scheduleOfTheDay.add(scheduleResponseDto);
@@ -374,6 +377,7 @@ public class ScheduleController {
             .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
             .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
             .creditAmount(schedule.getCreditAmount())
+            .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), scheduleResponseDto);
@@ -420,6 +424,7 @@ public class ScheduleController {
             .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
             .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
             .creditAmount(schedule.getCreditAmount())
+            .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.ACTIVATE_SCHEDULE_SUCCESS.getMessage(), responseDto);
@@ -458,6 +463,7 @@ public class ScheduleController {
             .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
             .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
             .creditAmount(schedule.getCreditAmount())
+            .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.DEACTIVATE_SCHEDULE.getMessage(), responseDto);
@@ -496,6 +502,7 @@ public class ScheduleController {
             .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
             .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
             .creditAmount(schedule.getCreditAmount())
+            .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.EDIT_DATA_SUCCESS.getMessage(), responseDto);
