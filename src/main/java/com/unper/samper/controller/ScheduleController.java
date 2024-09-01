@@ -76,7 +76,7 @@ public class ScheduleController {
 
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/lecture")
+    @GetMapping("/allbylecture")
     public ResponseEntity<?> getAll(
         @RequestParam(value = "dateFrom", required = false) LocalDate filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) LocalDate filterDateTo, 
