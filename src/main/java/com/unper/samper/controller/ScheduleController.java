@@ -76,7 +76,7 @@ public class ScheduleController {
 
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/allbylecture")
+    @GetMapping("/allbystudent")
     public ResponseEntity<?> getAll(
         @RequestParam(value = "dateFrom", required = false) LocalDate filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) LocalDate filterDateTo, 
@@ -145,7 +145,7 @@ public class ScheduleController {
 
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT')")
-    @GetMapping("/allbystudent")
+    @GetMapping("/allbylecture")
     public ResponseEntity<?> getAllByCurrentUserClass(
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
