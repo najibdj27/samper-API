@@ -2,7 +2,6 @@ package com.unper.samper.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,11 +74,11 @@ public class ScheduleController {
     LectureSubjectServiceImpl lectureSubjectServiceImpl;
 
     @Operation(summary = "Get all data of schedules")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT')")
     @GetMapping("/allbystudent")
     public ResponseEntity<?> getAll(
-        @RequestParam(value = "dateFrom", required = false) LocalDate filterDateFrom, 
-        @RequestParam(value = "dateTo", required = false) LocalDate filterDateTo, 
+        @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
+        @RequestParam(value = "dateTo", required = false) String filterDateTo, 
         @RequestParam(value = "classId", required = false) Long classId) throws ResourceNotFoundException {
         List<Schedule> scheduleList = scheduleServiceImpl.getAll(filterDateFrom, filterDateTo, classId);
         List<ScheduleResponseDto> responseDtoList = new LinkedList<>();
@@ -144,7 +143,7 @@ public class ScheduleController {
     }
 
     @Operation(summary = "Get all data of schedules")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
     @GetMapping("/allbylecture")
     public ResponseEntity<?> getAllByCurrentUserClass(
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 

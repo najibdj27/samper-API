@@ -2,7 +2,6 @@ package com.unper.samper.service.impl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -61,10 +60,8 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     Short creditHour;
 
     @Override
-    public List<Schedule> getAll(LocalDate filterDateFrom, LocalDate filterDateTo, Long classId) throws ResourceNotFoundException {
-        String dateFrom = filterDateFrom.toString();
-        String dateTo = filterDateTo.toString();
-        List<Schedule> scheduleList = scheduleRepository.findAllByStudent(dateFrom, dateTo, classId);
+    public List<Schedule> getAll(String filterDateFrom, String filterDateTo, Long classId) throws ResourceNotFoundException {
+        List<Schedule> scheduleList = scheduleRepository.findAllByStudent(filterDateFrom, filterDateTo, classId);
         if (scheduleList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
