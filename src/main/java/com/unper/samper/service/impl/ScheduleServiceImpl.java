@@ -60,7 +60,7 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     Short creditHour;
 
     @Override
-    public List<Schedule> getAll(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException {
+    public List<Schedule> getAllByLecture(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException {
         User user = authenticationServiceImpl.getCurrentUser();
         Lecture lecture = lectureServiceImpl.getByUser(user);
         Long lectureId = lecture.getId();
@@ -72,7 +72,7 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     }
 
     @Override
-    public List<Schedule> getAllByCurrentUserClass(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException {
+    public List<Schedule> getAllByStudent(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException {
         User user = authenticationServiceImpl.getCurrentUser();
         Student student = studentServiceImpl.getByUser(user);
         Long classId = student.getKelas().getId();

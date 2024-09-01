@@ -76,10 +76,10 @@ public class ScheduleController {
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT')")
     @GetMapping("/allbystudent")
-    public ResponseEntity<?> getAll(
+    public ResponseEntity<?> getAllByStudent(
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
-        List<Schedule> scheduleList = scheduleServiceImpl.getAllByCurrentUserClass(filterDateFrom, filterDateTo);
+        List<Schedule> scheduleList = scheduleServiceImpl.getAllByStudent(filterDateFrom, filterDateTo);
         List<ScheduleResponseDto> responseDtoList = new LinkedList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
@@ -145,10 +145,10 @@ public class ScheduleController {
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
     @GetMapping("/allbylecture")
-    public ResponseEntity<?> getAllByCurrentUserClass(
+    public ResponseEntity<?> getAllByLecture(
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
-        List<Schedule> scheduleList = scheduleServiceImpl.getAll(filterDateFrom, filterDateTo);
+        List<Schedule> scheduleList = scheduleServiceImpl.getAllByLecture(filterDateFrom, filterDateTo);
         List<ScheduleResponseDto> responseDtoList = new ArrayList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();

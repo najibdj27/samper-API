@@ -12,9 +12,9 @@ import com.unper.samper.model.dto.AddScheduleRequestDto;
 import com.unper.samper.model.dto.RescheduleRequestDto;
 
 public interface ScheduleSercvice {
-    List<Schedule> getAll(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException;
+    List<Schedule> getAllByLecture(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException;
 
-    List<Schedule> getAllByCurrentUserClass(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException;
+    List<Schedule> getAllByStudent(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException;
 
     List<Schedule> getScheduleMonthly(String dateStr, Long userId) throws ParseException, ResourceNotFoundException;
 
