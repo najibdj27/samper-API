@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.geo.Point;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,15 +18,14 @@ import lombok.NoArgsConstructor;
 public class PresenceResponseDto {
     private Long id;
 
-    private Long studentId;
+    private StudentResponseDto student;
 
-    private Long scheduleId;
+    private ScheduleResponseDto schedule;
 
-    private LocalDateTime checkIn;
+    @JsonFormat(pattern = "YYYY-MM-DD HH:mm")
+    private LocalDateTime time;
 
-    private LocalDateTime checkOut;
+    private Character status;
 
-    private Point checkInLocation;
-
-    private Point checkOutLocation;
+    private Point location;
 }

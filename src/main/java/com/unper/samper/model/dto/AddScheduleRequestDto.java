@@ -1,7 +1,5 @@
 package com.unper.samper.model.dto;
 
-import java.util.Calendar;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -14,14 +12,21 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class AddScheduleRequestDto {
+
     private Long classId;
 
     private Long subjectId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
-    private Calendar timeStart;
+    private Long lectureId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm")
-    private Calendar timeEnd;
+    @JsonFormat(pattern = "YYYY-MM-DD")
+    private String dateStart;
+    
+    @JsonFormat(pattern = "HH:mm")
+    private String timeStart;
+    
+    private Short creditAmount;
+
+    private Integer numberOfMeetings;
 
 }

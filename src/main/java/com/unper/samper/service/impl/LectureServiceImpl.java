@@ -9,9 +9,12 @@ import org.springframework.stereotype.Service;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.Lecture;
+import com.unper.samper.model.LectureSubject;
+import com.unper.samper.model.Subject;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddLectureRequestDto;
+import com.unper.samper.model.dto.AddLectureSubjectRequestDto;
 import com.unper.samper.repository.LectureRepository;
 import com.unper.samper.service.LectureService;
 
@@ -25,6 +28,12 @@ public class LectureServiceImpl implements LectureService {
 
     @Autowired
     UserServiceImpl userServiceImpl;
+
+    @Autowired
+    LectureSubjectServiceImpl lectureSubjectServiceImpl;
+
+    @Autowired
+    SubjectServiceImpl subjectServiceImpl;
 
     @Override
     public List<Lecture> getAll() throws ResourceNotFoundException {
@@ -87,5 +96,14 @@ public class LectureServiceImpl implements LectureService {
         User user = authenticationServiceImpl.getCurrentUser();
         Lecture lecture = getByUser(user);
         return lecture;
+    }
+
+    @Override
+    public Lecture addSubject(AddLectureSubjectRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+        Lecture lecture = getById(requestDto.getLectureId());
+        Subject subject = subjectServiceImpl.getById(requestDto.getSubjectId());
+
+        LectureSubject lectureSubject = lectureSubjectServiceImpl.add(lecture, subject);
+        return getById(lectureSubject.getLecture().getId());
     }
 }

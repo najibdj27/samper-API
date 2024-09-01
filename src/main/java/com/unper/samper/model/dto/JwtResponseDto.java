@@ -12,12 +12,12 @@ public class JwtResponseDto {
     private String accessToken;
     private String refreshToken;
     private String type = "Bearer";
-    private String username;
+    private Long userId;
     private List<String> roles;
-    public JwtResponseDto(String accessToken, String refreshToken, String username, List<String> roles) {
+    public JwtResponseDto(String accessToken, String refreshToken, Long userId, List<String> roles) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.username = username;
+        this.userId = userId;
         this.roles = roles;
     }
 }

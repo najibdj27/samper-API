@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
+import org.cloudinary.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -18,8 +19,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.ExpiredTokenException;
+import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.NoAccessException;
 import com.unper.samper.exception.OnScheduleException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
@@ -61,6 +64,15 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
         logger.error(error.getDescription());
         logger.error(loggerLine);
         return ResponseHandler.generateValidationErrorResponse(HttpStatus.BAD_REQUEST, messages, error.getCode(), error.getDescription());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {
+        var error = EErrorCode.NOT_FOUND;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, e.getMessage(), error.getCode(), error.getDescription());
     }
 
     @ExceptionHandler(SizeLimitExceededException.class)
@@ -164,6 +176,33 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     @ExceptionHandler(OnScheduleException.class)
     public ResponseEntity<?> handleOnScheduleException(OnScheduleException e) {
         var error = EErrorCode.ON_SCHEDULE;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
+    @ExceptionHandler(ActivityNotAllowedException.class)
+    public ResponseEntity<?> handleActivityNotAllowedException(ActivityNotAllowedException e) {
+        var error = EErrorCode.ACTIVITY_NOT_ALLOWED;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
+    @ExceptionHandler(JSONException.class)
+    public ResponseEntity<?> handleJSONException(JSONException e) {
+        var error = EErrorCode.JSON_STRING;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+    
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<?> handleInvalidTokenException(InvalidTokenException e) {
+        var error = EErrorCode.TOKEN_INVALID;
         logger.error(loggerLine);
         logger.error(error.getDescription());
         logger.error(loggerLine);

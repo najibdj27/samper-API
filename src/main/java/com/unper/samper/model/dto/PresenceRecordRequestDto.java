@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class PresenceCheckInRequestDto {
+public class PresenceRecordRequestDto {
 
     private Long scheduleId;
 
-    private Point cehckInLocation;
+    private Point location;
 }

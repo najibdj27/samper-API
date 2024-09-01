@@ -71,4 +71,9 @@ public class StudentServiceImpl implements StudentService {
         Student student = getById(id);
         userServiceImpl.delete(student.getUser().getId());
     }
+
+    @Override
+    public Student getStudentLeaderByClass(Long classId) throws ResourceNotFoundException {
+        return studentRepository.findStudentLeaderByClass(classId).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+    }
 }

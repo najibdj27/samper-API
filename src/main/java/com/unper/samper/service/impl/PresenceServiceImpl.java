@@ -6,8 +6,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.OnScheduleException;
+import com.unper.samper.exception.OutScheduleException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleNotActiveException;
 import com.unper.samper.model.Lecture;
@@ -15,8 +17,7 @@ import com.unper.samper.model.Presence;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.Student;
 import com.unper.samper.model.constant.EResponseMessage;
-import com.unper.samper.model.dto.PresenceCheckInRequestDto;
-import com.unper.samper.model.dto.PresenceCheckOutRequestDto;
+import com.unper.samper.model.dto.PresenceRecordRequestDto;
 import com.unper.samper.repository.PresenceRepository;
 import com.unper.samper.service.PresenceService;
 
@@ -51,27 +52,40 @@ public class PresenceServiceImpl implements PresenceService {
     }
 
     @Override
-    public Presence checkIn(PresenceCheckInRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException {
+    public List<Presence> findByStudent(Long studentId, Integer limit) throws ResourceNotFoundException {
+        List<Presence> presenceList = presenceRepository.findByStudent(studentId, limit);
+        if (presenceList.isEmpty()) {
+            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        }
+        return presenceList;
+    }
+
+    @Override
+    public Presence checkIn(PresenceRecordRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException {
         Schedule schedule = scheduleServiceImpl.getById(requestDto.getScheduleId());
         Student student = studentServiceImpl.getCurrentStudent();
         
+        //check if student record a presence from a different class
         if (schedule.getKelas() != student.getKelas()) {
             throw new DifferentClassException(EResponseMessage.PRESENCE_DIFFERENT_CLASS.getMessage());
         }
         
+        // check if schedule is inactive
         if (Boolean.FALSE.equals(schedule.getIsActive())) {
             throw new ScheduleNotActiveException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
 
-        if (Boolean.TRUE.equals(presenceRepository.isOnSchedule(student))) {
+        // check if student is on schedule
+        if (Boolean.TRUE.equals(presenceRepository.inOnCurrentSchedule(student, schedule))) {
             throw new OnScheduleException(EResponseMessage.ON_SCHEDULE.getMessage());
         }
+
         Presence presence = Presence.builder()
             .student(student)
             .schedule(schedule)
-            .checkIn(LocalDateTime.now())
-            .student(student)
-            .checkInLocation(requestDto.getCehckInLocation())
+            .time(LocalDateTime.now())
+            .status('I')
+            .location(requestDto.getLocation())
             .build();
         Presence newPresence = presenceRepository.save(presence);
 
@@ -79,19 +93,36 @@ public class PresenceServiceImpl implements PresenceService {
     }
 
     @Override
-    public Presence checkOut(PresenceCheckOutRequestDto requestDto) throws ScheduleNotActiveException, ResourceNotFoundException {
-        Presence presence = getById(requestDto.getId());
-        if (Boolean.FALSE.equals(presence.getSchedule().getIsActive())) {
+    public Presence checkOut(PresenceRecordRequestDto requestDto) throws ScheduleNotActiveException, ResourceNotFoundException, DifferentClassException, OutScheduleException, ActivityNotAllowedException {
+        Schedule schedule = scheduleServiceImpl.getById(requestDto.getScheduleId());
+        Student student = studentServiceImpl.getCurrentStudent();
+        
+        //check if student record a presence from a different class
+        if (schedule.getKelas() != student.getKelas()) {
+            throw new DifferentClassException(EResponseMessage.PRESENCE_DIFFERENT_CLASS.getMessage());
+        }
+        
+        // check if schedule is inactive
+        if (Boolean.FALSE.equals(schedule.getIsActive())) {
             throw new ScheduleNotActiveException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
 
-        if (presence.getCheckOut() != null && presence.getCheckOutLocation() != null) {
-            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+        // check if student is on schedule
+        if (Boolean.FALSE.equals(presenceRepository.inOnCurrentSchedule(student, schedule))) {
+            throw new OutScheduleException(EResponseMessage.OUT_SCHEDULE.getMessage());
         }
-        
-        presence.setCheckOut(LocalDateTime.now());
-        presence.setCheckOutLocation(requestDto.getCheckOutLocation());
-        
+
+        if (Boolean.TRUE.equals(presenceRepository.isCheckOut(student, schedule))) {
+            throw new ActivityNotAllowedException(EResponseMessage.ACTIVITY_NOT_ALLOWED.getMessage());
+        }
+
+        Presence presence = Presence.builder()
+            .student(student)
+            .schedule(schedule)
+            .time(LocalDateTime.now())
+            .status('O')
+            .location(requestDto.getLocation())
+            .build();
         Presence newPresence = presenceRepository.save(presence);
 
         return newPresence;
@@ -102,5 +133,4 @@ public class PresenceServiceImpl implements PresenceService {
         getById(id);
         presenceRepository.deleteById(id);
     }
-    
 }

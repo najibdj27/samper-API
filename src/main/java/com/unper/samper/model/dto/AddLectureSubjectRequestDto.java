@@ -1,7 +1,5 @@
 package com.unper.samper.model.dto;
 
-import org.springframework.data.geo.Point;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class PresenceCheckOutRequestDto {
-    private Long id;
-
-    private Point checkOutLocation;
+public class AddLectureSubjectRequestDto {
+    private Long lectureId;
+    
+    private Long subjectId;
 }

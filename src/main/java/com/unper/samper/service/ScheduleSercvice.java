@@ -1,5 +1,6 @@
 package com.unper.samper.service;
 
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,13 +15,15 @@ import com.unper.samper.model.dto.RescheduleRequestDto;
 public interface ScheduleSercvice {
     List<Schedule> getAll(LocalDate filterDateFrom, LocalDate filterDateTo, Long classId) throws ResourceNotFoundException;
 
-    List<Schedule> getAllByUserClass(String filterDateFrom, String filterDateTo, Long userId) throws ResourceNotFoundException;
+    List<Schedule> getAllByCurrentUserClass(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException;
+
+    List<Schedule> getScheduleMonthly(String dateStr, Long userId) throws ParseException, ResourceNotFoundException;
 
     Schedule getById(Long id) throws ResourceNotFoundException;
 
-    Schedule add(AddScheduleRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException;
+    List<Schedule> add(AddScheduleRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException, ParseException;
 
-    List<Schedule> addAll(List<AddScheduleRequestDto> requestDto) throws ResourceNotFoundException;
+    Schedule edit(Schedule schedule) throws ResourceNotFoundException;
 
     Schedule activate(Long id) throws ResourceNotFoundException, NoAccessException, ScheduleUnavailableException;
 
