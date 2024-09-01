@@ -78,9 +78,8 @@ public class ScheduleController {
     @GetMapping("/allbystudent")
     public ResponseEntity<?> getAll(
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
-        @RequestParam(value = "dateTo", required = false) String filterDateTo, 
-        @RequestParam(value = "classId", required = false) Long classId) throws ResourceNotFoundException {
-        List<Schedule> scheduleList = scheduleServiceImpl.getAll(filterDateFrom, filterDateTo, classId);
+        @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
+        List<Schedule> scheduleList = scheduleServiceImpl.getAllByCurrentUserClass(filterDateFrom, filterDateTo);
         List<ScheduleResponseDto> responseDtoList = new LinkedList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
@@ -149,7 +148,7 @@ public class ScheduleController {
     public ResponseEntity<?> getAllByCurrentUserClass(
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
-        List<Schedule> scheduleList = scheduleServiceImpl.getAllByCurrentUserClass(filterDateFrom, filterDateTo);
+        List<Schedule> scheduleList = scheduleServiceImpl.getAll(filterDateFrom, filterDateTo);
         List<ScheduleResponseDto> responseDtoList = new ArrayList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();

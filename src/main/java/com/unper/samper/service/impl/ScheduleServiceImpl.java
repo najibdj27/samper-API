@@ -60,8 +60,11 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     Short creditHour;
 
     @Override
-    public List<Schedule> getAll(String filterDateFrom, String filterDateTo, Long classId) throws ResourceNotFoundException {
-        List<Schedule> scheduleList = scheduleRepository.findAllByStudent(filterDateFrom, filterDateTo, classId);
+    public List<Schedule> getAll(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException {
+        User user = authenticationServiceImpl.getCurrentUser();
+        Lecture lecture = lectureServiceImpl.getByUser(user);
+        Long lectureId = lecture.getId();
+        List<Schedule> scheduleList = scheduleRepository.findAllByLecture(filterDateFrom, filterDateTo, lectureId);
         if (scheduleList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
@@ -73,7 +76,7 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
         User user = authenticationServiceImpl.getCurrentUser();
         Student student = studentServiceImpl.getByUser(user);
         Long classId = student.getKelas().getId();
-        List<Schedule> scheduleList = scheduleRepository.findAllByLecture(filterDateFrom, filterDateTo, classId);
+        List<Schedule> scheduleList = scheduleRepository.findAllByStudent(filterDateFrom, filterDateTo, classId);
         if (scheduleList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
