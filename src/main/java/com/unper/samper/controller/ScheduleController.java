@@ -74,7 +74,7 @@ public class ScheduleController {
     LectureSubjectServiceImpl lectureSubjectServiceImpl;
 
     @Operation(summary = "Get all data of schedules")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT') or hasAuthority('LECTURE')")
     @GetMapping("/allbystudent")
     public ResponseEntity<?> getAllByStudent(
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
