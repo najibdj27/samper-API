@@ -27,8 +27,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>{
 
     @Query(
         value = "SELECT s.* FROM public.schedule s" + "\n" +
-        "LEFT JOIN public.lecture_subject ls ON ls.subject_id = s.subject_id" + "\n" +
-        "LEFT JOIN public.lecture_subject_class lsc ON lsc.lecture_subject_id = ls.id " + "\n" +
+        "JOIN public.lecture_subject ls ON ls.subject_id = s.subject_id" + "\n" +
+        "JOIN public.lecture_subject_class lsc ON lsc.lecture_subject_id = ls.id " + "\n" +
         "WHERE lsc.lecture_subject_id IN (SELECT id FROM lecture_subject WHERE lecture_id = :lectureId)" + "\n" +
         "AND s.class_id = lsc.class_id" + "\n" +
         "AND (:filterDateFrom IS null OR s.time_start >= to_date(:filterDateFrom, 'YYYY-MM-DD'))" + "\n" +
