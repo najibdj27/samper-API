@@ -105,7 +105,7 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
        if (roles.contains(ERole.valueOf("STUDENT"))) {
             Student student = studentServiceImpl.getByUser(user);
             Long classId = student.getKelas().getId();
-           scheduleList = scheduleRepository.findAllByStudent(sdf.format(firtDayOfMonth.getTime()), sdf.format(lastDayOfMonth.getTime()), classId);
+            scheduleList = scheduleRepository.findAllByStudent(sdf.format(firtDayOfMonth.getTime()), sdf.format(lastDayOfMonth.getTime()), classId);
         } else {
             Lecture lecture = lectureServiceImpl.getByUser(user);
             scheduleList = scheduleRepository.findAllByLecture(sdf.format(firtDayOfMonth.getTime()), sdf.format(lastDayOfMonth.getTime()), lecture.getId());
