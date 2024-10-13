@@ -39,7 +39,7 @@ import com.unper.samper.model.constant.EErrorCode;
 public class ErrorExceptionHandlingController extends ResponseEntityExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(ErrorExceptionHandlingController.class);
 
-    private static final String loggerLine = "---------------------------------------";
+    private static final String loggerLine = "-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestPart(MissingServletRequestPartException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
