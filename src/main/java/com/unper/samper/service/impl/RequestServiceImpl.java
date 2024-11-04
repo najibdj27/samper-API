@@ -172,6 +172,7 @@ public class RequestServiceImpl implements RequestService {
         }
         request.setApproveTime(new Date());
         request.setStatus(EStatus.APPROVED);
+        request.setIsApproved(true);
 
         return requestRepository.save(request);
     }
