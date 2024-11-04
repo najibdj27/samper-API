@@ -61,6 +61,7 @@ public class StudentServiceImpl implements StudentService {
             .NIM(requestDto.getNIM())
             .kelas(requestDto.getKelas())
             .user(requestDto.getUser())
+            .isLeader(requestDto.getIsLeader())
             .build();
         Student newStudent = studentRepository.save(student);
         return newStudent;

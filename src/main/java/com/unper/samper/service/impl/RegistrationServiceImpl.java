@@ -65,6 +65,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             .user(newUser)
             .kelas(kelas)
             .NIM(requestDto.getNIM())
+            .isLeader(requestDto.getIsLeader())
             .build();
         studentServiceImpl.add(addStudentRequestDto);
     }

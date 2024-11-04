@@ -34,4 +34,6 @@ public class RegisterStudentRequestDto {
     private String phoneNumber;
 
     private String password;
+
+    private Boolean isLeader;
 }
