@@ -1,0 +1,52 @@
+spring:
+    datasource:
+        url: ${DB_URL}
+        username: ${DATABASE_USER}
+        password: ${DATABASE_PASSWORD}
+        # url: jdbc:postgresql://localhost:5432/samper_api
+        # username: postgres
+        # password: Doyouknow.p0stgr3s
+    jpa:
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+                jdbs: 
+                    lab:
+                        non_contextual_creation: true
+        hibernate:
+            ddl-auto: none
+        generate-ddl: false
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: najib.djulfikar@gmail.com
+        password: vccwrwpklsaqhskl
+        properties:
+            mail: 
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+
+springdoc:
+    swagger-ui:
+        enabled: true
+        tagSorter: alpha
+        operationsSorter: method
+        path: /api/v1/api-docs
+
+com:
+    unper:
+        samper: 
+            domain: samper-api-6bf01e4f0b51.herokuapp.com
+            cloud-name: dx1pjzkvf
+            api-key: 135717915924372
+            api-secret: 1WuBB8xMV8_QmFSGyV3DhDuR40g
+            jwt-secret: Kw0v7/HdetcXqaJuEzX2gNPesccuXr03qtL4ucPXLlM=
+            jwt-expiration-ms: 60000
+            refresh-token-expiration-ms: 86400000
+            version: 1.0.0
+            build: 001
+            credithour: 50
+
+
