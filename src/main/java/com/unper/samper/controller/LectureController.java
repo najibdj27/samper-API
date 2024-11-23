@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Lecture;
 import com.unper.samper.model.Role;
 import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.dto.AddLectureSubjectRequestDto;
 import com.unper.samper.model.dto.LectureResponseDto;
 import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.impl.LectureServiceImpl;
@@ -90,6 +92,33 @@ public class LectureController {
             .user(userResponseDto)
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
+    }
+
+    @Operation(summary = "Add subject hanled by the lecture")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PatchMapping("/addsubject")
+    public ResponseEntity<?> addSubject(AddLectureSubjectRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+        Lecture lecture = lectureServiceImpl.addSubject(requestDto);
+        List<String> roleList = new ArrayList<>();
+        for (Role role : lecture.getUser().getRoles()) {
+            roleList.add(role.getName().toString());
+        }
+        UserResponseDto userResponseDto = UserResponseDto.builder()
+            .id(lecture.getUser().getId())
+            .firstName(lecture.getUser().getFirstName())
+            .lastName(lecture.getUser().getLastName())
+            .dateOfBirth(lecture.getUser().getDateOfBirth())
+            .username(lecture.getUser().getUsername())
+            .email(lecture.getUser().getEmail())
+            .phoneNumber(lecture.getUser().getPhoneNumber())
+            .roles(roleList)
+            .build();
+        LectureResponseDto responseDto = LectureResponseDto.builder()
+            .id(lecture.getId())
+            .NIP(lecture.getNIP())
+            .user(userResponseDto)
+            .build();
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.INSERT_DATA_SUCCESS.getMessage(), responseDto);
     }
 
     @Operation(summary = "Soft delete a lecture")

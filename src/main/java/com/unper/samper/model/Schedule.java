@@ -39,9 +39,13 @@ public class Schedule extends Audit {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
+    private String meetingOrder;
+
     private Calendar timeStart;
 
     private Calendar timeEnd;
+
+    private Short creditAmount; 
 
     private Boolean isActive;
 

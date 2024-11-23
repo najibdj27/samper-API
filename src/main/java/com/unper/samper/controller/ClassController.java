@@ -74,7 +74,7 @@ public class ClassController {
                 .subjects(null)
                 .build();
             ClassResponseDto responseDto = ClassResponseDto.builder()
-                .Id(kelas.getId())
+                .id(kelas.getId())
                 .lecture(lectureResponseDto)
                 .name(kelas.getName())
                 .major(majorResponseDto)

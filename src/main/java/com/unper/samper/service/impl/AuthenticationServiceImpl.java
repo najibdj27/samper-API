@@ -101,7 +101,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         RefreshToken refreshToken = refreshTokenServiceImpl.createRefreshToken(user.getId());
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-        return new JwtResponseDto(jwt, refreshToken.getToken(), userDetails.getUsername(), roles);
+        return new JwtResponseDto(jwt, refreshToken.getToken(), userDetails.getId(), roles);
     }
 
     @Override

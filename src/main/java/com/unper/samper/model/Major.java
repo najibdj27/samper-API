@@ -43,7 +43,7 @@ public class Major extends Audit {
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = Lecture.class)
-    @JoinColumn(name = "major_id")
+    @JoinColumn(name = "major_head")
     private Lecture majorHead;
 
     @Builder.Default

@@ -27,4 +27,6 @@ public class Student extends Audit {
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Class.class)
     @JoinColumn(name = "class_id")
     private Class kelas;
+
+    private Boolean isLeader;
 }

@@ -12,7 +12,13 @@ import lombok.Setter;
 @Setter
 @Builder
 public class StudentResponseDto {
+    private Long id;
+    
     private String NIM;
 
     private UserResponseDto user;
+
+    private ClassResponseDto kelas;
+
+    private Boolean isLeader;
 }

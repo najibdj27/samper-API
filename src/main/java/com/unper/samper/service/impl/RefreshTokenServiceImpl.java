@@ -29,6 +29,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     public RefreshToken createRefreshToken(Long userId) throws ResourceNotFoundException {
         User user = userServiceImpl.getById(userId);
+        if (refreshTokenRepository.existsByUser(user)) {
+            RefreshToken existingRefreshToken = findByUser(user);
+            refreshTokenRepository.delete(existingRefreshToken);
+        }
         RefreshToken refreshToken = RefreshToken.builder()
             .user(user)
             .token(UUID.randomUUID().toString())
@@ -50,6 +54,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             throw new InvalidTokenException(EResponseMessage.REFRESH_TOKEN_EXPIRED.getMessage());
         }
         return refreshToken;
+    }
+
+    @Override
+    public RefreshToken findByUser(User user) throws ResourceNotFoundException {
+        return refreshTokenRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
     }
     
 }

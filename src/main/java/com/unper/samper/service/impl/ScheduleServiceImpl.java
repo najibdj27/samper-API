@@ -1,10 +1,14 @@
 package com.unper.samper.service.impl;
 
-import java.time.LocalDate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.unper.samper.model.Schedule;
@@ -12,12 +16,15 @@ import com.unper.samper.model.Student;
 import com.unper.samper.model.Subject;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.constant.ERole;
 import com.unper.samper.exception.NoAccessException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleUnavailableException;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.Lecture;
+import com.unper.samper.model.LectureSubject;
+import com.unper.samper.model.Role;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
 import com.unper.samper.model.dto.RescheduleRequestDto;
 import com.unper.samper.repository.ScheduleRepository;
@@ -46,11 +53,18 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     @Autowired
     AuthenticationServiceImpl authenticationServiceImpl;
 
+    @Autowired
+    LectureSubjectServiceImpl lectureSubjectServiceImpl;
+
+    @Value("${com.unper.samper.credithour}")
+    Short creditHour;
+
     @Override
-    public List<Schedule> getAll(LocalDate filterDateFrom, LocalDate filterDateTo, Long classId) throws ResourceNotFoundException {
-        String dateFrom = filterDateFrom.toString();
-        String dateTo = filterDateTo.toString();
-        List<Schedule> scheduleList = scheduleRepository.findAllWithFilter(dateFrom, dateTo, classId);
+    public List<Schedule> getAllByLecture(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException {
+        User user = authenticationServiceImpl.getCurrentUser();
+        Lecture lecture = lectureServiceImpl.getByUser(user);
+        Long lectureId = lecture.getId();
+        List<Schedule> scheduleList = scheduleRepository.findAllByLecture(filterDateFrom, filterDateTo, lectureId);
         if (scheduleList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
@@ -58,15 +72,46 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     }
 
     @Override
-    public List<Schedule> getAllByUserClass(String filterDateFrom, String filterDateTo, Long userId) throws ResourceNotFoundException {
-        User user = userServiceImpl.getById(userId);
+    public List<Schedule> getAllByStudent(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException {
+        User user = authenticationServiceImpl.getCurrentUser();
         Student student = studentServiceImpl.getByUser(user);
         Long classId = student.getKelas().getId();
-        List<Schedule> scheduleList = scheduleRepository.findAllWithFilter(filterDateFrom, filterDateTo, classId);
+        List<Schedule> scheduleList = scheduleRepository.findAllByStudent(filterDateFrom, filterDateTo, classId);
         if (scheduleList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
         return scheduleList;
+    }
+
+    @Override
+    public List<Schedule> getScheduleMonthly(String dateStr, Long userId) throws ParseException, ResourceNotFoundException {
+       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+       Calendar firtDayOfMonth = Calendar.getInstance();
+       Calendar lastDayOfMonth = Calendar.getInstance();
+       firtDayOfMonth.setTime(sdf.parse(dateStr));
+       lastDayOfMonth.setTime(sdf.parse(dateStr));
+       int year = lastDayOfMonth.get(Calendar.YEAR);
+       int month = lastDayOfMonth.get(Calendar.MONTH);
+       YearMonth yearMonth = YearMonth.of(year, month+1);
+       int monthLength = yearMonth.lengthOfMonth();
+       firtDayOfMonth.set(Calendar.DAY_OF_MONTH, 1);
+       lastDayOfMonth.set(Calendar.DAY_OF_MONTH, monthLength);
+       User user = userServiceImpl.getById(userId);
+       List<Schedule> scheduleList = new ArrayList<>();
+       List<ERole> roles = new ArrayList<>();
+       for (Role role : user.getRoles()) {
+            roles.add(role.getName());
+       }
+       if (roles.contains(ERole.valueOf("STUDENT"))) {
+            Student student = studentServiceImpl.getByUser(user);
+            Long classId = student.getKelas().getId();
+            scheduleList = scheduleRepository.findAllByStudent(sdf.format(firtDayOfMonth.getTime()), sdf.format(lastDayOfMonth.getTime()), classId);
+        } else {
+            Lecture lecture = lectureServiceImpl.getByUser(user);
+            scheduleList = scheduleRepository.findAllByLecture(sdf.format(firtDayOfMonth.getTime()), sdf.format(lastDayOfMonth.getTime()), lecture.getId());
+        }
+
+       return scheduleList;
     }
 
     @Override
@@ -75,44 +120,49 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
         return schedule;
     }
 
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceAlreadyExistException.class, ParseException.class})
     @Override
-    public Schedule add(AddScheduleRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException {
+    public List<Schedule> add(AddScheduleRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException, ParseException {
         Class kelas = classServiceImpl.getById(requestDto.getClassId());
         Subject subject = subjectServiceImpl.getById(requestDto.getSubjectId());
-        // check if schedule on the time exist
-        if (Boolean.TRUE.equals(scheduleRepository.existsByTime(kelas ,requestDto.getTimeStart(), requestDto.getTimeEnd()))) {
-            throw new ResourceAlreadyExistException(EResponseMessage.INSERT_DATA_ALREADY_EXIST.getMessage());
+        Lecture lecture = lectureServiceImpl.getById(requestDto.getLectureId());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        LectureSubject lectureSubject = lectureSubjectServiceImpl.getByLectureAndSubject(subject, lecture);
+
+        if (Boolean.FALSE.equals(lectureSubjectServiceImpl.checkLectureSubjectClass(lectureSubject, kelas))) {
+            lectureSubjectServiceImpl.addClass(lectureSubject.getId(), kelas.getId());
         }
-        Schedule schedule = Schedule.builder()
-            .kelas(kelas)
-            .subject(subject)
-            .isActive(Boolean.FALSE)
-            .timeStart(requestDto.getTimeStart())
-            .timeEnd(requestDto.getTimeEnd())
-            .build();
+
+        List<Schedule> scheduleList = new ArrayList<>();
+        for (int i = 0; i < requestDto.getNumberOfMeetings(); i++) {
+            Calendar timeStart = Calendar.getInstance();
+            Calendar timeEnd = Calendar.getInstance();
+            timeStart.setTime(simpleDateFormat.parse(requestDto.getDateStart() + " " + requestDto.getTimeStart()));
+            timeEnd.setTime(simpleDateFormat.parse(requestDto.getDateStart() + " " + requestDto.getTimeStart()));
+            timeStart.add(Calendar.DAY_OF_MONTH, 7*i); 
+            timeEnd.add(Calendar.DAY_OF_MONTH, 7*i);
+            timeEnd.add(Calendar.MINUTE, requestDto.getCreditAmount()*creditHour);
+             
+            Schedule schedule = Schedule.builder()
+                .kelas(kelas)
+                .subject(subject)
+                .meetingOrder(String.valueOf(i+1))
+                .timeStart(timeStart)
+                .timeEnd(timeEnd)
+                .creditAmount(requestDto.getCreditAmount())
+                .isActive(false)
+                .build();
+            scheduleList.add(schedule);
+        }
         
-        Schedule newSchedule = scheduleRepository.save(schedule);
-        return newSchedule;
+        return scheduleRepository.saveAll(scheduleList);
     }
 
     @Override
-    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceAlreadyExistException.class})
-    public List<Schedule> addAll(List<AddScheduleRequestDto> requestDtoList) throws ResourceNotFoundException {
-        List<Schedule> scheduleList = new ArrayList<>();
-        requestDtoList.forEach(requestDto -> {
-            Schedule schedule =  new Schedule();
-            try {
-                schedule = add(requestDto);
-            } catch (ResourceNotFoundException e) {
-
-            } catch (ResourceAlreadyExistException e) {
-
-            }
-            scheduleList.add(schedule);
-        });
-        
-        List<Schedule> newSchedules = scheduleRepository.saveAll(scheduleList);
-        return newSchedules;       
+    public Schedule edit(Schedule schedule) throws ResourceNotFoundException {
+        getById(schedule.getId());
+        return scheduleRepository.save(schedule);
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.unper.samper.model.dto;
 
-import java.util.Calendar;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,9 +18,13 @@ public class ScheduleResponseDto {
 
     private LectureResponseDto lecture;
 
-    private Calendar timeStart;
+    private String meetingOrder;
 
-    private Calendar timeEnd;
+    private String timeStart;
+
+    private String timeEnd;
+
+    private Short creditAmount;
 
     private Boolean isActive;
 }

@@ -1,8 +1,17 @@
 package com.unper.samper.controller;
 
-import java.time.LocalDate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -65,21 +74,20 @@ public class ScheduleController {
     LectureSubjectServiceImpl lectureSubjectServiceImpl;
 
     @Operation(summary = "Get all data of schedules")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/all")
-    public ResponseEntity<?> getAll(
-        @RequestParam(value = "dateFrom", required = false) LocalDate filterDateFrom, 
-        @RequestParam(value = "dateTo", required = false) LocalDate filterDateTo, 
-        @RequestParam(value = "classId", required = false) Long classId) throws ResourceNotFoundException {
-        List<Schedule> scheduleList = scheduleServiceImpl.getAll(filterDateFrom, filterDateTo, classId);
-        List<ScheduleResponseDto> responseDtoList = new ArrayList<>();
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT') or hasAuthority('LECTURE')")
+    @GetMapping("/allbystudent")
+    public ResponseEntity<?> getAllByStudent(
+        @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
+        @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
+        List<Schedule> scheduleList = scheduleServiceImpl.getAllByStudent(filterDateFrom, filterDateTo);
+        List<ScheduleResponseDto> responseDtoList = new LinkedList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
             try {
                 kelas = classServiceImpl.getById(schedule.getKelas().getId());
             } catch (ResourceNotFoundException e) {}
             ClassResponseDto classResponseDto = ClassResponseDto.builder()
-                .Id(kelas.getId())
+                .id(kelas.getId())
                 .lecture(null)
                 .name(kelas.getName())
                 .build(); 
@@ -115,13 +123,18 @@ public class ScheduleController {
                 .lecture(null)
                 .name(subject.getName())
                 .build();
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
             ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
                 .id(schedule.getId())
                 .kelas(classResponseDto)
                 .subject(subjectResponseDto)
                 .lecture(lectureResponseDto)
-                .timeStart(schedule.getTimeStart())
-                .timeEnd(schedule.getTimeEnd())
+                .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
+                .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+                .creditAmount(schedule.getCreditAmount())
+                .meetingOrder(schedule.getMeetingOrder())
                 .isActive(schedule.getIsActive())
                 .build();
             responseDtoList.add(scheduleResponseDto);
@@ -130,13 +143,12 @@ public class ScheduleController {
     }
 
     @Operation(summary = "Get all data of schedules")
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT')")
-    @GetMapping("/allbycurrentuserclass")
-    public ResponseEntity<?> getAllByCurrentUserClass(
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
+    @GetMapping("/allbylecture")
+    public ResponseEntity<?> getAllByLecture(
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
-        @RequestParam(value = "dateTo", required = false) String filterDateTo,
-        @RequestParam(value = "userId", required = false) Long userId) throws ResourceNotFoundException {
-        List<Schedule> scheduleList = scheduleServiceImpl.getAllByUserClass(filterDateFrom, filterDateTo, userId);
+        @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
+        List<Schedule> scheduleList = scheduleServiceImpl.getAllByLecture(filterDateFrom, filterDateTo);
         List<ScheduleResponseDto> responseDtoList = new ArrayList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
@@ -144,7 +156,7 @@ public class ScheduleController {
                 kelas = classServiceImpl.getById(schedule.getKelas().getId());
             } catch (ResourceNotFoundException e) {}
             ClassResponseDto classResponseDto = ClassResponseDto.builder()
-                .Id(kelas.getId())
+                .id(kelas.getId())
                 .lecture(null)
                 .name(kelas.getName())
                 .build(); 
@@ -180,13 +192,18 @@ public class ScheduleController {
                 .name(subject.getName())
                 .build();
 
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
             ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
                 .id(schedule.getId())
                 .kelas(classResponseDto)
                 .subject(subjectResponseDto)
                 .lecture(lectureResponseDto)
-                .timeStart(schedule.getTimeStart())
-                .timeEnd(schedule.getTimeEnd())
+                .meetingOrder(schedule.getMeetingOrder())
+                .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
+                .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+                .creditAmount(schedule.getCreditAmount())
+                .meetingOrder(schedule.getMeetingOrder())
                 .isActive(schedule.getIsActive())
                 .build();
             responseDtoList.add(scheduleResponseDto);
@@ -194,10 +211,181 @@ public class ScheduleController {
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList); 
     }
 
+    @Operation(summary = "Get data of schedules for a month by the given date and user's class")
+    @PreAuthorize("hasAuthority('STUDENT') or hasAuthority('LECTURE')")
+    @GetMapping("/getmonthlyschedule")
+    public ResponseEntity<?> getScheduleMonthly(
+        @RequestParam(value = "date", required = true) String dateStr,
+        @RequestParam(value = "userId", required = true) Long userId
+    ) throws ParseException, ResourceNotFoundException {
+        Map<String, List<ScheduleResponseDto>> responseMap = new LinkedHashMap<>();
+        List<Schedule> scheduleList = scheduleServiceImpl.getScheduleMonthly(dateStr, userId);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar firtDayOfMonth = Calendar.getInstance();
+        Calendar dayOfMonth = Calendar.getInstance();
+        dayOfMonth.setTime(sdf.parse(dateStr));
+        firtDayOfMonth.setTime(sdf.parse(dateStr));
+        int year = dayOfMonth.get(Calendar.YEAR);
+        int month = dayOfMonth.get(Calendar.MONTH);
+        YearMonth yearMonth = YearMonth.of(year, month+1);
+        int monthLength = yearMonth.lengthOfMonth();
+        
+        for (int i = 0; i < monthLength; i++) {
+            firtDayOfMonth.set(Calendar.DAY_OF_MONTH, i+1);
+            List<ScheduleResponseDto> scheduleOfTheDay = new LinkedList<>();
+            for (Schedule schedule : scheduleList) {
+                String scheduleDate = sdf.format(schedule.getTimeStart().getTime());
+                if (sdf.format(firtDayOfMonth.getTime()).equals(scheduleDate)) {
+                    Class kelas = new Class();
+                    try {
+                        kelas = classServiceImpl.getById(schedule.getKelas().getId());
+                    } catch (ResourceNotFoundException e) {}
+                    ClassResponseDto classResponseDto = ClassResponseDto.builder()
+                        .id(kelas.getId())
+                        .lecture(null)
+                        .name(kelas.getName())
+                        .build(); 
+                    
+                    LectureSubject lectureSubject = new LectureSubject();
+                    try {
+                        lectureSubject = lectureSubjectServiceImpl.getLectureSubjectBySubjectAndClass(schedule.getSubject(), schedule.getKelas());
+                    } catch (ResourceNotFoundException e) {}
+                    UserResponseDto userResponseDto = UserResponseDto.builder()
+                        .id(lectureSubject.getLecture().getUser().getId())
+                        .firstName(lectureSubject.getLecture().getUser().getFirstName())
+                        .lastName(lectureSubject.getLecture().getUser().getLastName())
+                        .dateOfBirth(lectureSubject.getLecture().getUser().getDateOfBirth())
+                        .username(lectureSubject.getLecture().getUser().getUsername())
+                        .email(lectureSubject.getLecture().getUser().getEmail())
+                        .phoneNumber(lectureSubject.getLecture().getUser().getPhoneNumber())
+                        .roles(null)
+                        .build();
+                    
+                    LectureResponseDto lectureResponseDto = LectureResponseDto.builder()
+                        .id(lectureSubject.getLecture().getId())
+                        .NIP(lectureSubject.getLecture().getNIP())
+                        .user(userResponseDto)
+                        .build();
+                    
+                    Subject subject = new Subject();
+                    try {
+                        subject = subjectServiceImpl.getById(schedule.getSubject().getId());
+                    } catch (ResourceNotFoundException e) {}
+                    SubjectResponseDto subjectResponseDto = SubjectResponseDto.builder()
+                        .id(subject.getId())
+                        .lecture(null)
+                        .name(subject.getName())
+                        .build();
+                        
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
+                        .id(schedule.getId())
+                        .kelas(classResponseDto)
+                        .subject(subjectResponseDto)
+                        .lecture(lectureResponseDto)
+                        .meetingOrder(schedule.getMeetingOrder())
+                        .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
+                        .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+                        .creditAmount(schedule.getCreditAmount())
+                        .meetingOrder(schedule.getMeetingOrder())
+                        .isActive(schedule.getIsActive())
+                        .build();
+                    scheduleOfTheDay.add(scheduleResponseDto);
+                }
+            }
+            Collections.sort(scheduleOfTheDay, new Comparator<ScheduleResponseDto>() {
+                @Override
+                public int compare(ScheduleResponseDto o1, ScheduleResponseDto o2){
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date o1Date = new Date();
+                    Date o2Date = new Date();
+                    try {
+                        o1Date = sdf.parse(o1.getTimeStart());
+                        o2Date = sdf.parse(o2.getTimeStart());
+                    } catch (ParseException e) {
+                        // TODO: handle exception
+                    }
+                    return o1Date.compareTo(o2Date);
+                }
+            });
+            responseMap.put(sdf.format(firtDayOfMonth.getTime()), scheduleOfTheDay);
+        }
+
+        Map<String, Integer> metaMap = new LinkedHashMap<>();
+        metaMap.put("__total", scheduleList.size());
+        metaMap.put("__dateTotal", responseMap.size());
+        metaMap.put("__monthIndex", month+1);
+        metaMap.put("__monthLength", monthLength);
+        return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseMap, metaMap);
+    }
+
+    @Operation(summary = "Get Schedule detail by id")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE') or hasAuthority('STUDENT')")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable("id") Long id) throws ResourceNotFoundException {
+        Schedule schedule = scheduleServiceImpl.getById(id);
+        Class kelas = new Class();
+        try {
+            kelas = classServiceImpl.getById(schedule.getKelas().getId());
+        } catch (ResourceNotFoundException e) {}
+        ClassResponseDto classResponseDto = ClassResponseDto.builder()
+            .id(kelas.getId())
+            .lecture(null)
+            .name(kelas.getName())
+            .build(); 
+
+        LectureSubject lectureSubject = new LectureSubject();
+        try {
+            lectureSubject = lectureSubjectServiceImpl.getLectureSubjectBySubjectAndClass(schedule.getSubject(), schedule.getKelas());
+        } catch (ResourceNotFoundException e) {}
+        UserResponseDto userResponseDto = UserResponseDto.builder()
+            .id(lectureSubject.getLecture().getUser().getId())
+            .firstName(lectureSubject.getLecture().getUser().getFirstName())
+            .lastName(lectureSubject.getLecture().getUser().getLastName())
+            .dateOfBirth(lectureSubject.getLecture().getUser().getDateOfBirth())
+            .username(lectureSubject.getLecture().getUser().getUsername())
+            .email(lectureSubject.getLecture().getUser().getEmail())
+            .phoneNumber(lectureSubject.getLecture().getUser().getPhoneNumber())
+            .roles(null)
+            .build();
+
+        LectureResponseDto lectureResponseDto = LectureResponseDto.builder()
+            .id(lectureSubject.getLecture().getId())
+            .NIP(lectureSubject.getLecture().getNIP())
+            .user(userResponseDto)
+            .build();
+        
+        Subject subject = new Subject();
+        try {
+            subject = subjectServiceImpl.getById(schedule.getSubject().getId());
+        } catch (ResourceNotFoundException e) {}
+        SubjectResponseDto subjectResponseDto = SubjectResponseDto.builder()
+            .id(subject.getId())
+            .lecture(null)
+            .name(subject.getName())
+            .build();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
+            .id(schedule.getId())
+            .kelas(classResponseDto)
+            .subject(subjectResponseDto)
+            .lecture(lectureResponseDto)
+            .meetingOrder(schedule.getMeetingOrder())
+            .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
+            .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+            .creditAmount(schedule.getCreditAmount())
+            .meetingOrder(schedule.getMeetingOrder())
+            .isActive(schedule.getIsActive())
+            .build();
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), scheduleResponseDto);
+    }
+
     @Operation(summary = "Add new schedule")
-    @PreAuthorize("hasAuthority('LECTURE')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/add")
-    public ResponseEntity<?> add(@RequestBody AddScheduleRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException {
+    public ResponseEntity<?> add(@RequestBody AddScheduleRequestDto requestDto) throws ResourceNotFoundException, ResourceAlreadyExistException, ParseException {
         scheduleServiceImpl.add(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.INSERT_DATA_SUCCESS.getMessage(), null);
     }
@@ -212,7 +400,7 @@ public class ScheduleController {
             kelas = classServiceImpl.getById(schedule.getKelas().getId());
         } catch (ResourceNotFoundException e) {}
         ClassResponseDto classResponseDto = ClassResponseDto.builder()
-            .Id(kelas.getId())
+            .id(kelas.getId())
             .lecture(null)
             .name(kelas.getName())
             .build(); 
@@ -225,12 +413,17 @@ public class ScheduleController {
             .lecture(null)
             .name(subject.getName())
             .build();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         ScheduleResponseDto responseDto = ScheduleResponseDto.builder()
             .id(schedule.getId())
             .kelas(classResponseDto)
             .subject(subjectResponseDto)
-            .timeStart(schedule.getTimeStart())
-            .timeEnd(schedule.getTimeEnd())
+            .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
+            .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+            .creditAmount(schedule.getCreditAmount())
+            .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.ACTIVATE_SCHEDULE_SUCCESS.getMessage(), responseDto);
@@ -246,7 +439,7 @@ public class ScheduleController {
             kelas = classServiceImpl.getById(schedule.getKelas().getId());
         } catch (ResourceNotFoundException e) {}
         ClassResponseDto classResponseDto = ClassResponseDto.builder()
-            .Id(kelas.getId())
+            .id(kelas.getId())
             .lecture(null)
             .name(kelas.getName())
             .build(); 
@@ -259,12 +452,17 @@ public class ScheduleController {
             .lecture(null)
             .name(subject.getName())
             .build();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        
         ScheduleResponseDto responseDto = ScheduleResponseDto.builder()
             .id(schedule.getId())
             .kelas(classResponseDto)
             .subject(subjectResponseDto)
-            .timeStart(schedule.getTimeStart())
-            .timeEnd(schedule.getTimeEnd())
+            .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
+            .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+            .creditAmount(schedule.getCreditAmount())
+            .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.DEACTIVATE_SCHEDULE.getMessage(), responseDto);
@@ -280,7 +478,7 @@ public class ScheduleController {
             kelas = classServiceImpl.getById(schedule.getKelas().getId());
         } catch (ResourceNotFoundException e) {}
         ClassResponseDto classResponseDto = ClassResponseDto.builder()
-            .Id(kelas.getId())
+            .id(kelas.getId())
             .lecture(null)
             .name(kelas.getName())
             .build(); 
@@ -293,12 +491,17 @@ public class ScheduleController {
             .lecture(null)
             .name(subject.getName())
             .build();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         ScheduleResponseDto responseDto = ScheduleResponseDto.builder()
             .id(schedule.getId())
             .kelas(classResponseDto)
             .subject(subjectResponseDto)
-            .timeStart(schedule.getTimeStart())
-            .timeEnd(schedule.getTimeEnd())
+            .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
+            .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+            .creditAmount(schedule.getCreditAmount())
+            .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.EDIT_DATA_SUCCESS.getMessage(), responseDto);

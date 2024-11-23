@@ -61,6 +61,7 @@ public class StudentServiceImpl implements StudentService {
             .NIM(requestDto.getNIM())
             .kelas(requestDto.getKelas())
             .user(requestDto.getUser())
+            .isLeader(requestDto.getIsLeader())
             .build();
         Student newStudent = studentRepository.save(student);
         return newStudent;
@@ -70,5 +71,10 @@ public class StudentServiceImpl implements StudentService {
     public void delete(Long id) throws ResourceNotFoundException {
         Student student = getById(id);
         userServiceImpl.delete(student.getUser().getId());
+    }
+
+    @Override
+    public Student getStudentLeaderByClass(Long classId) throws ResourceNotFoundException {
+        return studentRepository.findStudentLeaderByClass(classId).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
     }
 }

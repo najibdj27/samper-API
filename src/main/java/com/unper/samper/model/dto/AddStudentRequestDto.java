@@ -21,4 +21,6 @@ public class AddStudentRequestDto {
     private User user;
 
     private Class kelas;
+
+    private Boolean isLeader;
 }

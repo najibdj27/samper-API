@@ -20,6 +20,7 @@ import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Role;
 import com.unper.samper.model.Student;
 import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.dto.ClassResponseDto;
 import com.unper.samper.model.dto.StudentResponseDto;
 import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.impl.StudentServiceImpl;
@@ -62,10 +63,17 @@ public class StudentController {
                 .phoneNumber(student.getUser().getPhoneNumber())
                 .roles(roleList)
                 .build();
-            
+            ClassResponseDto classResponseDto = ClassResponseDto.builder()
+                .id(student.getKelas().getId())
+                .lecture(null)
+                .name(student.getKelas().getName())
+                .build(); 
             StudentResponseDto responseDto = StudentResponseDto.builder()
+                .id(student.getId())
                 .NIM(student.getNIM())
                 .user(userResponseDto)
+                .kelas(classResponseDto)
+                .isLeader(student.getIsLeader())
                 .build();
             responseDtoList.add(responseDto);
         });
@@ -87,22 +95,30 @@ public class StudentController {
     public ResponseEntity<?> getById(@PathVariable("id") Long id) throws ResourceNotFoundException{
         Student student = studentServiceImpl.getById(id);
         List<String> roleList = new ArrayList<>();
-            for (Role role : student.getUser().getRoles()) {
-                roleList.add(role.getName().toString());
-            }
-            UserResponseDto userResponseDto = UserResponseDto.builder()
-                .id(student.getUser().getId())
-                .firstName(student.getUser().getFirstName())
-                .lastName(student.getUser().getLastName())
-                .dateOfBirth(student.getUser().getDateOfBirth())
-                .username(student.getUser().getUsername())
-                .email(student.getUser().getEmail())
-                .phoneNumber(student.getUser().getPhoneNumber())
-                .roles(roleList)
-                .build();
+        for (Role role : student.getUser().getRoles()) {
+            roleList.add(role.getName().toString());
+        }
+        UserResponseDto userResponseDto = UserResponseDto.builder()
+            .id(student.getUser().getId())
+            .firstName(student.getUser().getFirstName())
+            .lastName(student.getUser().getLastName())
+            .dateOfBirth(student.getUser().getDateOfBirth())
+            .username(student.getUser().getUsername())
+            .email(student.getUser().getEmail())
+            .phoneNumber(student.getUser().getPhoneNumber())
+            .roles(roleList)
+            .build();
+        ClassResponseDto classResponseDto = ClassResponseDto.builder()
+            .id(student.getKelas().getId())
+            .lecture(null)
+            .name(student.getKelas().getName())
+            .build(); 
         StudentResponseDto responseDto = StudentResponseDto.builder()
+            .id(student.getId())
             .NIM(student.getNIM())
             .user(userResponseDto)
+            .kelas(classResponseDto)
+            .isLeader(student.getIsLeader())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
     }

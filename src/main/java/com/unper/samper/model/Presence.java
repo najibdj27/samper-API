@@ -52,13 +52,11 @@ public class Presence extends Audit {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime checkIn;
+    private LocalDateTime time;
 
-    private LocalDateTime checkOut;
+    private Character status;
 
-    private Point checkInLocation;
-
-    private Point checkOutLocation;
+    private Point location;
 
     @Builder.Default
     private Boolean isDeleted = Boolean.FALSE;

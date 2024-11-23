@@ -16,6 +16,8 @@ public interface StudentService {
 
     Student getCurrentStudent() throws ResourceNotFoundException;
 
+    Student getStudentLeaderByClass(Long classId) throws ResourceNotFoundException;
+
     Student add(AddStudentRequestDto requestDto);
 
     void delete(Long id) throws ResourceNotFoundException;

@@ -76,7 +76,7 @@ public class SubjectController {
     }
 
     @Operation(summary = "Soft delete a subject")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
     @PatchMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) throws ResourceNotFoundException { 
         subjectServiceImpl.delete(id);

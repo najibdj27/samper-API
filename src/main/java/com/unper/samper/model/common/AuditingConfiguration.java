@@ -1,15 +1,15 @@
-package com.unper.samper.model.common;
+// package com.unper.samper.model.common;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+// import org.springframework.boot.autoconfigure.SpringBootApplication;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@SpringBootApplication
-@EnableJpaAuditing
-class AuditingConfiguration {
+// @SpringBootApplication
+// @EnableJpaAuditing
+// class AuditingConfiguration {
 
-	@Bean
-	AuditorAwareImpl auditorAware() {
-		return new AuditorAwareImpl();
-	}
-}
+// 	@Bean
+// 	AuditorAwareImpl auditorAware() {
+// 		return new AuditorAwareImpl();
+// 	}
+// }
