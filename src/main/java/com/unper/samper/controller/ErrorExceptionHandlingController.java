@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.ExpiredTokenException;
+import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.NoAccessException;
 import com.unper.samper.exception.OnScheduleException;
@@ -203,6 +204,15 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<?> handleInvalidTokenException(InvalidTokenException e) {
         var error = EErrorCode.TOKEN_INVALID;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+
+    @ExceptionHandler(ExternalAPIException.class)
+    public ResponseEntity<?> handleExternalApiException(ExternalAPIException e) {
+        var error = EErrorCode.EXT_API_ERR;
         logger.error(loggerLine);
         logger.error(error.getDescription());
         logger.error(loggerLine);

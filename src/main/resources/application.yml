@@ -49,4 +49,17 @@ com:
             build: 001
             credithour: 50
 
+external-api:
+    faceplusplus:
+        base-url: https://api-us.faceplusplus.com
+        api-key: WMyGjFJxOgnWFxQWL_-HC6ledbbod4lK
+        api-secret: ZYJYDVy-96Ylx338z5eNCYdJ28Aku3om
+        tomeout: 60000
+        end-point:
+            CREATE: /facepp/v3/faceset/create
+            ADD: /facepp/v3/faceset/addface
+            UPDATE: /facepp/v3/faceset/update
+            DELETE: /facepp/v3/faceset/delete
+            REMMOVE: /facepp/v3/faceset/removeface
+            FACE_COMPARE: /facepp/v3/compare
 
