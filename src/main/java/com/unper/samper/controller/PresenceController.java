@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -131,8 +130,9 @@ public class PresenceController {
                 .student(null)
                 .schedule(scheduleResponseDto)
                 .time(presence.getTime())
-                .status(presence.getStatus())
-                .location(presence.getLocation())
+                .type(presence.getType())
+                .longitude(presence.getLongitude())
+                .latitude(presence.getLatitude())
                 .build();
             responseDtoList.add(responseDto);
         });
@@ -211,13 +211,14 @@ public class PresenceController {
                 .student(null)
                 .schedule(scheduleResponseDto)
                 .time(presence.getTime())
-                .status(presence.getStatus())
-                .location(presence.getLocation())
+                .type(presence.getType())
+                .longitude(null)
+                .latitude(null)
                 .build();
             responseDtoList.add(responseDto);
         });
         Map<String, Integer> metaData = new HashMap<>();
-        metaData.put("_total", presenceList.size());   
+        metaData.put("_total", presenceList.size());
         return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList, metaData);
     }
 
@@ -227,19 +228,20 @@ public class PresenceController {
     public ResponseEntity<?> checkIn(@RequestBody PresenceRecordRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException{
         Presence presence = presenceServiceImpl.checkIn(requestDto);
         PresenceResponseDto responseDto = PresenceResponseDto.builder()
-            .id(presence.getId())
+            .id(presence.getId())   
             .student(null)
             .schedule(null)
             .time(null)
-            .status(null)
-            .location(null)
+            .type(null)
+            .longitude(null)
+            .latitude(null)
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.PRESENCE_SUCCESS.getMessage(), responseDto);
     }
 
     @PreAuthorize("hasAuthority('STUDENT')")
     @Operation(summary = "Record check out presence")
-    @PatchMapping("/checkout")
+    @PostMapping("/checkout")
     public ResponseEntity<?> checkOut(@RequestBody PresenceRecordRequestDto requestDto) throws ResourceNotFoundException, ScheduleNotActiveException, DifferentClassException, OutScheduleException, ActivityNotAllowedException {
         Presence presence = presenceServiceImpl.checkOut(requestDto);
         PresenceResponseDto responseDto = PresenceResponseDto.builder()
@@ -247,8 +249,9 @@ public class PresenceController {
             .student(null)
             .schedule(null)
             .time(null)
-            .status(null)
-            .location(null)
+            .type(null)
+            .longitude(null)
+            .latitude(null)
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.PRESENCE_SUCCESS.getMessage(), responseDto);
     }

@@ -9,6 +9,7 @@ import com.unper.samper.exception.OutScheduleException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleNotActiveException;
 import com.unper.samper.model.Presence;
+import com.unper.samper.model.Schedule;
 import com.unper.samper.model.dto.PresenceRecordRequestDto;
 
 public interface PresenceService {
@@ -16,6 +17,8 @@ public interface PresenceService {
 
     Presence getById(Long id) throws ResourceNotFoundException;
 
+    Presence getByCurrentStudentAndScheduleAndType(Schedule shedule, Character Type) throws ResourceNotFoundException;
+    
     List<Presence> findByStudent(Long studentId, Integer limit) throws ResourceNotFoundException;
 
     Presence checkIn(PresenceRecordRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException;

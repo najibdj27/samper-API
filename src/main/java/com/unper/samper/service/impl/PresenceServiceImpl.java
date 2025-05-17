@@ -1,6 +1,9 @@
 package com.unper.samper.service.impl;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import com.unper.samper.model.Lecture;
 import com.unper.samper.model.Presence;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.Student;
+import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.PresenceRecordRequestDto;
 import com.unper.samper.repository.PresenceRepository;
@@ -23,6 +27,9 @@ import com.unper.samper.service.PresenceService;
 
 @Service
 public class PresenceServiceImpl implements PresenceService {
+    @Autowired
+    AuthenticationServiceImpl authenticationServiceImpl;
+
     @Autowired
     ScheduleServiceImpl scheduleServiceImpl;
 
@@ -49,6 +56,15 @@ public class PresenceServiceImpl implements PresenceService {
     public Presence getById(Long id) throws ResourceNotFoundException {
         Presence presence = presenceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
         return presence;
+    }
+   
+    @Override
+    public Presence getByCurrentStudentAndScheduleAndType(Schedule schedule, Character type) throws ResourceNotFoundException {
+        User user = authenticationServiceImpl.getCurrentUser();
+        Student student = studentServiceImpl.getByUser(user);
+        Presence presenceList = presenceRepository.findByStudentAndScheduleAndType(student, schedule, type);
+
+        return presenceList;
     }
 
     @Override
@@ -80,12 +96,18 @@ public class PresenceServiceImpl implements PresenceService {
             throw new OnScheduleException(EResponseMessage.ON_SCHEDULE.getMessage());
         }
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+
+
+
         Presence presence = Presence.builder()
             .student(student)
             .schedule(schedule)
-            .time(LocalDateTime.now())
-            .status('I')
-            .location(requestDto.getLocation())
+            .time(calendar)
+            .type('I')
+            .longitude(requestDto.getLongitude())
+            .latitude(requestDto.getLatitude())
             .build();
         Presence newPresence = presenceRepository.save(presence);
 
@@ -116,12 +138,16 @@ public class PresenceServiceImpl implements PresenceService {
             throw new ActivityNotAllowedException(EResponseMessage.ACTIVITY_NOT_ALLOWED.getMessage());
         }
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+
         Presence presence = Presence.builder()
             .student(student)
             .schedule(schedule)
-            .time(LocalDateTime.now())
-            .status('O')
-            .location(requestDto.getLocation())
+            .time(calendar)
+            .type('O')
+            .longitude(requestDto.getLongitude())
+            .latitude(requestDto.getLatitude())
             .build();
         Presence newPresence = presenceRepository.save(presence);
 
