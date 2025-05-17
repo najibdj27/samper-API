@@ -35,17 +35,20 @@ import com.unper.samper.model.Schedule;
 import com.unper.samper.model.Subject;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.LectureSubject;
+import com.unper.samper.model.Presence;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
 import com.unper.samper.model.dto.ClassResponseDto;
 import com.unper.samper.model.dto.LectureResponseDto;
 import com.unper.samper.model.dto.RescheduleRequestDto;
+import com.unper.samper.model.dto.ScheduleHistoryResponseDto;
 import com.unper.samper.model.dto.ScheduleResponseDto;
 import com.unper.samper.model.dto.SubjectResponseDto;
 import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.impl.ClassServiceImpl;
 import com.unper.samper.service.impl.LectureServiceImpl;
 import com.unper.samper.service.impl.LectureSubjectServiceImpl;
+import com.unper.samper.service.impl.PresenceServiceImpl;
 import com.unper.samper.service.impl.ScheduleServiceImpl;
 import com.unper.samper.service.impl.SubjectServiceImpl;
 
@@ -73,6 +76,9 @@ public class ScheduleController {
     @Autowired
     LectureSubjectServiceImpl lectureSubjectServiceImpl;
 
+    @Autowired
+    PresenceServiceImpl presenceServiceImpl;
+
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT') or hasAuthority('LECTURE')")
     @GetMapping("/allbystudent")
@@ -80,7 +86,7 @@ public class ScheduleController {
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
         List<Schedule> scheduleList = scheduleServiceImpl.getAllByStudent(filterDateFrom, filterDateTo);
-        List<ScheduleResponseDto> responseDtoList = new LinkedList<>();
+        List<ScheduleHistoryResponseDto> responseDtoList = new LinkedList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
             try {
@@ -118,26 +124,48 @@ public class ScheduleController {
             try {
                 subject = subjectServiceImpl.getById(schedule.getSubject().getId());
             } catch (ResourceNotFoundException e) {}
+            
             SubjectResponseDto subjectResponseDto = SubjectResponseDto.builder()
                 .id(subject.getId())
                 .lecture(null)
                 .name(subject.getName())
-                .build();
+                .build();                
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
+            Presence clockInPresence = new Presence();
+            String clockInTime = null;
+            try {
+                clockInPresence = presenceServiceImpl.getByCurrentStudentAndScheduleAndType(schedule, 'I');
+                if (clockInPresence != null) {
+                    clockInTime = dateFormat.format(clockInPresence.getTime().getTime());
+                }
+            } catch (ResourceNotFoundException e) {}
+            
+            
+            Presence clockOutPresence = new Presence();
+            String clockOutTime = null;
+            try {
+                clockOutPresence = presenceServiceImpl.getByCurrentStudentAndScheduleAndType(schedule, 'O');
+                if (clockOutPresence != null) {
+                   clockOutTime = dateFormat.format(clockOutPresence.getTime().getTime()); 
+                }
+            } catch (ResourceNotFoundException e) {}
+            
+            ScheduleHistoryResponseDto scheduleHistoryResponseDto = ScheduleHistoryResponseDto.builder()
                 .id(schedule.getId())
                 .kelas(classResponseDto)
                 .subject(subjectResponseDto)
                 .lecture(lectureResponseDto)
                 .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
                 .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+                .clockIn(clockInTime)
+                .clockOut(clockOutTime)
                 .creditAmount(schedule.getCreditAmount())
                 .meetingOrder(schedule.getMeetingOrder())
                 .isActive(schedule.getIsActive())
                 .build();
-            responseDtoList.add(scheduleResponseDto);
+            responseDtoList.add(scheduleHistoryResponseDto);
         });
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList);
     }
