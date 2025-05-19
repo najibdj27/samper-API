@@ -33,7 +33,7 @@ import lombok.Setter;
 @Table(name = "request", schema = "public")
 public class Request extends Audit{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String reason;
