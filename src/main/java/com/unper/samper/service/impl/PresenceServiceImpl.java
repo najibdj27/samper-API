@@ -7,10 +7,18 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.DifferentClassException;
+import com.unper.samper.exception.ExternalAPIException;
+import com.unper.samper.exception.FaceNotMatchedException;
+import com.unper.samper.exception.GeolocationException;
 import com.unper.samper.exception.OnScheduleException;
 import com.unper.samper.exception.OutScheduleException;
 import com.unper.samper.exception.ResourceNotFoundException;
@@ -18,12 +26,14 @@ import com.unper.samper.exception.ScheduleNotActiveException;
 import com.unper.samper.model.Lecture;
 import com.unper.samper.model.Presence;
 import com.unper.samper.model.Schedule;
+import com.unper.samper.model.ScheduleHistory;
 import com.unper.samper.model.Student;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.PresenceRecordRequestDto;
 import com.unper.samper.repository.PresenceRepository;
 import com.unper.samper.service.PresenceService;
+import com.unper.samper.util.GeoUtils;
 
 @Service
 public class PresenceServiceImpl implements PresenceService {
@@ -34,6 +44,9 @@ public class PresenceServiceImpl implements PresenceService {
     ScheduleServiceImpl scheduleServiceImpl;
 
     @Autowired
+    ScheduleHistoryServiceImpl scheduleHistoryServiceImpl;
+
+    @Autowired
     StudentServiceImpl studentServiceImpl;
 
     @Autowired
@@ -41,6 +54,9 @@ public class PresenceServiceImpl implements PresenceService {
 
     @Autowired
     PresenceRepository presenceRepository;
+
+    @Autowired
+    ExternalAPIServiceImpl externalAPIServiceImpl;
 
     @Override
     public List<Presence> getAllByLecture() throws ResourceNotFoundException {
@@ -77,7 +93,7 @@ public class PresenceServiceImpl implements PresenceService {
     }
 
     @Override
-    public Presence checkIn(PresenceRecordRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException {
+    public Presence checkIn(PresenceRecordRequestDto requestDto) throws ResourceNotFoundException, DifferentClassException, ScheduleNotActiveException, OnScheduleException, ExternalAPIException, JsonMappingException, JsonProcessingException, FaceNotMatchedException, GeolocationException {
         Schedule schedule = scheduleServiceImpl.getById(requestDto.getScheduleId());
         Student student = studentServiceImpl.getCurrentStudent();
         
@@ -99,7 +115,27 @@ public class PresenceServiceImpl implements PresenceService {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 
+        ScheduleHistory scheduleHistory = scheduleHistoryServiceImpl.getByScheduleId(requestDto.getScheduleId());
+        if (Boolean.TRUE.equals(schedule.getGeolocationFlag()) && Boolean.FALSE.equals(GeoUtils.isWithinRadius(scheduleHistory.getOpenLatitude(), scheduleHistory.getOpenLongitude(), requestDto.getLatitude(), requestDto.getLongitude(), Double.valueOf(0.1)))) {
+            throw new GeolocationException("You are out of the class location");
+        }
 
+        ResponseEntity<String> getDetailResponse = externalAPIServiceImpl.faceplusplusGetDetail(student.getUser().getFacesetToken());
+        ObjectMapper getDetailMapper = new ObjectMapper();
+        JsonNode getDetailRoot = getDetailMapper.readTree(getDetailResponse.getBody());
+        JsonNode userFaceTokenArray = getDetailRoot.path("face_tokens");
+
+        String userFaceToken = userFaceTokenArray.get(0).asText();
+      
+        ResponseEntity<String> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
+        ObjectMapper faceCompareMapper = new ObjectMapper();
+        JsonNode faceCommpareRoot =  faceCompareMapper.readTree(faceCompareRespone.getBody());
+
+        double faceCompareScore = faceCommpareRoot.path("confidence").asDouble();
+
+        if (faceCompareScore < 80) {
+            throw new FaceNotMatchedException(EResponseMessage.FACE_NOT_MATCH.getMessage());
+        }
 
         Presence presence = Presence.builder()
             .student(student)
@@ -115,7 +151,7 @@ public class PresenceServiceImpl implements PresenceService {
     }
 
     @Override
-    public Presence checkOut(PresenceRecordRequestDto requestDto) throws ScheduleNotActiveException, ResourceNotFoundException, DifferentClassException, OutScheduleException, ActivityNotAllowedException {
+    public Presence checkOut(PresenceRecordRequestDto requestDto) throws ScheduleNotActiveException, ResourceNotFoundException, DifferentClassException, OutScheduleException, ActivityNotAllowedException, FaceNotMatchedException, ExternalAPIException, JsonMappingException, JsonProcessingException, GeolocationException {
         Schedule schedule = scheduleServiceImpl.getById(requestDto.getScheduleId());
         Student student = studentServiceImpl.getCurrentStudent();
         
@@ -140,6 +176,28 @@ public class PresenceServiceImpl implements PresenceService {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+
+        ScheduleHistory scheduleHistory = scheduleHistoryServiceImpl.getByScheduleId(requestDto.getScheduleId());
+        if (Boolean.FALSE.equals(Boolean.TRUE.equals(schedule.getGeolocationFlag()) && GeoUtils.isWithinRadius(scheduleHistory.getCloseLatitude(), scheduleHistory.getCloseLongitude(), requestDto.getLatitude(), requestDto.getLongitude(), Double.valueOf(0.1)))) {
+            throw new GeolocationException("You are out of the class location");
+        }
+
+        ResponseEntity<String> getDetailResponse = externalAPIServiceImpl.faceplusplusGetDetail(student.getUser().getFacesetToken());
+        ObjectMapper getDetailMapper = new ObjectMapper();
+        JsonNode getDetailRoot = getDetailMapper.readTree(getDetailResponse.getBody());
+        JsonNode userFaceTokenArray = getDetailRoot.path("face_tokens");
+
+        String userFaceToken = userFaceTokenArray.get(0).asText();
+      
+        ResponseEntity<String> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
+        ObjectMapper faceCompareMapper = new ObjectMapper();
+        JsonNode faceCommpareRoot =  faceCompareMapper.readTree(faceCompareRespone.getBody());
+
+        double faceCompareScore = faceCommpareRoot.path("confidence").asDouble();
+
+        if (faceCompareScore < 80) {
+            throw new FaceNotMatchedException(EResponseMessage.FACE_NOT_MATCH.getMessage());
+        } 
 
         Presence presence = Presence.builder()
             .student(student)

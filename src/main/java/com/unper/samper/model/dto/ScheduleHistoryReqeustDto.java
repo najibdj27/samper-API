@@ -1,21 +1,25 @@
 package com.unper.samper.model.dto;
 
+import java.util.Calendar;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
-public class PresenceRecordRequestDto {
-
+public class ScheduleHistoryReqeustDto {
+    
     private Long scheduleId;
+
+    private Calendar time;
 
     private Double longitude;
 
     private Double latitude;
-
-    private String imageBase64;
 }

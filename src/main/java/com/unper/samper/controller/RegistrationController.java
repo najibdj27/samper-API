@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.handler.ResponseHandler;
@@ -29,21 +32,21 @@ public class RegistrationController {
     
     @Operation(summary = "Register new student")
     @PostMapping("/registerstudent")
-    public ResponseEntity<?> registerStudent(@RequestBody RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException{
+    public ResponseEntity<?> registerStudent(@RequestBody RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException{
         registrationServiceImpl.registerStudent(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }
     
     @Operation(summary = "Register new lecture")
     @PostMapping("/registerlecture")
-    public ResponseEntity<?> registerLecture(@RequestBody RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException{
+    public ResponseEntity<?> registerLecture(@RequestBody RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException{
         registrationServiceImpl.registerLecture(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }
 
     @Operation(summary = "Register new admin")
     @PostMapping("/registeradmin")
-    public ResponseEntity<?> registerAdmin(@RequestBody RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException{
+    public ResponseEntity<?> registerAdmin(@RequestBody RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException{
         registrationServiceImpl.registerAdmin(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }

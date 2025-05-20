@@ -25,6 +25,7 @@ public enum EResponseMessage {
     DELETE_SUCCESS("Data deleted successfully!"),
     DELETE_NO_RESOURCE("Can't delete data!"),
     REFRESH_TOKEN_NOT_EXIST("Refresh token is not found!"),
+    FACE_NOT_MATCH("Face not matched!"),
     REFRESH_TOKEN_EXPIRED("Refresh token is expired!");
 
     private final String message;

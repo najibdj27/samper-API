@@ -24,6 +24,10 @@ public class ScheduleHistoryResponseDto {
 
     private String timeEnd;
 
+    private String openTime;
+
+    private String closeTime;
+
     private String clockIn;
 
     private String clockOut;
@@ -31,4 +35,6 @@ public class ScheduleHistoryResponseDto {
     private Short creditAmount;
 
     private Boolean isActive;
+
+    private Boolean geolocationFlag;
 }

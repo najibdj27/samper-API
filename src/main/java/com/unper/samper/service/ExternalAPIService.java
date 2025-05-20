@@ -5,5 +5,11 @@ import org.springframework.http.ResponseEntity;
 import com.unper.samper.exception.ExternalAPIException;
 
 public interface ExternalAPIService {
-    ResponseEntity<String> faceCompare(String imageBase64_1, String imageBase64_2) throws ExternalAPIException;
+    ResponseEntity<String> faceplusplusFaceCompare(String faceToken1, String imageBase64_2) throws ExternalAPIException;
+
+    ResponseEntity<String> faceplusplusDetect(String imageBase64) throws ExternalAPIException;
+
+    ResponseEntity<String> faceplusplusCreateFaceSet(Long outerId, String displayName, String faceToken) throws ExternalAPIException;
+
+    ResponseEntity<String> faceplusplusGetDetail(String facesetToken) throws ExternalAPIException;
 }

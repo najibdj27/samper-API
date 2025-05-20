@@ -14,7 +14,7 @@ import javax.mail.MessagingException;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,8 +23,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unper.samper.config.JwtUtils;
 import com.unper.samper.exception.ExpiredTokenException;
+import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
@@ -81,6 +86,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
     EmailSender emailSender;
+
+    @Autowired
+    ExternalAPIServiceImpl externalAPIServiceImpl;
 
     @Value("${com.unper.samper.domain}")
     String domain;
@@ -165,7 +173,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public User registerUser(SignUpRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public User registerUser(SignUpRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, JsonMappingException, JsonProcessingException {
         if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new ResourceAlreadyExistException(EResponseMessage.USERNAME_ALREADY_TAKEN.getMessage());
         }
@@ -175,6 +183,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (userRepository.existsByPhoneNumber(requestDto.getPhoneNumber())) {
             throw new ResourceAlreadyExistException(EResponseMessage.PHONE_NUMBER_ALREADY_EXIST.getMessage());
         }
+
         User user = User.builder()
             .firstName(requestDto.getFirstName())
             .lastName(requestDto.getLastName())
@@ -183,6 +192,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .email(requestDto.getEmail())
             .phoneNumber(requestDto.getPhoneNumber())
             .password(encoder.encode(requestDto.getPassword()))
+            .facesetToken(null)
             .build();
         Set<Role> roleSet = new HashSet<>();
         requestDto.getRoles().forEach(role -> {
@@ -195,7 +205,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             roleSet.add(roles);
         });
         user.setRoles(roleSet);
+        
+        if (!requestDto.getFaceData().isEmpty()) {
+            ResponseEntity<String> faceDetectResponse = externalAPIServiceImpl.faceplusplusDetect(requestDto.getFaceData());
+            ObjectMapper faceDetectMapper = new ObjectMapper();
+            JsonNode faceDetectRoot =  faceDetectMapper.readTree(faceDetectResponse.getBody());
+            JsonNode facesNode  = faceDetectRoot.path("faces");
+            
+            if (facesNode.isArray() && facesNode.size() == 1) {
+                JsonNode faceData = facesNode.get(0);
+                String faceToken = faceData.path("face_token").toString();
+                ResponseEntity<String> facesetCreateResponse = externalAPIServiceImpl.faceplusplusCreateFaceSet(user.getId(), user.getUsername(), faceToken);
+                ObjectMapper facesetCreateMapper = new ObjectMapper();
+                JsonNode facesetCreateRoot = facesetCreateMapper.readTree(facesetCreateResponse.getBody());
+                String faceSetToken = facesetCreateRoot.path("faceset_token").asText();
+                user.setFacesetToken(faceSetToken);
+            }
+        }
+
         userRepository.save(user);
+        
         return user;
     }
 

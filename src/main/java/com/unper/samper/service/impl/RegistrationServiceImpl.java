@@ -2,11 +2,15 @@ package com.unper.samper.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingFormatArgumentException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.User;
@@ -45,7 +49,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public void registerStudent(RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public void registerStudent(RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException {
+        if (requestDto.getFaceData().isEmpty()) {
+            throw new MissingFormatArgumentException("Face data is null");
+        }
+        
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.STUDENT);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
@@ -72,7 +80,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public void registerLecture(RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public void registerLecture(RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException {
+        if (requestDto.getFaceData().isEmpty()) {
+            throw new MissingFormatArgumentException("Face data is null");
+        }
+
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.LECTURE);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
@@ -83,6 +95,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             .email(requestDto.getEmail())
             .phoneNumber(requestDto.getPhoneNumber())
             .password(requestDto.getPassword())
+            .faceData(requestDto.getFaceData())
             .roles(eRoleList)
             .build();
         User newUser = authenticationServiceImpl.registerUser(signUpRequestDto);
@@ -96,7 +109,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException {
+    public void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException {
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.ADMIN);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
@@ -107,6 +120,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             .email(requestDto.getEmail())
             .phoneNumber(requestDto.getPhoneNumber())
             .password(requestDto.getPassword())
+            .faceData(null)
             .roles(eRoleList)
             .build();
         User newUser = authenticationServiceImpl.registerUser(signUpRequestDto);

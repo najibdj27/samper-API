@@ -49,6 +49,8 @@ public class Schedule extends Audit {
 
     private Boolean isActive;
 
+    private Boolean geolocationFlag;
+
     @Builder.Default
     private Boolean isDeleted = Boolean.FALSE;
 }

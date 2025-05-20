@@ -55,5 +55,7 @@ public class SignUpRequestDto {
     @Pattern(regexp = "(?=.*[!@#$&*]).+", message = "must at least have 1 special character '!@#$&*'")
     private String password;
 
+    private String faceData;
+
     private List<ERole> roles;
 }

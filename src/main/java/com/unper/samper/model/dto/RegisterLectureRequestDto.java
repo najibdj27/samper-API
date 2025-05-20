@@ -32,4 +32,6 @@ public class RegisterLectureRequestDto {
     private String phoneNumber;
 
     private String password;
+
+    private String faceData;
 }

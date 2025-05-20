@@ -27,4 +27,6 @@ public class ScheduleResponseDto {
     private Short creditAmount;
 
     private Boolean isActive;
+
+    private Boolean geolocationFlag;
 }

@@ -2,20 +2,23 @@ package com.unper.samper.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
-public class PresenceRecordRequestDto {
-
+public class ActionScheduleRequestDto {
     private Long scheduleId;
 
     private Double longitude;
 
     private Double latitude;
+
+    private Boolean geolocationFlag;
 
     private String imageBase64;
 }

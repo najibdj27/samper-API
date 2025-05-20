@@ -1,11 +1,11 @@
 spring:
     datasource:
-        url: ${DB_URL}
-        username: ${DATABASE_USER}
-        password: ${DATABASE_PASSWORD}
-        # url: jdbc:postgresql://localhost:5432/samper_api
-        # username: postgres
-        # password: Doyouknow.p0stgr3s
+        # url: ${DB_URL}
+        # username: ${DATABASE_USER}
+        # password: ${DATABASE_PASSWORD}
+        url: jdbc:postgresql://localhost:5432/samper_api
+        username: postgres
+        password: Doyouknow.p0stgr3s
     jpa:
         properties:
             hibernate:
@@ -62,4 +62,6 @@ external-api:
             DELETE: /facepp/v3/faceset/delete
             REMMOVE: /facepp/v3/faceset/removeface
             FACE_COMPARE: /facepp/v3/compare
+            FACE_DETECT: /facepp/v3/detect
+            GET_DETAIL: /facepp/v3/faceset/getdetail
 

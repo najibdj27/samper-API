@@ -3,6 +3,7 @@ package com.unper.samper.controller;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingFormatArgumentException;
 
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.cloudinary.json.JSONException;
@@ -23,6 +24,8 @@ import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.ExternalAPIException;
+import com.unper.samper.exception.FaceNotMatchedException;
+import com.unper.samper.exception.GeolocationException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.NoAccessException;
 import com.unper.samper.exception.OnScheduleException;
@@ -216,7 +219,34 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
         logger.error(loggerLine);
         logger.error(error.getDescription());
         logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.GATEWAY_TIMEOUT, e.getMessage(), error.getCode(), error.getDescription());
+    }
+    
+    @ExceptionHandler(FaceNotMatchedException.class)
+    public ResponseEntity<?> handleFaceNotMatchedException(ExternalAPIException e) {
+        var error = EErrorCode.FACE_NOT_MATCH;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, e.getMessage(), error.getCode(), error.getDescription());
+    }
+   
+    @ExceptionHandler(MissingFormatArgumentException.class)
+    public ResponseEntity<?> handleMissingFormatArgumentException(ExternalAPIException e) {
+        var error = EErrorCode.MISSING_PARAM;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
         return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+   
+    @ExceptionHandler(GeolocationException.class)
+    public ResponseEntity<?> handleGeolocationException(ExternalAPIException e) {
+        var error = EErrorCode.LOCATION_NOT_IN_RANGE;
+        logger.error(loggerLine);
+        logger.error(error.getDescription());
+        logger.error(loggerLine);
+        return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, e.getMessage(), error.getCode(), error.getDescription());
     }
 
 }
