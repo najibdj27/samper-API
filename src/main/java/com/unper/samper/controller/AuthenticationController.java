@@ -84,9 +84,9 @@ public class AuthenticationController {
      * @throws MessagingException
      */
     @Operation(summary = "Get OTP to reset password")
-    @PostMapping("/forgetpassword")
+    @PostMapping("/forgetpassword/sendotp")
     public ResponseEntity<?> forgetPassword(@Valid @RequestBody ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
-        authenticationServiceImpl.changePassword(requestDto);
+        authenticationServiceImpl.sendChangePasswordOTP(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been sent to your email!", null);
     }
 
@@ -99,9 +99,9 @@ public class AuthenticationController {
      * @throws ResourceAlreadyExistException 
      */
     @Operation(summary = "Confirm OTP to get the token to reset the password")
-    @PostMapping("/confirmotp")
+    @PostMapping("/forgetpassword/confirmotp")
     public ResponseEntity<?> confirmOTP(@Valid @RequestBody ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException {
-        ConfirmOTPResponseDto responseDto = authenticationServiceImpl.confirmOTP(requestDto);
+        ConfirmOTPResponseDto responseDto = authenticationServiceImpl.confirmRegistrationOTP(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been confirmed!", responseDto);
     }
 
@@ -115,7 +115,7 @@ public class AuthenticationController {
      * @throws ExpiredTokenException
      */
     @Operation(summary = "Reset the password")
-    @PatchMapping("/reset_password")
+    @PatchMapping("/forgetpassword/resetpassword")
     public ResponseEntity<?> resetPassword(@RequestParam("token") UUID token, @Valid @RequestBody ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
         authenticationServiceImpl.resetPassword(token, requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Password has been reset successfully!", null);

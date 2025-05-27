@@ -2,10 +2,13 @@ package com.unper.samper.service.impl;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +24,16 @@ public class TokenServiceImpl implements TokenService {
     @Autowired
     TokenRepository tokenRepository;
 
+    @Value("${com.unper.samper.token-expiration-ms}")
+    int tokenExpiration;
+
     @Override
     public Token create(Token token) throws ResourceAlreadyExistException, ResourceNotFoundException {
         if (tokenRepository.findByKey(token.getKey()).isPresent()) {
             deleteByKey(token.getKey());
         }
+        Date now = Calendar.getInstance().getTime();
+        token.setExpiredDate(DateUtils.addMilliseconds(now, tokenExpiration));
         Token newToken = tokenRepository.save(token);
         return newToken;
     }

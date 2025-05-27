@@ -11,5 +11,5 @@ import lombok.Setter;
 @Setter
 public class ConfirmOTPResponseDto {
 
-    private String resetPasswordToken;
+    private String token;
 }

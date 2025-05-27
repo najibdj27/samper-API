@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -92,9 +91,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${com.unper.samper.domain}")
     String domain;
 
-    @Value("${com.unper.samper.token-expiration-ms}")
-    int tokenExpiration;
-
     @Override
     public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException {
         User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
@@ -124,31 +120,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void changePassword(ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
+    public void sendChangePasswordOTP(ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
         if (!userRepository.existsByEmail(requestDto.getEmailAddress())) {
-            throw new ResourceNotFoundException("User with email " + requestDto.getEmailAddress() + " does not exist!");
+            throw new ResourceNotFoundException("sendChangePasswordOTP: User with email " + requestDto.getEmailAddress() + " does not exist!");
         }
         String emailAddress = requestDto.getEmailAddress();
         int otp = otpService.generateOTP(emailAddress);
         emailSender.sendOtpMessage(emailAddress, "SAMPER Reset Password Request", String.valueOf(otp));
     }
 
+    
     @Override
-    public ConfirmOTPResponseDto confirmOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException{
-        if (otpService.getOTP(requestDto.getEmailAddress()) == 0) {
-            throw new ResourceNotFoundException("You have not generated OTP!");
-        }else if (otpService.getOTP(requestDto.getEmailAddress()) != requestDto.getOtp()) {
-            throw new WrongOTPException("Wrong OTP!");
-        }
-        Date now = Calendar.getInstance().getTime();
-        Token newToken = Token.builder()
-            .key(requestDto.getEmailAddress())
-            .expiredDate(DateUtils.addMilliseconds(now, tokenExpiration))
-            .type(EType.RESET_PASSWORD)
-            .build();
-        Token resetPasswordToken = tokenServiceImpl.create(newToken);
-        return new ConfirmOTPResponseDto(resetPasswordToken.getToken().toString());
-        
+    public ConfirmOTPResponseDto confirmRegistrationOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException {
+        return otpService.confirmOTP(requestDto.getKey(), requestDto.getOtp(), EType.RESET_PASSWORD);
     }
 
     @Override

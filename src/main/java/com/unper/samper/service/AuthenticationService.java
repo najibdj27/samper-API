@@ -30,9 +30,9 @@ public interface AuthenticationService {
 
     RefreshTokenResponseDto refreshAuthToken(RefreshTokenRequestDto requestDto) throws ResourceNotFoundException, InvalidTokenException;
 
-    void changePassword(ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException;
-    
-    ConfirmOTPResponseDto confirmOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException;
+    void sendChangePasswordOTP(ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException;
+
+    ConfirmOTPResponseDto confirmRegistrationOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException;
     
     void resetPassword(UUID token, ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException;
     
