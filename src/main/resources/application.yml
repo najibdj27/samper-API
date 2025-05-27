@@ -48,6 +48,7 @@ com:
             version: 1.0.0
             build: 001
             credit-minutes: 800
+            token-expiration-ms: 60000 
 
 external-api:
     faceplusplus:

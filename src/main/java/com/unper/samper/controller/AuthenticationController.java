@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
+import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
 import com.unper.samper.exception.WrongOTPException;
@@ -95,10 +96,11 @@ public class AuthenticationController {
      * @return
      * @throws WrongOTPException
      * @throws ResourceNotFoundException
+     * @throws ResourceAlreadyExistException 
      */
     @Operation(summary = "Confirm OTP to get the token to reset the password")
     @PostMapping("/confirmotp")
-    public ResponseEntity<?> confirmOTP(@Valid @RequestBody ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException {
+    public ResponseEntity<?> confirmOTP(@Valid @RequestBody ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException {
         ConfirmOTPResponseDto responseDto = authenticationServiceImpl.confirmOTP(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been confirmed!", responseDto);
     }

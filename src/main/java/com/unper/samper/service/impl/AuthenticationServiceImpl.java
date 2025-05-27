@@ -15,7 +15,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,11 +36,12 @@ import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.model.RefreshToken;
-import com.unper.samper.model.ResetPasswordToken;
 import com.unper.samper.model.Role;
+import com.unper.samper.model.Token;
 import com.unper.samper.model.User;
 import com.unper.samper.model.common.UserDetailsImpl;
 import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.constant.EType;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
 import com.unper.samper.model.dto.ForgetPasswordRequestDto;
@@ -51,7 +51,6 @@ import com.unper.samper.model.dto.RefreshTokenResponseDto;
 import com.unper.samper.model.dto.ResetPasswordRequestDto;
 import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.model.dto.SignUpRequestDto;
-import com.unper.samper.repository.ResetPasswordTokenRepository;
 import com.unper.samper.repository.RoleRepository;
 import com.unper.samper.repository.UserRepository;
 import com.unper.samper.service.AuthenticationService;
@@ -70,13 +69,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     RoleRepository roleRepository;
 
     @Autowired
-    ResetPasswordTokenRepository resetPasswordTokenRepository;
-
-    @Autowired
     PasswordEncoder encoder;
 
     @Autowired
     RefreshTokenServiceImpl refreshTokenServiceImpl;
+
+    @Autowired
+    TokenServiceImpl tokenServiceImpl;
 
     @Autowired
     JwtUtils jwtUtils;
@@ -92,6 +91,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${com.unper.samper.domain}")
     String domain;
+
+    @Value("${com.unper.samper.token-expiration-ms}")
+    int tokenExpiration;
 
     @Override
     public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException {
@@ -132,18 +134,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public ConfirmOTPResponseDto confirmOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException{
+    public ConfirmOTPResponseDto confirmOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException{
         if (otpService.getOTP(requestDto.getEmailAddress()) == 0) {
             throw new ResourceNotFoundException("You have not generated OTP!");
         }else if (otpService.getOTP(requestDto.getEmailAddress()) != requestDto.getOtp()) {
             throw new WrongOTPException("Wrong OTP!");
         }
-        resetPasswordTokenRepository.deleteByEmailAddress(requestDto.getEmailAddress());
         Date now = Calendar.getInstance().getTime();
-        ResetPasswordToken resetPasswordToken = resetPasswordTokenRepository.save(ResetPasswordToken.builder()
-            .emailAddress(requestDto.getEmailAddress())
-            .expiredDate(DateUtils.addMinutes(now, 5))
-            .build());
+        Token newToken = Token.builder()
+            .key(requestDto.getEmailAddress())
+            .expiredDate(DateUtils.addMilliseconds(now, tokenExpiration))
+            .type(EType.RESET_PASSWORD)
+            .build();
+        Token resetPasswordToken = tokenServiceImpl.create(newToken);
         return new ConfirmOTPResponseDto(resetPasswordToken.getToken().toString());
         
     }
@@ -151,18 +154,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void resetPassword(UUID token , ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
         Date now = Calendar.getInstance().getTime();
-        Optional<ResetPasswordToken> resetPasswordToken = resetPasswordTokenRepository.findByToken(token);
-        if (resetPasswordToken.isEmpty()) {
-            throw new ResourceNotFoundException("Token is not valid!");
-        }
-        if (Boolean.TRUE.equals(resetPasswordTokenRepository.isExpired(resetPasswordToken.get().getId(), now))) {
+        Token resetPasswordToken = tokenServiceImpl.getByKey(token.toString());
+        if (Boolean.TRUE.equals(tokenServiceImpl.isExpired(resetPasswordToken.getId(), now))) {
             throw new ExpiredTokenException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
-        Optional<User> optionalUser = userRepository.findByEmail(resetPasswordToken.get().getEmailAddress());
+        Optional<User> optionalUser = userRepository.findByEmail(resetPasswordToken.getKey());
         User user = optionalUser.get();
         user.setPassword(encoder.encode(requestDto.getNewPassword()));
         userRepository.save(user);
-        resetPasswordTokenRepository.deleteByEmailAddress(resetPasswordToken.get().getEmailAddress());
+        tokenServiceImpl.deleteByKey(resetPasswordToken.getKey());
     }
 
     @Override
@@ -226,17 +226,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
         
         return user;
-    }
-
-    @Override
-    @Scheduled(cron = "0 15 12 1/1 * *")
-    public void deleteExpiredToken() throws ResourceNotFoundException {
-        List<ResetPasswordToken> resetPasswordTokenList = resetPasswordTokenRepository.findExpiredToken();
-        if (resetPasswordTokenList.isEmpty()) {
-            throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
-        }
-        resetPasswordTokenRepository.deleteAll(resetPasswordTokenList);
-        System.out.println(String.valueOf(resetPasswordTokenList.size()) + " Token successfully deleted");
     }
 
     @Override

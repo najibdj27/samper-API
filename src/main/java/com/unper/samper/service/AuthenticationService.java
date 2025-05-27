@@ -32,7 +32,7 @@ public interface AuthenticationService {
 
     void changePassword(ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException;
     
-    ConfirmOTPResponseDto confirmOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException;
+    ConfirmOTPResponseDto confirmOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException;
     
     void resetPassword(UUID token, ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException;
     
@@ -41,6 +41,4 @@ public interface AuthenticationService {
     User getCurrentUser() throws ResourceNotFoundException;
 
     Boolean checkTokenExpiration(String token);
-
-    void deleteExpiredToken() throws ResourceNotFoundException;
 }
