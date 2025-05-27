@@ -239,11 +239,11 @@ public class ScheduleController {
             String closedTime = null;
             try {
                 scheduleHistory = scheduleHistoryServiceImpl.getByScheduleId(schedule.getId());
-                if (!scheduleHistory.getOpenTime().equals(null)) {
+                if (scheduleHistory != null) {
                     openTime = dateFormat.format(scheduleHistory.getOpenTime().getTime());
-                }
-                if (!scheduleHistory.getCloseTime().equals(null)) {
-                    closedTime = dateFormat.format(scheduleHistory.getCloseTime().getTime());
+                    if (scheduleHistory.getCloseTime() != null) {
+                        closedTime = dateFormat.format(scheduleHistory.getCloseTime().getTime());
+                    }
                 }
             } catch (ResourceNotFoundException e) {
             }
