@@ -193,7 +193,7 @@ public class RequestController {
                 .schedule(scheduleResponseDto)
                 .sender(senderResponseDto)
                 .receiver(receiverResponseDto)
-                .requsetData(requestDataMap)
+                .requestData(requestDataMap)
                 .build();
             if (responseDto.getType().equals(ERequestType.LATE_RECORD)) {
                 lateCounter++;
@@ -334,7 +334,7 @@ public class RequestController {
                 .schedule(scheduleResponseDto)
                 .sender(senderResponseDto)
                 .receiver(receiverResponseDto)
-                .requsetData(requestDataMap)
+                .requestData(requestDataMap)
                 .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
     }
@@ -438,7 +438,7 @@ public class RequestController {
                 .schedule(scheduleResponseDto)
                 .sender(senderResponseDto)
                 .receiver(receiverResponseDto)
-                .requsetData(requestDataMap)
+                .requestData(requestDataMap)
                 .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.INSERT_DATA_SUCCESS.getMessage(), responseDto);
     }
