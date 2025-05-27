@@ -114,6 +114,7 @@ public class WebSecurityConfig {
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests.antMatchers(
                     "/auth/**",
+                    "/class/all",
                     "/api/v1/swagger-ui/**",
                     "/api/v1/api-docs/**",
                     "/registration/**",

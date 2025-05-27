@@ -41,7 +41,6 @@ public class ClassController {
     ClassServiceImpl classServiceImpl;
 
     @Operation(summary = "Get all data of classes")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<?> getAll() throws ResourceNotFoundException{
         List<Class> classList = classServiceImpl.getAll();
