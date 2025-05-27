@@ -47,7 +47,7 @@ com:
             refresh-token-expiration-ms: 86400000
             version: 1.0.0
             build: 001
-            credithour: 50
+            credit-minutes: 800
 
 external-api:
     faceplusplus:

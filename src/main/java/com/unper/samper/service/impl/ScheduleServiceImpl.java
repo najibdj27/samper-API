@@ -77,8 +77,8 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     @Autowired
     ExternalAPIServiceImpl externalAPIServiceImpl;
 
-    @Value("${com.unper.samper.credithour}")
-    Short creditHour;
+    @Value("${com.unper.samper.credit-minutes}")
+    Short creditMinutes;
 
     @Override
     public List<Schedule> getAllByLecture(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException {
@@ -163,7 +163,9 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
             timeEnd.setTime(simpleDateFormat.parse(requestDto.getDateStart() + " " + requestDto.getTimeStart()));
             timeStart.add(Calendar.DAY_OF_MONTH, 7*i); 
             timeEnd.add(Calendar.DAY_OF_MONTH, 7*i);
-            timeEnd.add(Calendar.MINUTE, requestDto.getCreditAmount()*creditHour);
+            double minutes = (requestDto.getCreditAmount()*creditMinutes)/requestDto.getNumberOfMeetings();
+            int roundedUpMinutes = (int) Math.ceil(minutes);
+            timeEnd.add(Calendar.MINUTE, roundedUpMinutes);
              
             Schedule schedule = Schedule.builder()
                 .kelas(kelas)
