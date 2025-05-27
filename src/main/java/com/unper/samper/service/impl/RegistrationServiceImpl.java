@@ -64,6 +64,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             .email(requestDto.getEmail())
             .phoneNumber(requestDto.getPhoneNumber())
             .password(requestDto.getPassword())
+            .faceData(requestDto.getFaceData())
             .roles(eRoleList)
             .build();
         User newUser = authenticationServiceImpl.registerUser(signUpRequestDto);
