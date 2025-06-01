@@ -32,7 +32,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>{
         "WHERE lsc.lecture_subject_id IN (SELECT id FROM lecture_subject WHERE lecture_id = :lectureId)" + "\n" +
         "AND s.class_id = lsc.class_id" + "\n" +
         "AND (:filterDateFrom IS null OR s.time_start >= to_date(:filterDateFrom, 'YYYY-MM-DD'))" + "\n" +
-        "AND (:filterDateTo IS null OR s.time_start <= to_date(:filterDateTo, 'YYYY-MM-DD'))",
+        "AND (:filterDateTo IS null OR s.time_end <= to_date(:filterDateTo, 'YYYY-MM-DD'))",
         nativeQuery = true
     )
     List<Schedule> findAllByLecture(@Param("filterDateFrom") String filterDateFrom, @Param("filterDateTo") String filterDateTo, @Param("lectureId") Long lectureId);
