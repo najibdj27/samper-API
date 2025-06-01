@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.MissingFormatArgumentException;
 
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,39 +15,61 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.model.User;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.constant.ERole;
+import com.unper.samper.model.constant.EType;
 import com.unper.samper.model.dto.AddAdminRequestDto;
 import com.unper.samper.model.dto.AddLectureRequestDto;
 import com.unper.samper.model.dto.AddStudentRequestDto;
+import com.unper.samper.model.dto.ConfirmOTPRequestDto;
+import com.unper.samper.model.dto.ConfirmOTPResponseDto;
 import com.unper.samper.model.dto.RegisterAdminRequestDto;
 import com.unper.samper.model.dto.RegisterLectureRequestDto;
 import com.unper.samper.model.dto.RegisterStudentRequestDto;
+import com.unper.samper.model.dto.SendEmailOTPRequestDto;
 import com.unper.samper.model.dto.SignUpRequestDto;
 import com.unper.samper.repository.RoleRepository;
+import com.unper.samper.service.AdminService;
+import com.unper.samper.service.AuthenticationService;
+import com.unper.samper.service.ClassService;
+import com.unper.samper.service.LectureService;
+import com.unper.samper.service.OTPService;
 import com.unper.samper.service.RegistrationService;
+import com.unper.samper.service.StudentService;
+import com.unper.samper.service.UserService;
+import com.unper.samper.util.EmailSender;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
-    AuthenticationServiceImpl authenticationServiceImpl;
+    AuthenticationService authenticationService;
 
     @Autowired
     RoleRepository roleRepository;
 
     @Autowired
-    StudentServiceImpl studentServiceImpl;
+    UserService userService;
 
     @Autowired
-    LectureServiceImpl lectureServiceImpl;
+    OTPService otpService;
 
     @Autowired
-    AdminServiceImpl adminServiceImpl;
+    EmailSender emailSender;
 
     @Autowired
-    ClassServiceImpl classServiceImpl;
+    StudentService studentService;
+
+    @Autowired
+    LectureService lectureService;
+
+    @Autowired
+    AdminService adminService;
+
+    @Autowired
+    ClassService classService;
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
@@ -67,16 +91,16 @@ public class RegistrationServiceImpl implements RegistrationService {
             .faceData(requestDto.getFaceData())
             .roles(eRoleList)
             .build();
-        User newUser = authenticationServiceImpl.registerUser(signUpRequestDto);
+        User newUser = authenticationService.registerUser(signUpRequestDto);
 
-        Class kelas = classServiceImpl.getById(requestDto.getClassId());  
+        Class kelas = classService.getById(requestDto.getClassId());  
         AddStudentRequestDto addStudentRequestDto = AddStudentRequestDto.builder()
             .user(newUser)
             .kelas(kelas)
             .NIM(requestDto.getNIM())
-            .isLeader(requestDto.getIsLeader())
+            .isLeader(false)
             .build();
-        studentServiceImpl.add(addStudentRequestDto);
+        studentService.add(addStudentRequestDto);
     }
 
     @Override
@@ -99,13 +123,13 @@ public class RegistrationServiceImpl implements RegistrationService {
             .faceData(requestDto.getFaceData())
             .roles(eRoleList)
             .build();
-        User newUser = authenticationServiceImpl.registerUser(signUpRequestDto);
+        User newUser = authenticationService.registerUser(signUpRequestDto);
 
         AddLectureRequestDto addLectureRequestDto = AddLectureRequestDto.builder()
             .NIP(requestDto.getNIP())
             .user(newUser)
             .build();
-        lectureServiceImpl.add(addLectureRequestDto);
+        lectureService.add(addLectureRequestDto);
     }
 
     @Override
@@ -124,14 +148,29 @@ public class RegistrationServiceImpl implements RegistrationService {
             .faceData(null)
             .roles(eRoleList)
             .build();
-        User newUser = authenticationServiceImpl.registerUser(signUpRequestDto);
+        User newUser = authenticationService.registerUser(signUpRequestDto);
 
         AddAdminRequestDto addAdminRequestDto = AddAdminRequestDto.builder()
             .user(newUser)
             .NIP(requestDto.getNIP())
             .previllagesId(requestDto.getPrevillages())
             .build();
-        adminServiceImpl.add(addAdminRequestDto);
+        adminService.add(addAdminRequestDto);
+    }
+
+    @Override
+    public void sendRegistrationOTP(SendEmailOTPRequestDto requestDto) throws MessagingException, ResourceAlreadyExistException {
+        if (userService.existsByEmail(requestDto.getEmailAddress())) {
+            throw new ResourceAlreadyExistException("User with email " + requestDto.getEmailAddress() + " have been registered!");
+        }
+        String emailAddress = requestDto.getEmailAddress();
+        int otp = otpService.generateOTP(emailAddress);
+        emailSender.sendOtpMessage(emailAddress, "SAMPER Registration", String.valueOf(otp));
+    }
+
+    @Override
+    public ConfirmOTPResponseDto confirmRegistrationOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException {
+        return otpService.confirmOTP(requestDto.getKey(), requestDto.getOtp(), EType.REGISTRATION);
     }
     
 }

@@ -35,7 +35,5 @@ public class RegisterStudentRequestDto {
 
     private String password;
 
-    private Boolean isLeader;
-
     private String faceData;
 }
