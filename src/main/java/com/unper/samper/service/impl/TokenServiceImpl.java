@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.Token;
+import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.constant.EType;
 import com.unper.samper.repository.TokenRepository;
 import com.unper.samper.service.TokenService;
 
@@ -40,14 +42,17 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Token getById(Long id) throws ResourceNotFoundException {
-        Token token = tokenRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Token with id "+id+" not found!"));
-        return token;
+        return tokenRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Token with id "+id+" not found!"));
     }
-
+    
     @Override
     public Token getByKey(String key) throws ResourceNotFoundException {
-        Token token = tokenRepository.findByKey(key).orElseThrow(() -> new ResourceNotFoundException("Token with key '"+key+"' not found!"));
-        return token;
+        return tokenRepository.findByKey(key).orElseThrow(() -> new ResourceNotFoundException("Token with key '"+key+"' not found!"));
+    }
+    
+    @Override
+    public Token getByKeyAndType(String key, EType type) throws ResourceNotFoundException {
+        return tokenRepository.findByKeyAndType(key, type).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.TOKEN_NOT_EXISST.getMessage()));
     }
 
     @Override
