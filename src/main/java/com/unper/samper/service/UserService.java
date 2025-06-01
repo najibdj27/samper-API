@@ -12,6 +12,14 @@ public interface UserService {
 
     User getById(Long id) throws ResourceNotFoundException;
 
+    User getByEmail(String emailAddress) throws ResourceNotFoundException;
+
+    boolean existsUsername(String username);
+
+    boolean existsByEmail(String emailAddress);
+
+    boolean existByPhoneNumber(String phoneNumber);
+
     UserResponseDto edit(Long id, EditUserRequestDto requestDto) throws ResourceNotFoundException;
 
     void delete(Long id) throws ResourceNotFoundException;

@@ -40,6 +40,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getByEmail(String emailAddress) throws ResourceNotFoundException {
+        return userRepository.findByEmail(emailAddress).orElseThrow(() -> new ResourceNotFoundException(emailAddress));
+    }
+
+    @Override
+    public boolean existsUsername(String username) {
+        return userRepository.existsByEmail(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String emailAddress) {
+        return userRepository.existsByEmail(emailAddress);
+    }
+
+    @Override
+    public boolean existByPhoneNumber(String phoneNumber) {
+        return userRepository.existsByEmail(phoneNumber);
+    }
+
+    @Override
     public UserResponseDto edit(Long id, EditUserRequestDto requestDto) throws ResourceNotFoundException {
         User user = User.builder()
             .id(id)
