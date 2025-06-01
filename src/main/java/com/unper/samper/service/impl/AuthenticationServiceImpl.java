@@ -43,11 +43,11 @@ import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.constant.EType;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
-import com.unper.samper.model.dto.ForgetPasswordRequestDto;
 import com.unper.samper.model.dto.JwtResponseDto;
 import com.unper.samper.model.dto.RefreshTokenRequestDto;
 import com.unper.samper.model.dto.RefreshTokenResponseDto;
 import com.unper.samper.model.dto.ResetPasswordRequestDto;
+import com.unper.samper.model.dto.SendEmailOTPRequestDto;
 import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.model.dto.SignUpRequestDto;
 import com.unper.samper.repository.RoleRepository;
@@ -120,9 +120,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void sendChangePasswordOTP(ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
+    public void sendChangePasswordOTP(SendEmailOTPRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
         if (!userRepository.existsByEmail(requestDto.getEmailAddress())) {
-            throw new ResourceNotFoundException("sendChangePasswordOTP: User with email " + requestDto.getEmailAddress() + " does not exist!");
+            throw new ResourceNotFoundException("User with email " + requestDto.getEmailAddress() + " does not exist!");
         }
         String emailAddress = requestDto.getEmailAddress();
         int otp = otpService.generateOTP(emailAddress);

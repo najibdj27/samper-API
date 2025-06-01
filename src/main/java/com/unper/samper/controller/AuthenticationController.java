@@ -29,11 +29,11 @@ import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.CheckExpiredJwtTokenResponseDto;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
-import com.unper.samper.model.dto.ForgetPasswordRequestDto;
 import com.unper.samper.model.dto.JwtResponseDto;
 import com.unper.samper.model.dto.RefreshTokenRequestDto;
 import com.unper.samper.model.dto.RefreshTokenResponseDto;
 import com.unper.samper.model.dto.ResetPasswordRequestDto;
+import com.unper.samper.model.dto.SendEmailOTPRequestDto;
 import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.service.impl.AuthenticationServiceImpl;
 
@@ -85,7 +85,7 @@ public class AuthenticationController {
      */
     @Operation(summary = "Get OTP to reset password")
     @PostMapping("/forgetpassword/sendotp")
-    public ResponseEntity<?> forgetPassword(@Valid @RequestBody ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
+    public ResponseEntity<?> forgetPassword(@Valid @RequestBody SendEmailOTPRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
         authenticationServiceImpl.sendChangePasswordOTP(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been sent to your email!", null);
     }

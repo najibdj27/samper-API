@@ -17,11 +17,11 @@ import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.model.User;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
-import com.unper.samper.model.dto.ForgetPasswordRequestDto;
 import com.unper.samper.model.dto.JwtResponseDto;
 import com.unper.samper.model.dto.RefreshTokenRequestDto;
 import com.unper.samper.model.dto.RefreshTokenResponseDto;
 import com.unper.samper.model.dto.ResetPasswordRequestDto;
+import com.unper.samper.model.dto.SendEmailOTPRequestDto;
 import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.model.dto.SignUpRequestDto;
 
@@ -30,7 +30,7 @@ public interface AuthenticationService {
 
     RefreshTokenResponseDto refreshAuthToken(RefreshTokenRequestDto requestDto) throws ResourceNotFoundException, InvalidTokenException;
 
-    void sendChangePasswordOTP(ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException;
+    void sendChangePasswordOTP(SendEmailOTPRequestDto requestDto) throws ResourceNotFoundException, MessagingException;
 
     ConfirmOTPResponseDto confirmRegistrationOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException;
     
