@@ -1,8 +1,11 @@
 package com.unper.samper.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingFormatArgumentException;
+import java.util.UUID;
 
 import javax.mail.MessagingException;
 
@@ -13,12 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.unper.samper.exception.ExternalAPIException;
+import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.model.User;
 import com.unper.samper.model.Class;
+import com.unper.samper.model.Token;
+import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.constant.ERole;
+import com.unper.samper.model.constant.EStatus;
 import com.unper.samper.model.constant.EType;
 import com.unper.samper.model.dto.AddAdminRequestDto;
 import com.unper.samper.model.dto.AddLectureRequestDto;
@@ -28,6 +35,7 @@ import com.unper.samper.model.dto.ConfirmOTPResponseDto;
 import com.unper.samper.model.dto.RegisterAdminRequestDto;
 import com.unper.samper.model.dto.RegisterLectureRequestDto;
 import com.unper.samper.model.dto.RegisterStudentRequestDto;
+import com.unper.samper.model.dto.RegistrationEligibilityRequestDto;
 import com.unper.samper.model.dto.SendEmailOTPRequestDto;
 import com.unper.samper.model.dto.SignUpRequestDto;
 import com.unper.samper.repository.RoleRepository;
@@ -38,6 +46,7 @@ import com.unper.samper.service.LectureService;
 import com.unper.samper.service.OTPService;
 import com.unper.samper.service.RegistrationService;
 import com.unper.samper.service.StudentService;
+import com.unper.samper.service.TokenService;
 import com.unper.samper.service.UserService;
 import com.unper.samper.util.EmailSender;
 
@@ -71,13 +80,21 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     ClassService classService;
 
+    @Autowired
+    TokenService tokenService;
+
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public void registerStudent(RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException {
+    public void registerStudent(UUID requestToken, RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, InvalidTokenException {
         if (requestDto.getFaceData().isEmpty()) {
             throw new MissingFormatArgumentException("Face data is null");
         }
         
+        Token token = tokenService.getByKeyAndType(requestDto.getEmail(), EType.REGISTRATION);
+        if (!token.getToken().equals(requestToken)) {
+            throw new InvalidTokenException(EResponseMessage.TOKEN_INVALID.getMessage());
+        }
+
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.STUDENT);
         SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
@@ -105,9 +122,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public void registerLecture(RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException {
+    public void registerLecture(UUID requestToken, RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, InvalidTokenException {
         if (requestDto.getFaceData().isEmpty()) {
             throw new MissingFormatArgumentException("Face data is null");
+        }
+
+        Token token = tokenService.getByKeyAndType(requestDto.getEmail(), EType.REGISTRATION);
+        if (!token.getToken().equals(requestToken)) {
+            throw new InvalidTokenException(EResponseMessage.TOKEN_INVALID.getMessage());
         }
 
         List<ERole> eRoleList = new ArrayList<>();
@@ -171,6 +193,30 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public ConfirmOTPResponseDto confirmRegistrationOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException {
         return otpService.confirmOTP(requestDto.getKey(), requestDto.getOtp(), EType.REGISTRATION);
+    }
+
+    @Override
+    public Map<String, Map<String, String>> registrationEligibilityCheck(RegistrationEligibilityRequestDto requestDto) {
+        Map<String, Map<String, String>> eligbilityMap = new HashMap<>();
+        if (userService.existsUsername(requestDto.getUsername())) {
+            Map<String, String> fieldMap = new HashMap<>();
+            fieldMap.put("status", String.valueOf(EStatus.NOT_ELIGIBLE.getCode()));
+            fieldMap.put("message", EResponseMessage.USERNAME_ALREADY_TAKEN.getMessage());
+            eligbilityMap.put("username", fieldMap);
+        }
+        if (userService.existsByEmail(requestDto.getEmail())) {
+            Map<String, String> fieldMap = new HashMap<>();
+            fieldMap.put("status", String.valueOf(EStatus.NOT_ELIGIBLE.getCode()));
+            fieldMap.put("message", EResponseMessage.EMAIL_ALREADY_EXIST.getMessage());
+            eligbilityMap.put("email", fieldMap);
+        }
+        if (userService.existByPhoneNumber(requestDto.getPhoneNumber())) {
+            Map<String, String> fieldMap = new HashMap<>();
+            fieldMap.put("status", String.valueOf(EStatus.NOT_ELIGIBLE.getCode()));
+            fieldMap.put("message", EResponseMessage.PHONE_NUMBER_ALREADY_EXIST.getMessage());
+            eligbilityMap.put("phoneNumber", fieldMap);
+        }
+        return eligbilityMap;
     }
     
 }

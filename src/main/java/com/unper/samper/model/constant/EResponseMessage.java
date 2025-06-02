@@ -26,7 +26,11 @@ public enum EResponseMessage {
     DELETE_NO_RESOURCE("Can't delete data!"),
     REFRESH_TOKEN_NOT_EXIST("Refresh token is not found!"),
     FACE_NOT_MATCH("Face not matched!"),
-    REFRESH_TOKEN_EXPIRED("Refresh token is expired!");
+    REFRESH_TOKEN_EXPIRED("Refresh token is expired!"),
+    SUCCESS_SEND_EMAIL_OTP("OTP has been sent to your email!"),
+    SUCCESS_VALIDATE_OTP("Your OTP is Valid!"),
+    TOKEN_NOT_EXISST("Token not found or expired, kindly to try again!"),
+    TOKEN_INVALID("Token is not valid!");
 
     private final String message;
 
