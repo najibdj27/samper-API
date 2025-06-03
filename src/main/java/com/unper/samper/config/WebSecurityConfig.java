@@ -46,13 +46,13 @@ public class WebSecurityConfig {
     @Autowired
     private AuthEntryPoinJwt unauthorizedHandler;
 
-    @Value("${com.unper.samper.cloud-name}")
+    @Value("${external-api.cloudinary.cloud-name}")
     String cloudName;
     
-    @Value("${com.unper.samper.api-key}")
+    @Value("${external-api.cloudinary.api-key}")
     String apiKey;
     
-    @Value("${com.unper.samper.api-secret}")
+    @Value("${external-api.cloudinary.api-secret}")
     String apiSecret;
 
     @Bean
