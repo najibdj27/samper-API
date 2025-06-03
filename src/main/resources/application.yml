@@ -68,5 +68,5 @@ external-api:
             FACE_DETECT: /facepp/v3/detect
     cloudinary:
         cloud-name: dx1pjzkvf
-        api-key: 135717915924372
-        api-secret: 1WuBB8xMV8_QmFSGyV3DhDuR40g
+        api-key: 274874634654542
+        api-secret: 9WLF-E7wh6GhUdimL9Mt4Sxcci4
