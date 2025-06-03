@@ -26,8 +26,6 @@ public class UserServiceImpl implements UserService {
         if (userList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
-
-        
         
         return userList;
     }
