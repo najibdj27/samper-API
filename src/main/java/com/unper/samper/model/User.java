@@ -36,7 +36,9 @@ public class User extends Audit {
 
     private String password;
 
-    private String facesetToken;
+    private String faceToken;
+
+    private String registeredFaceUrl;
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
