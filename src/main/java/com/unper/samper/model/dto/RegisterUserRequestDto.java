@@ -16,7 +16,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class SignUpRequestDto {
+public class RegisterUserRequestDto {
     @NotBlank
     @Size(min = 2, max = 20)
     @Pattern(regexp = "[a-zA-Z]+", message = "can only contain letters with no whitespace")

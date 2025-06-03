@@ -41,8 +41,8 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
     @Value("${external-api.faceplusplus.end-point.CREATE_FACESET}")
     private String FACEPLUSPLUS_FACESET_CREATE;
     
-    @Value("${external-api.faceplusplus.end-point.GET_DETAIL}")
-    private String FACEPLUSPLUS_GET_DETAIL;
+    @Value("${external-api.faceplusplus.end-point.GET_DETAIL_FACESET}")
+    private String FACEPLUSPLUS_GET_DETAIL_FACESET;
     
     @Value("${external-api.faceplusplus.end-point.ADD_USER_ID_FACE}")
     private String FACEPLUSPLUS_ADD_USER_ID;
@@ -134,7 +134,7 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_GET_DETAIL, request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_GET_DETAIL_FACESET, request, String.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             return response;
         } else {
@@ -184,22 +184,18 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
     }
 
     @Override
-    public ResponseEntity<?> cloudinaryUploadBase64Image(String base64Image, String folderPath) throws ExternalAPIException, IOException {
-        try{
-            if (base64Image.contains(",")) {
-                base64Image = base64Image.split(",")[1];
-            }
-    
-            Map<?,?> uploadResult = cloudinary.uploader().upload(
-                "data:image/jpeg;base64,"+base64Image, 
-                ObjectUtils.asMap(
-                    "resource_type", "image",
-                    "folder",folderPath)
-            );
-    
-            return ResponseEntity.ok(uploadResult);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image:"+e.getMessage());
+    public Map<?,?> cloudinaryUploadBase64Image(String base64Image, String folderPath) throws ExternalAPIException, IOException {
+        if (base64Image.contains(",")) {
+            base64Image = base64Image.split(",")[1];
         }
+
+        Map<?,?> uploadResult = cloudinary.uploader().upload(
+            "data:image/jpeg;base64,"+base64Image, 
+            ObjectUtils.asMap(
+                "resource_type", "image",
+                "folder",folderPath)
+        );
+
+        return uploadResult;
     }
 }

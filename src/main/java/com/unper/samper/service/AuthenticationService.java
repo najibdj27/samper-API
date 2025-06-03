@@ -1,5 +1,6 @@
 package com.unper.samper.service;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
@@ -23,7 +24,7 @@ import com.unper.samper.model.dto.RefreshTokenResponseDto;
 import com.unper.samper.model.dto.ResetPasswordRequestDto;
 import com.unper.samper.model.dto.SendEmailOTPRequestDto;
 import com.unper.samper.model.dto.SignInRequestDto;
-import com.unper.samper.model.dto.SignUpRequestDto;
+import com.unper.samper.model.dto.RegisterUserRequestDto;
 
 public interface AuthenticationService {
     JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException;
@@ -36,7 +37,7 @@ public interface AuthenticationService {
     
     void resetPassword(UUID token, ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException;
     
-    User registerUser(SignUpRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, JsonMappingException, JsonProcessingException;
+    User registerUser(RegisterUserRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, JsonMappingException, JsonProcessingException, IOException;
 
     User getCurrentUser() throws ResourceNotFoundException;
 

@@ -207,12 +207,7 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 
-        ResponseEntity<String> getDetailResponse = externalAPIServiceImpl.faceplusplusGetDetail(lecture.getUser().getFacesetToken());
-        ObjectMapper getDetailMapper = new ObjectMapper();
-        JsonNode getDetailRoot = getDetailMapper.readTree(getDetailResponse.getBody());
-        JsonNode userFaceTokenArray = getDetailRoot.path("face_tokens");
-
-        String userFaceToken = userFaceTokenArray.get(0).asText();
+        String userFaceToken = lecture.getUser().getFaceToken();
       
         ResponseEntity<String> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
         ObjectMapper faceCompareMapper = new ObjectMapper();
@@ -260,13 +255,8 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
             throw new GeolocationException("You are out of the class location");
         }
 
-        ResponseEntity<String> getDetailResponse = externalAPIServiceImpl.faceplusplusGetDetail(lecture.getUser().getFacesetToken());
-        ObjectMapper getDetailMapper = new ObjectMapper();
-        JsonNode getDetailRoot = getDetailMapper.readTree(getDetailResponse.getBody());
-        JsonNode userFaceTokenArray = getDetailRoot.path("face_tokens");
-
-        String userFaceToken = userFaceTokenArray.get(0).asText();
-      
+        String userFaceToken = lecture.getUser().getFaceToken();
+        
         ResponseEntity<String> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
         ObjectMapper faceCompareMapper = new ObjectMapper();
         JsonNode faceCommpareRoot =  faceCompareMapper.readTree(faceCompareRespone.getBody());

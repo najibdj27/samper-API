@@ -1,5 +1,6 @@
 package com.unper.samper.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
@@ -37,7 +36,7 @@ import com.unper.samper.model.dto.RegisterLectureRequestDto;
 import com.unper.samper.model.dto.RegisterStudentRequestDto;
 import com.unper.samper.model.dto.RegistrationEligibilityRequestDto;
 import com.unper.samper.model.dto.SendEmailOTPRequestDto;
-import com.unper.samper.model.dto.SignUpRequestDto;
+import com.unper.samper.model.dto.RegisterUserRequestDto;
 import com.unper.samper.repository.RoleRepository;
 import com.unper.samper.service.AdminService;
 import com.unper.samper.service.AuthenticationService;
@@ -85,7 +84,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public void registerStudent(UUID requestToken, RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, InvalidTokenException {
+    public void registerStudent(UUID requestToken, RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException {
         if (requestDto.getFaceData().isEmpty()) {
             throw new MissingFormatArgumentException("Face data is null");
         }
@@ -97,7 +96,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.STUDENT);
-        SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
+        RegisterUserRequestDto signUpRequestDto = RegisterUserRequestDto.builder()
             .firstName(requestDto.getFirstName())
             .lastName(requestDto.getLastName())
             .dateOfBirth(requestDto.getDateOfBirth())
@@ -122,7 +121,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public void registerLecture(UUID requestToken, RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, InvalidTokenException {
+    public void registerLecture(UUID requestToken, RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException {
         if (requestDto.getFaceData().isEmpty()) {
             throw new MissingFormatArgumentException("Face data is null");
         }
@@ -134,7 +133,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.LECTURE);
-        SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
+        RegisterUserRequestDto signUpRequestDto = RegisterUserRequestDto.builder()
             .firstName(requestDto.getFirstName())
             .lastName(requestDto.getLastName())
             .dateOfBirth(requestDto.getDateOfBirth())
@@ -155,11 +154,11 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException {
+    @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class, ExternalAPIException.class, IOException.class})
+    public void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, IOException {
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.ADMIN);
-        SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
+        RegisterUserRequestDto signUpRequestDto = RegisterUserRequestDto.builder()
             .firstName(requestDto.getFirstName())
             .lastName(requestDto.getLastName())
             .dateOfBirth(requestDto.getDateOfBirth())

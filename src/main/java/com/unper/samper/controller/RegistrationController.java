@@ -1,5 +1,6 @@
 package com.unper.samper.controller;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -14,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
@@ -46,21 +45,21 @@ public class RegistrationController {
     
     @Operation(summary = "Register new student")
     @PostMapping("/registerstudent")
-    public ResponseEntity<?> registerStudent(@RequestParam("token") UUID requestToken, @RequestBody RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, InvalidTokenException{
+    public ResponseEntity<?> registerStudent(@RequestParam("token") UUID requestToken, @RequestBody RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException{
         registrationService.registerStudent(requestToken, requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }
     
     @Operation(summary = "Register new lecture")
     @PostMapping("/registerlecture")
-    public ResponseEntity<?> registerLecture(@RequestParam("token") UUID requestToken, @RequestBody RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, InvalidTokenException{
+    public ResponseEntity<?> registerLecture(@RequestParam("token") UUID requestToken, @RequestBody RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException{
         registrationService.registerLecture(requestToken, requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }
 
     @Operation(summary = "Register new admin")
     @PostMapping("/registeradmin")
-    public ResponseEntity<?> registerAdmin(@RequestBody RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException{
+    public ResponseEntity<?> registerAdmin(@RequestBody RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, IOException{
         registrationService.registerAdmin(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }

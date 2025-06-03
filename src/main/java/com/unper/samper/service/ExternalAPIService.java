@@ -1,6 +1,7 @@
 package com.unper.samper.service;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 
@@ -19,5 +20,5 @@ public interface ExternalAPIService {
 
     ResponseEntity<String> faceplusplusGetFaceDetail(String faceToken) throws ExternalAPIException;
     
-    ResponseEntity<?> cloudinaryUploadBase64Image(String base64Image, String folderPath) throws ExternalAPIException, IOException;
+    Map<?,?> cloudinaryUploadBase64Image(String base64Image, String folderPath) throws ExternalAPIException, IOException;
 }

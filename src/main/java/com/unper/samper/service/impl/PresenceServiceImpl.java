@@ -120,12 +120,7 @@ public class PresenceServiceImpl implements PresenceService {
             throw new GeolocationException("You are out of the class location");
         }
 
-        ResponseEntity<String> getDetailResponse = externalAPIServiceImpl.faceplusplusGetDetail(student.getUser().getFacesetToken());
-        ObjectMapper getDetailMapper = new ObjectMapper();
-        JsonNode getDetailRoot = getDetailMapper.readTree(getDetailResponse.getBody());
-        JsonNode userFaceTokenArray = getDetailRoot.path("face_tokens");
-
-        String userFaceToken = userFaceTokenArray.get(0).asText();
+        String userFaceToken = student.getUser().getFaceToken();
       
         ResponseEntity<String> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
         ObjectMapper faceCompareMapper = new ObjectMapper();
@@ -182,12 +177,7 @@ public class PresenceServiceImpl implements PresenceService {
             throw new GeolocationException("You are out of the class location");
         }
 
-        ResponseEntity<String> getDetailResponse = externalAPIServiceImpl.faceplusplusGetDetail(student.getUser().getFacesetToken());
-        ObjectMapper getDetailMapper = new ObjectMapper();
-        JsonNode getDetailRoot = getDetailMapper.readTree(getDetailResponse.getBody());
-        JsonNode userFaceTokenArray = getDetailRoot.path("face_tokens");
-
-        String userFaceToken = userFaceTokenArray.get(0).asText();
+        String userFaceToken = student.getUser().getFaceToken();
       
         ResponseEntity<String> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
         ObjectMapper faceCompareMapper = new ObjectMapper();
