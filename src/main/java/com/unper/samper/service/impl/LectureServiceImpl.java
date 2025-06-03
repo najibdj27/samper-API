@@ -69,6 +69,12 @@ public class LectureServiceImpl implements LectureService {
         return lecture;
     }
 
+    
+    @Override
+    public Boolean existsByNIP(String nip) {
+        return lectureRepository.existsByNIP(nip);
+    }
+
     @Override
     public Lecture add(AddLectureRequestDto requestDto) throws ResourceAlreadyExistException {
         Lecture lecture = Lecture.builder()
