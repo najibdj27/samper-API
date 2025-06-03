@@ -1,5 +1,9 @@
 package com.unper.samper.service.impl;
 
+import java.io.IOException;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +15,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.service.ExternalAPIService;
 
@@ -43,6 +49,9 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
     
     @Value("${external-api.faceplusplus.end-point.GET_DETAIL_FACE}")
     private String FACEPLUSPLUS_GET_FACE_DETAIL;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     private final String FACE_ATTRIBUTES = "eyestatus,smiling,gender,headpose,eyegaze,mouthstatus";
 
@@ -171,6 +180,26 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
             return response;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus set user id API.");
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> cloudinaryUploadBase64Image(String base64Image, String folderPath) throws ExternalAPIException, IOException {
+        try{
+            if (base64Image.contains(",")) {
+                base64Image = base64Image.split(",")[1];
+            }
+    
+            Map<?,?> uploadResult = cloudinary.uploader().upload(
+                "data:image/jpeg;base64,"+base64Image, 
+                ObjectUtils.asMap(
+                    "resource_type", "image",
+                    "folder",folderPath)
+            );
+    
+            return ResponseEntity.ok(uploadResult);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image:"+e.getMessage());
         }
     }
 }
