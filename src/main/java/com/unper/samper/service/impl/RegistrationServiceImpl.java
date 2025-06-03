@@ -94,6 +94,10 @@ public class RegistrationServiceImpl implements RegistrationService {
             throw new InvalidTokenException(EResponseMessage.TOKEN_INVALID.getMessage());
         }
 
+        if (studentService.existsByNIM(requestDto.getNim())){
+            throw new ResourceAlreadyExistException("NIM is already exists");
+        }
+
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.STUDENT);
         RegisterUserRequestDto signUpRequestDto = RegisterUserRequestDto.builder()
