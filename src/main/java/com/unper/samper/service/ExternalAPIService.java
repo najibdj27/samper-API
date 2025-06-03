@@ -12,4 +12,9 @@ public interface ExternalAPIService {
     ResponseEntity<String> faceplusplusCreateFaceSet(Long outerId, String displayName, String faceToken) throws ExternalAPIException;
 
     ResponseEntity<String> faceplusplusGetDetail(String facesetToken) throws ExternalAPIException;
+
+    ResponseEntity<String> faceplusplusSetUserId(String faceToken, String userId) throws ExternalAPIException;
+
+    ResponseEntity<String> faceplusplusGetFaceDetail(String faceToken) throws ExternalAPIException;
+
 }

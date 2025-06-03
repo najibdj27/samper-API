@@ -32,11 +32,17 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
     @Value("${external-api.faceplusplus.end-point.FACE_DETECT}")
     private String FACEPLUSPLUS_FACE_DETECT;
     
-    @Value("${external-api.faceplusplus.end-point.CREATE}")
+    @Value("${external-api.faceplusplus.end-point.CREATE_FACESET}")
     private String FACEPLUSPLUS_FACESET_CREATE;
     
     @Value("${external-api.faceplusplus.end-point.GET_DETAIL}")
     private String FACEPLUSPLUS_GET_DETAIL;
+    
+    @Value("${external-api.faceplusplus.end-point.ADD_USER_ID_FACE}")
+    private String FACEPLUSPLUS_ADD_USER_ID;
+    
+    @Value("${external-api.faceplusplus.end-point.GET_DETAIL_FACE}")
+    private String FACEPLUSPLUS_GET_FACE_DETAIL;
 
     private final String FACE_ATTRIBUTES = "eyestatus,smiling,gender,headpose,eyegaze,mouthstatus";
 
@@ -124,6 +130,47 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
             return response;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus get detail API.");
+        }
+    }
+    
+    @Override
+    public ResponseEntity<String> faceplusplusSetUserId(String faceToken, String userId) throws ExternalAPIException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("api_key", FACEPLUSPLUS_API_KEY);
+        params.add("api_secret", FACEPLUSPLUS_API_SECRET);
+        params.add("face_token", faceToken);
+        params.add("user_id", userId);
+        
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+        
+        ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_ADD_USER_ID, request, String.class);
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            return response;
+        } else {
+            throw new ExternalAPIException("Failed when calling faceplusplus set user id API.");
+        }
+    }
+    
+    @Override
+    public ResponseEntity<String> faceplusplusGetFaceDetail(String faceToken) throws ExternalAPIException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("api_key", FACEPLUSPLUS_API_KEY);
+        params.add("api_secret", FACEPLUSPLUS_API_SECRET);
+        params.add("face_token", faceToken);
+    
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+    
+        ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_GET_FACE_DETAIL, request, String.class);
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            return response;
+        } else {
+            throw new ExternalAPIException("Failed when calling faceplusplus set user id API.");
         }
     }
 }
