@@ -12,6 +12,8 @@ public enum EResponseMessage {
     USERNAME_ALREADY_TAKEN("Username is already exists!"),
     EMAIL_ALREADY_EXIST("Email is already exists!"),
     PHONE_NUMBER_ALREADY_EXIST("Phone number is already exists!"),
+    NIM_ALREADY_EXIST("NIM is already exists!"),
+    NIP_ALREADY_EXIST("NIP is already exists!"),
     REGISTRATION_SUCCESS("Registration success!"),
     MISSING_PARAM("Missing parameter, check again your request!"),
     PRESENCE_DIFFERENT_CLASS("Can't present in other class!"),

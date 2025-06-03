@@ -17,4 +17,8 @@ public class RegistrationEligibilityRequestDto {
     private String email;
 
     private String phoneNumber;
+
+    private String nim;
+
+    private String nip;
 }

@@ -201,22 +201,34 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public Map<String, Map<String, String>> registrationEligibilityCheck(RegistrationEligibilityRequestDto requestDto) {
         Map<String, Map<String, String>> eligbilityMap = new HashMap<>();
-        if (userService.existsUsername(requestDto.getUsername())) {
+        if (requestDto.getUsername() != null && userService.existsUsername(requestDto.getUsername())) {
             Map<String, String> fieldMap = new HashMap<>();
             fieldMap.put("status", String.valueOf(EStatus.NOT_ELIGIBLE.getCode()));
             fieldMap.put("message", EResponseMessage.USERNAME_ALREADY_TAKEN.getMessage());
             eligbilityMap.put("username", fieldMap);
         }
-        if (userService.existsByEmail(requestDto.getEmail())) {
+        if (requestDto.getEmail() != null && userService.existsByEmail(requestDto.getEmail())) {
             Map<String, String> fieldMap = new HashMap<>();
             fieldMap.put("status", String.valueOf(EStatus.NOT_ELIGIBLE.getCode()));
             fieldMap.put("message", EResponseMessage.EMAIL_ALREADY_EXIST.getMessage());
             eligbilityMap.put("email", fieldMap);
         }
-        if (userService.existByPhoneNumber(requestDto.getPhoneNumber())) {
+        if (requestDto.getPhoneNumber() != null && userService.existByPhoneNumber(requestDto.getPhoneNumber())) {
             Map<String, String> fieldMap = new HashMap<>();
             fieldMap.put("status", String.valueOf(EStatus.NOT_ELIGIBLE.getCode()));
             fieldMap.put("message", EResponseMessage.PHONE_NUMBER_ALREADY_EXIST.getMessage());
+            eligbilityMap.put("phoneNumber", fieldMap);
+        }
+        if (requestDto.getNim() != null && studentService.existsByNIM(requestDto.getNim())) {
+            Map<String, String> fieldMap = new HashMap<>();
+            fieldMap.put("status", String.valueOf(EStatus.NOT_ELIGIBLE.getCode()));
+            fieldMap.put("message", EResponseMessage.NIP_ALREADY_EXIST.getMessage());
+            eligbilityMap.put("phoneNumber", fieldMap);
+        }
+        if (requestDto.getNip() != null && lectureService.existsByNIP(requestDto.getNip())) {
+            Map<String, String> fieldMap = new HashMap<>();
+            fieldMap.put("status", String.valueOf(EStatus.NOT_ELIGIBLE.getCode()));
+            fieldMap.put("message", EResponseMessage.NIM_ALREADY_EXIST.getMessage());
             eligbilityMap.put("phoneNumber", fieldMap);
         }
         return eligbilityMap;
