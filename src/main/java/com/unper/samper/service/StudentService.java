@@ -18,6 +18,8 @@ public interface StudentService {
 
     Student getStudentLeaderByClass(Long classId) throws ResourceNotFoundException;
 
+    Boolean existsByNIM(String nim);
+
     Student add(AddStudentRequestDto requestDto);
 
     void delete(Long id) throws ResourceNotFoundException;

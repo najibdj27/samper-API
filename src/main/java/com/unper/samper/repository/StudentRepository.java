@@ -23,4 +23,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Override
     @Query(value = "SELECT s.* FROM public.student s LEFT JOIN public.user u ON u.id = s.user_id WHERE u.is_deleted = false AND s.id = :id", nativeQuery = true)
     Optional<Student> findById(@Param("id") Long id);
+
+    Boolean existsByNIM(String nim);
 }

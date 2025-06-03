@@ -56,6 +56,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public Boolean existsByNIM(String nim){
+        return studentRepository.existsByNIM(nim);
+    }
+
+    @Override
     public Student add(AddStudentRequestDto requestDto) {
         Student student = Student.builder()
             .NIM(requestDto.getNIM())
