@@ -131,7 +131,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     
     @Override
-    public ConfirmOTPResponseDto confirmRegistrationOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException {
+    public ConfirmOTPResponseDto confirmResetPasswordOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException {
         return otpService.confirmOTP(requestDto.getKey(), requestDto.getOtp(), EType.RESET_PASSWORD);
     }
 

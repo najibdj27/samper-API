@@ -101,7 +101,7 @@ public class AuthenticationController {
     @Operation(summary = "Confirm OTP to get the token to reset the password")
     @PostMapping("/forgetpassword/confirmotp")
     public ResponseEntity<?> confirmOTP(@Valid @RequestBody ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException {
-        ConfirmOTPResponseDto responseDto = authenticationServiceImpl.confirmRegistrationOTP(requestDto);
+        ConfirmOTPResponseDto responseDto = authenticationServiceImpl.confirmResetPasswordOTP(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been confirmed!", responseDto);
     }
 
