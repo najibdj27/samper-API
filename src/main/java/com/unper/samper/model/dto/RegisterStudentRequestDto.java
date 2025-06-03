@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class RegisterStudentRequestDto {
-    private String NIM;
+    private String nim;
 
     private Long classId;
 

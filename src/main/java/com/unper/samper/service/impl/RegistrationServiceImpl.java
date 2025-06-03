@@ -114,7 +114,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         AddStudentRequestDto addStudentRequestDto = AddStudentRequestDto.builder()
             .user(newUser)
             .kelas(kelas)
-            .NIM(requestDto.getNIM())
+            .NIM(requestDto.getNim())
             .isLeader(false)
             .build();
         studentService.add(addStudentRequestDto);
