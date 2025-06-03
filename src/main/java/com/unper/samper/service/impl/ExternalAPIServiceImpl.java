@@ -72,12 +72,12 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("api_key", FACEPLUSPLUS_API_KEY);
         params.add("api_secret", FACEPLUSPLUS_API_SECRET);
-        params.add("imageBase64", imageBase64);
+        params.add("image_base64", imageBase64);
         params.add("return_attributes", FACE_ATTRIBUTES);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_FACE_COMPARE, request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_FACE_DETECT, request, String.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             return response;
         } else {
