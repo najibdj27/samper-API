@@ -58,12 +58,14 @@ external-api:
         api-secret: ZYJYDVy-96Ylx338z5eNCYdJ28Aku3om
         tomeout: 60000
         end-point:
-            CREATE: /facepp/v3/faceset/create
-            ADD: /facepp/v3/faceset/addface
-            UPDATE: /facepp/v3/faceset/update
-            DELETE: /facepp/v3/faceset/delete
-            REMMOVE: /facepp/v3/faceset/removeface
+            CREATE_FACESET: /facepp/v3/faceset/create
+            ADD_FACE_FACESET: /facepp/v3/faceset/addface
+            UPDATE_FACESET: /facepp/v3/faceset/update
+            DELETE_FACESET: /facepp/v3/faceset/delete
+            REMMOVE_FACESET: /facepp/v3/faceset/removeface
+            GET_DETAIL_FACESET: /facepp/v3/faceset/getdetail
+            ADD_USER_ID_FACE: /facepp/v3/face/setuserid
+            GET_DETAIL_FACE: /facepp/v3/face/getdetail
+            ANALYZE_FACE: /facepp/v3/face/analyze
             FACE_COMPARE: /facepp/v3/compare
             FACE_DETECT: /facepp/v3/detect
-            GET_DETAIL: /facepp/v3/faceset/getdetail
-
