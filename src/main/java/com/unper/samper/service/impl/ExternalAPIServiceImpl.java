@@ -17,6 +17,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.service.ExternalAPIService;
 
@@ -58,7 +61,7 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
     RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public ResponseEntity<String> faceplusplusFaceCompare(String faceToken1, String imageBase64_2) throws ExternalAPIException {
+    public Map<?,?> faceplusplusFaceCompare(String faceToken1, String imageBase64_2) throws ExternalAPIException, JsonMappingException, JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -71,8 +74,11 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_FACE_COMPARE, request, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        String responseBody = response.getBody();
+        Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            return response;
+            return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus face compare API.");
         } 
@@ -80,7 +86,7 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
     }
     
     @Override
-    public ResponseEntity<String> faceplusplusDetect(String imageBase64) throws ExternalAPIException {
+    public Map<?,?> faceplusplusDetect(String imageBase64) throws ExternalAPIException, JsonMappingException, JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         
@@ -93,15 +99,18 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_FACE_DETECT, request, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        String responseBody = response.getBody();
+        Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            return response;
+            return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus face detect API.");
         }
     }
 
     @Override
-    public ResponseEntity<String> faceplusplusCreateFaceSet(Long outerId, String displayName, String faceToken) throws ExternalAPIException{
+    public Map<?,?> faceplusplusCreateFaceSet(Long outerId, String displayName, String faceToken) throws ExternalAPIException, JsonMappingException, JsonProcessingException{
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         
@@ -115,15 +124,18 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_FACESET_CREATE, request, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        String responseBody = response.getBody();
+        Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            return response;
+            return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus faceset create API.");
         }
     }
 
     @Override
-    public ResponseEntity<String> faceplusplusGetDetail(String facesetToken) throws ExternalAPIException {
+    public Map<?,?> faceplusplusGetDetail(String facesetToken) throws ExternalAPIException, JsonMappingException, JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         
@@ -135,15 +147,18 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_GET_DETAIL_FACESET, request, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        String responseBody = response.getBody();
+        Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            return response;
+            return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus get detail API.");
         }
     }
     
     @Override
-    public ResponseEntity<String> faceplusplusSetUserId(String faceToken, String userId) throws ExternalAPIException {
+    public Map<?,?> faceplusplusSetUserId(String faceToken, String userId) throws ExternalAPIException, JsonMappingException, JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         
@@ -156,15 +171,18 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         
         ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_ADD_USER_ID, request, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        String responseBody = response.getBody();
+        Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            return response;
+            return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus set user id API.");
         }
     }
     
     @Override
-    public ResponseEntity<String> faceplusplusGetFaceDetail(String faceToken) throws ExternalAPIException {
+    public Map<?,?> faceplusplusGetFaceDetail(String faceToken) throws ExternalAPIException, JsonMappingException, JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         
@@ -176,8 +194,11 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
     
         ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_GET_FACE_DETAIL, request, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        String responseBody = response.getBody();
+        Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            return response;
+            return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus set user id API.");
         }

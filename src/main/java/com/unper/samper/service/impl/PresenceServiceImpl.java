@@ -5,15 +5,13 @@ import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.DifferentClassException;
 import com.unper.samper.exception.ExternalAPIException;
@@ -122,11 +120,9 @@ public class PresenceServiceImpl implements PresenceService {
 
         String userFaceToken = student.getUser().getFaceToken();
       
-        ResponseEntity<String> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
-        ObjectMapper faceCompareMapper = new ObjectMapper();
-        JsonNode faceCommpareRoot =  faceCompareMapper.readTree(faceCompareRespone.getBody());
+        Map<?,?> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
 
-        double faceCompareScore = faceCommpareRoot.path("confidence").asDouble();
+        Double faceCompareScore = (Double) faceCompareRespone.get("confience");
 
         if (faceCompareScore < 80) {
             throw new FaceNotMatchedException(EResponseMessage.FACE_NOT_MATCH.getMessage());
@@ -179,11 +175,9 @@ public class PresenceServiceImpl implements PresenceService {
 
         String userFaceToken = student.getUser().getFaceToken();
       
-        ResponseEntity<String> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
-        ObjectMapper faceCompareMapper = new ObjectMapper();
-        JsonNode faceCommpareRoot =  faceCompareMapper.readTree(faceCompareRespone.getBody());
+        Map<?,?> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
 
-        double faceCompareScore = faceCommpareRoot.path("confidence").asDouble();
+        Double faceCompareScore = (Double) faceCompareRespone.get("confidence");
 
         if (faceCompareScore < 80) {
             throw new FaceNotMatchedException(EResponseMessage.FACE_NOT_MATCH.getMessage());

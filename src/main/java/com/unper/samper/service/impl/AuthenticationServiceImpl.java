@@ -15,7 +15,6 @@ import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,8 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unper.samper.config.JwtUtils;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.ExternalAPIException;
@@ -193,19 +190,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setRoles(roleSet);
         
         if (!requestDto.getFaceData().isEmpty()) {
-            ResponseEntity<String> faceDetectResponse = externalAPIService.faceplusplusDetect(requestDto.getFaceData());
-            ObjectMapper faceDetectMapper = new ObjectMapper();
-            JsonNode faceDetectRoot =  faceDetectMapper.readTree(faceDetectResponse.getBody());
-            JsonNode facesNode  = faceDetectRoot.path("faces");
+            Map<?,?> faceDetectResponse = externalAPIService.faceplusplusDetect(requestDto.getFaceData());
             
-            if (facesNode.isArray() && facesNode.size() == 1) {
-                JsonNode faceData = facesNode.get(0);
-                String faceToken = faceData.path("face_token").asText();
-                ResponseEntity<String> facesetCreateResponse = externalAPIService.faceplusplusSetUserId(faceToken, user.getUsername());
-                ObjectMapper facesetCreateMapper = new ObjectMapper();
-                JsonNode setFaceUserIdRoot = facesetCreateMapper.readTree(facesetCreateResponse.getBody());
-                String setFaceUserIdFaceToken = setFaceUserIdRoot.path("face_token").asText();
-                user.setFaceToken(setFaceUserIdFaceToken);
+            @SuppressWarnings("unchecked")
+            List<Map<?,?>> faceList = (List<Map<?,?>>) faceDetectResponse.get("faces");
+            
+            if (faceList.size() == 1) {
+                String faceToken = (String) faceList.get(0).get("face_token");
+                externalAPIService.faceplusplusSetUserId(faceToken, user.getUsername());
+                user.setFaceToken(faceToken);
             }
         }
 

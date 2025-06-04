@@ -3,22 +3,22 @@ package com.unper.samper.service;
 import java.io.IOException;
 import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.unper.samper.exception.ExternalAPIException;
 
 public interface ExternalAPIService {
-    ResponseEntity<String> faceplusplusFaceCompare(String faceToken1, String imageBase64_2) throws ExternalAPIException;
+    Map<?,?> faceplusplusFaceCompare(String faceToken1, String imageBase64_2) throws ExternalAPIException, JsonMappingException, JsonProcessingException;
 
-    ResponseEntity<String> faceplusplusDetect(String imageBase64) throws ExternalAPIException;
+    Map<?,?> faceplusplusDetect(String imageBase64) throws ExternalAPIException, JsonMappingException, JsonProcessingException;
 
-    ResponseEntity<String> faceplusplusCreateFaceSet(Long outerId, String displayName, String faceToken) throws ExternalAPIException;
+    Map<?,?> faceplusplusCreateFaceSet(Long outerId, String displayName, String faceToken) throws ExternalAPIException, JsonMappingException, JsonProcessingException;
 
-    ResponseEntity<String> faceplusplusGetDetail(String facesetToken) throws ExternalAPIException;
+    Map<?,?> faceplusplusGetDetail(String facesetToken) throws ExternalAPIException, JsonMappingException, JsonProcessingException;
 
-    ResponseEntity<String> faceplusplusSetUserId(String faceToken, String userId) throws ExternalAPIException;
+    Map<?,?> faceplusplusSetUserId(String faceToken, String userId) throws ExternalAPIException, JsonMappingException, JsonProcessingException;
 
-    ResponseEntity<String> faceplusplusGetFaceDetail(String faceToken) throws ExternalAPIException;
+    Map<?,?> faceplusplusGetFaceDetail(String faceToken) throws ExternalAPIException, JsonMappingException, JsonProcessingException;
     
     Map<?,?> cloudinaryUploadBase64Image(String base64Image, String folderPath) throws ExternalAPIException, IOException;
 }
