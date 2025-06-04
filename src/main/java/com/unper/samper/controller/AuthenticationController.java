@@ -68,11 +68,12 @@ public class AuthenticationController {
      * @return
      * @throws ResourceNotFoundException
      * @throws InvalidTokenException
+     * @throws ExpiredTokenException 
      */
     @Operation(summary = "Refresh access token")
     @PostMapping("/refreshtoken")
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequestDto requestDto) throws ResourceNotFoundException, InvalidTokenException{
-        RefreshTokenResponseDto responseDto = authenticationServiceImpl.refreshAuthToken(requestDto);
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequestDto requestDto) throws ExpiredTokenException{
+        RefreshTokenResponseDto responseDto = new RefreshTokenResponseDto(authenticationServiceImpl.refreshAuthToken(requestDto.getRefreshToken()));
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully refresh token!", responseDto);
     }
     

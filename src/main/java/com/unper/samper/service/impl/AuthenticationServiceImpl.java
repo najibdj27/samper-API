@@ -25,13 +25,11 @@ import org.springframework.stereotype.Service;
 import com.unper.samper.config.JwtUtils;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.ExternalAPIException;
-import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
 import com.unper.samper.exception.WrongOTPException;
-import com.unper.samper.model.RefreshToken;
 import com.unper.samper.model.Role;
 import com.unper.samper.model.Token;
 import com.unper.samper.model.User;
@@ -41,8 +39,6 @@ import com.unper.samper.model.constant.EType;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
 import com.unper.samper.model.dto.JwtResponseDto;
-import com.unper.samper.model.dto.RefreshTokenRequestDto;
-import com.unper.samper.model.dto.RefreshTokenResponseDto;
 import com.unper.samper.model.dto.RegisterUserRequestDto;
 import com.unper.samper.model.dto.ResetPasswordRequestDto;
 import com.unper.samper.model.dto.SendEmailOTPRequestDto;
@@ -67,9 +63,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
     PasswordEncoder encoder;
-
-    @Autowired
-    RefreshTokenServiceImpl refreshTokenServiceImpl;
 
     @Autowired
     TokenServiceImpl tokenServiceImpl;
@@ -101,20 +94,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestDto.getUsername(), requestDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-        RefreshToken refreshToken = refreshTokenServiceImpl.createRefreshToken(user.getId());
+        Map<String,String> jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-        return new JwtResponseDto(jwt, refreshToken.getToken(), userDetails.getId(), roles);
+        JwtResponseDto jwtResponseDto = JwtResponseDto.builder()
+            .accessToken(jwt.get("accessToken"))
+            .refreshToken(jwt.get("refreshToken"))
+            .userId(userDetails.getId())
+            .roles(roles)
+            .build();
+        return jwtResponseDto;
     }
 
     @Override
-    public RefreshTokenResponseDto refreshAuthToken(RefreshTokenRequestDto requestDto) throws ResourceNotFoundException, InvalidTokenException {
-        RefreshToken token = refreshTokenServiceImpl.verifyTokenExpiration(requestDto.getRefreshToken());
-        String jwt = jwtUtils.refreshJwtToken(token);
-        // UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        // List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-        return new RefreshTokenResponseDto(jwt);
+    public String refreshAuthToken(String refreshToken) throws ExpiredTokenException {
+        
+        return jwtUtils.refreshAccessToken(refreshToken);
     }
 
     @Override
