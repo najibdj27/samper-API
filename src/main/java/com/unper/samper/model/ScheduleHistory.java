@@ -26,7 +26,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
-@Table(name = "schedule_history", schema = "public")
+@Table(name = "schedule_history", schema = "schedule")
 public class ScheduleHistory extends Audit {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)

@@ -30,7 +30,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
-@Table(name = "request", schema = "public")
+@Table(name = "request", schema = "schedule")
 public class Request extends Audit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

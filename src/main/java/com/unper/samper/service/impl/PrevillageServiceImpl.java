@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
-import com.unper.samper.model.Previllage;
+import com.unper.samper.model.Privilage;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.repository.PrevillageRepository;
 import com.unper.samper.service.PrevillageService;
@@ -19,18 +19,18 @@ public class PrevillageServiceImpl implements PrevillageService {
     PrevillageRepository previllageRepository;
 
     @Override
-    public List<Previllage> getAll() {
+    public List<Privilage> getAll() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getAll'");
     }
 
     @Override
-    public Set<Previllage> getAllById(Set<Integer> previllagesId) throws ResourceNotFoundException {
-        List<Previllage> previllageList = previllageRepository.findAllById(previllagesId);
+    public Set<Privilage> getAllById(Set<Integer> previllagesId) throws ResourceNotFoundException {
+        List<Privilage> previllageList = previllageRepository.findAllById(previllagesId);
         if (previllageList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
-        Set<Previllage> previllageSet = new HashSet<>(previllageList);
+        Set<Privilage> previllageSet = new HashSet<>(previllageList);
         return previllageSet;
         
     }

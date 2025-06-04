@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Admin;
-import com.unper.samper.model.Previllage;
+import com.unper.samper.model.Privilage;
 import com.unper.samper.model.Role;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AdminResponseDto;
@@ -64,7 +64,7 @@ public class AdminController {
                 .phoneNumber(admin.getUser().getPhoneNumber())
                 .roles(roleList)
                 .build();
-            List<Previllage> previllageList = new ArrayList<>();
+            List<Privilage> previllageList = new ArrayList<>();
             try {
                 previllageList = adminPrevillageServiceImpl.getAllByAdmin(admin.getId());
             } catch (ResourceNotFoundException e) {
@@ -126,7 +126,7 @@ public class AdminController {
             .phoneNumber(admin.getUser().getPhoneNumber())
             .roles(roleList)
             .build();
-        List<Previllage> previllageList = new ArrayList<>();
+        List<Privilage> previllageList = new ArrayList<>();
         try {
             previllageList = adminPrevillageServiceImpl.getAllByAdmin(admin.getId());
         } catch (ResourceNotFoundException e) {

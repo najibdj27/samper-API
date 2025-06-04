@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "schedule", schema = "public")
+@Table(name = "schedule", schema = "schedule")
 public class Schedule extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

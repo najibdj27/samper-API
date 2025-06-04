@@ -15,7 +15,7 @@ import java.util.UUID;
 @Setter
 @Builder
 @Entity
-@Table(name = "token", schema = "public")
+@Table(name = "token", schema = "token")
 public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

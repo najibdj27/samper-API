@@ -27,7 +27,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
-@Table(name = "subject", schema = "public")
+@Table(name = "subject", schema = "common")
 public class Subject extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +37,7 @@ public class Subject extends Audit {
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "subject_major", joinColumns = @JoinColumn(name = "subject_id"), inverseJoinColumns = @JoinColumn(name = "major_id"))
+    @JoinTable(name = "subject_major", joinColumns = @JoinColumn(name = "subject_id"), inverseJoinColumns = @JoinColumn(name = "major_id"), schema = "common")
     private Set<Major> majors = new HashSet<>();
 
     @Builder.Default

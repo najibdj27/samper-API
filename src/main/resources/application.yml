@@ -14,7 +14,7 @@ spring:
                     lab:
                         non_contextual_creation: true
         hibernate:
-            ddl-auto: none
+            ddl-auto: validate
         generate-ddl: false
     mail:
         host: smtp.gmail.com
