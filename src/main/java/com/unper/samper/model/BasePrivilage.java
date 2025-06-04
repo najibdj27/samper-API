@@ -21,8 +21,8 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
-@Table(name = "base_previllage", schema = "public", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
-public class BasePrevillage extends Audit {
+@Table(name = "base_privilage", schema = "public", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
+public class BasePrivilage extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

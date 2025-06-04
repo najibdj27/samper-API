@@ -6,19 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
-import com.unper.samper.model.BasePrevillage;
+import com.unper.samper.model.BasePrivilage;
 import com.unper.samper.model.constant.EResponseMessage;
-import com.unper.samper.repository.BasePrevillageRepository;
-import com.unper.samper.service.BasePrevillageService;
+import com.unper.samper.repository.BasePrivilageRepository;
+import com.unper.samper.service.BasePrivillageService;
 
 @Service
-public class BasePrevillageServiceImpl implements BasePrevillageService {
+public class BasePrivillageServiceImpl implements BasePrivillageService {
     @Autowired
-    BasePrevillageRepository basePrevillageRepository;
+    BasePrivilageRepository basePrevillageRepository;
 
     @Override
-    public List<BasePrevillage> getAll() throws ResourceNotFoundException {
-        List<BasePrevillage> basePrevillageList = basePrevillageRepository.findAll();
+    public List<BasePrivilage> getAll() throws ResourceNotFoundException {
+        List<BasePrivilage> basePrevillageList = basePrevillageRepository.findAll();
         if (basePrevillageList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
@@ -27,8 +27,8 @@ public class BasePrevillageServiceImpl implements BasePrevillageService {
     }
     
     @Override
-    public List<BasePrevillage> getAllById(List<Integer> idList) throws ResourceNotFoundException {
-        List<BasePrevillage> basePrevillageList = basePrevillageRepository.findAllById(idList);
+    public List<BasePrivilage> getAllById(List<Integer> idList) throws ResourceNotFoundException {
+        List<BasePrivilage> basePrevillageList = basePrevillageRepository.findAllById(idList);
         if (basePrevillageList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }

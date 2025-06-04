@@ -36,9 +36,9 @@ public class Previllage extends Audit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = BasePrevillage.class)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = BasePrivilage.class)
     @JoinColumn(name = "base_previllage_id")
-    private BasePrevillage basePrevillage;
+    private BasePrivilage basePrevillage;
 
     private String url;
 
