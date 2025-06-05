@@ -1,14 +1,14 @@
 package com.unper.samper.service.impl;
 
 import java.util.List;
-import java.util.Set;
+// import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.model.Admin;
-import com.unper.samper.model.Privilage;
+// import com.unper.samper.model.Privilage;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddAdminRequestDto;
@@ -49,11 +49,11 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Admin add(AddAdminRequestDto requestDto) throws ResourceNotFoundException {
-        Set<Privilage> previllageSet = previllageServiceImpl.getAllById(requestDto.getPrevillagesId());
+        // Set<Privilage> previllageSet = previllageServiceImpl.getAllById(requestDto.getPrevillagesId());
         Admin admin = Admin.builder()
             .user(requestDto.getUser())
             .NIP(requestDto.getNIP())
-            .previllages(previllageSet)
+            .previllages(null)
             .build();
         Admin newAdmin = adminRepository.save(admin);
         return newAdmin;
