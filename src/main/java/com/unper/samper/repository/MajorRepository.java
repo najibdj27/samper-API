@@ -16,16 +16,16 @@ public interface MajorRepository extends JpaRepository<Major, Long> {
     Boolean existsByMajorCode(String majorCode);
 
     @Override
-    @Query(value = "SELECT * FROM public.major WHERE is_deleted IS false", nativeQuery = true)
+    @Query(value = "SELECT * FROM common.major WHERE is_deleted IS false", nativeQuery = true)
     List<Major> findAll();
 
     @Override
-    @Query(value = "SELECT * FROM public.major WHERE id = :id AND is_deleted IS false", nativeQuery = true)
+    @Query(value = "SELECT * FROM common.major WHERE id = :id AND is_deleted IS false", nativeQuery = true)
     Optional<Major> findById(@Param("id") Long id);
 
     @Override
     @Modifying
     @Transactional
-    @Query(value = "UPDATE public.major SET is_deleted = true WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE common.major SET is_deleted = true WHERE id = :id", nativeQuery = true)
     void deleteById(@Param("id") Long id);
 }
