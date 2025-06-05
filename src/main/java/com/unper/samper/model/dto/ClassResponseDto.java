@@ -17,4 +17,6 @@ public class ClassResponseDto {
     private MajorResponseDto major;
 
     private String name;
+    
+    private String year;
 }

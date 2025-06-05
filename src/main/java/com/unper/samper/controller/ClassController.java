@@ -76,6 +76,7 @@ public class ClassController {
                 .id(kelas.getId())
                 .lecture(lectureResponseDto)
                 .name(kelas.getName())
+                .year(kelas.getYear())
                 .major(majorResponseDto)
                 .build();
             responseDtoList.add(responseDto);

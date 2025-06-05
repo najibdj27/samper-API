@@ -43,6 +43,8 @@ public class Class extends Audit {
 
     private String name;
 
+    private String year;
+
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Major.class)
     @JoinColumn(name = "major_id")
     private Major major;
