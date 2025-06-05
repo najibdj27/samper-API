@@ -35,6 +35,7 @@ import com.unper.samper.model.Token;
 import com.unper.samper.model.User;
 import com.unper.samper.model.common.UserDetailsImpl;
 import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.constant.ERole;
 import com.unper.samper.model.constant.EType;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
@@ -184,7 +185,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         });
         user.setRoles(roleSet);
         
-        if (!requestDto.getFaceData().isEmpty()) {
+        if (requestDto.getFaceData() != null && !requestDto.getRoles().contains(ERole.ADMIN)) {
             Map<?,?> faceDetectResponse = externalAPIService.faceplusplusDetect(requestDto.getFaceData());
             
             @SuppressWarnings("unchecked")
@@ -194,14 +195,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 String faceToken = (String) faceList.get(0).get("face_token");
                 externalAPIService.faceplusplusSetUserId(faceToken, user.getUsername());
                 user.setFaceToken(faceToken);
+                
+                Map<?,?> uploadBase64Image = externalAPIService.cloudinaryUploadBase64Image(requestDto.getFaceData(), "user/registration");
+                String registeredFaceUrl = uploadBase64Image.get("secure_url").toString();
+                user.setRegisteredFaceUrl(registeredFaceUrl);
             }
         }
 
-        Map<?,?> uploadBase64Image = externalAPIService.cloudinaryUploadBase64Image(requestDto.getFaceData(), "user/registration");
-    
-        String registeredFaceUrl = uploadBase64Image.get("secure_url").toString();
-
-        user.setRegisteredFaceUrl(registeredFaceUrl);
 
         userRepository.save(user);
         
