@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class RegisterAdminRequestDto {
-    private String NIP;
+    private String nip;
 
     private Set<Integer> previllages; 
 

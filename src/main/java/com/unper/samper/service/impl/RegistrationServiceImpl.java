@@ -177,7 +177,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         AddAdminRequestDto addAdminRequestDto = AddAdminRequestDto.builder()
             .user(newUser)
-            .NIP(requestDto.getNIP())
+            .NIP(requestDto.getNip())
             .previllagesId(requestDto.getPrevillages())
             .build();
         adminService.add(addAdminRequestDto);
