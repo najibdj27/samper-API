@@ -18,9 +18,11 @@ import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.TemplateNotFoundException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.model.User;
 import com.unper.samper.model.Class;
+import com.unper.samper.model.EmailTemplate;
 import com.unper.samper.model.Token;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.constant.ERole;
@@ -41,6 +43,7 @@ import com.unper.samper.repository.RoleRepository;
 import com.unper.samper.service.AdminService;
 import com.unper.samper.service.AuthenticationService;
 import com.unper.samper.service.ClassService;
+import com.unper.samper.service.EmailTemplateService;
 import com.unper.samper.service.LectureService;
 import com.unper.samper.service.OTPService;
 import com.unper.samper.service.RegistrationService;
@@ -81,6 +84,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Autowired
     TokenService tokenService;
+
+    @Autowired
+    EmailTemplateService emailTemplateService;
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
@@ -184,13 +190,17 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public void sendRegistrationOTP(SendEmailOTPRequestDto requestDto) throws MessagingException, ResourceAlreadyExistException {
+    public void sendRegistrationOTP(SendEmailOTPRequestDto requestDto) throws MessagingException, ResourceAlreadyExistException, TemplateNotFoundException {
         if (userService.existsByEmail(requestDto.getEmailAddress())) {
             throw new ResourceAlreadyExistException("User with email " + requestDto.getEmailAddress() + " have been registered!");
         }
         String emailAddress = requestDto.getEmailAddress();
-        int otp = otpService.generateOTP(emailAddress);
-        emailSender.sendOtpMessage(emailAddress, "SAMPER Registration", String.valueOf(otp));
+        int otpCode = otpService.generateOTP(emailAddress);
+        EmailTemplate emailTemplate = emailTemplateService.getByName("REGISTRATION_OTP");
+        Map<String, String> emailTemplateParams = new HashMap<>();
+        emailTemplateParams.put("otp_code", String.valueOf(otpCode));
+
+        emailSender.sendEmailWithTemplate(emailAddress, emailTemplate, emailTemplateParams);
     }
 
     @Override

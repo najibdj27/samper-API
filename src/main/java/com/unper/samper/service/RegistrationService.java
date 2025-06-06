@@ -14,6 +14,7 @@ import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.TemplateNotFoundException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
@@ -31,7 +32,7 @@ public interface RegistrationService {
 
     void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, IOException;
 
-    void sendRegistrationOTP(SendEmailOTPRequestDto requestDto) throws MessagingException, ResourceNotFoundException, ResourceAlreadyExistException;
+    void sendRegistrationOTP(SendEmailOTPRequestDto requestDto) throws MessagingException, ResourceNotFoundException, ResourceAlreadyExistException, TemplateNotFoundException;
 
     Map<String, Map<String, String>> registrationEligibilityCheck(RegistrationEligibilityRequestDto requestDto);
 

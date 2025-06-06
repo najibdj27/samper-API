@@ -23,6 +23,7 @@ import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
+import com.unper.samper.exception.TemplateNotFoundException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.constant.EResponseMessage;
@@ -83,10 +84,11 @@ public class AuthenticationController {
      * @return
      * @throws ResourceNotFoundException
      * @throws MessagingException
+     * @throws TemplateNotFoundException 
      */
     @Operation(summary = "Get OTP to reset password")
     @PostMapping("/forgetpassword/sendotp")
-    public ResponseEntity<?> forgetPassword(@Valid @RequestBody SendEmailOTPRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
+    public ResponseEntity<?> forgetPassword(@Valid @RequestBody SendEmailOTPRequestDto requestDto) throws ResourceNotFoundException, MessagingException, TemplateNotFoundException {
         authenticationServiceImpl.sendChangePasswordOTP(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been sent to your email!", null);
     }
