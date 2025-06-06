@@ -3,6 +3,7 @@ package com.unper.samper.service.impl;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,9 @@ import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
+import com.unper.samper.exception.TemplateNotFoundException;
 import com.unper.samper.exception.WrongOTPException;
+import com.unper.samper.model.EmailTemplate;
 import com.unper.samper.model.Role;
 import com.unper.samper.model.Token;
 import com.unper.samper.model.User;
@@ -47,6 +50,7 @@ import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.repository.RoleRepository;
 import com.unper.samper.repository.UserRepository;
 import com.unper.samper.service.AuthenticationService;
+import com.unper.samper.service.EmailTemplateService;
 import com.unper.samper.service.ExternalAPIService;
 import com.unper.samper.util.EmailSender;
 
@@ -79,6 +83,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
     ExternalAPIService externalAPIService;
+
+    @Autowired
+    EmailTemplateService emailTemplateService;
 
     @Value("${com.unper.samper.domain}")
     String domain;
@@ -114,13 +121,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void sendChangePasswordOTP(SendEmailOTPRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
+    public void sendChangePasswordOTP(SendEmailOTPRequestDto requestDto) throws ResourceNotFoundException, MessagingException, TemplateNotFoundException {
         if (!userRepository.existsByEmail(requestDto.getEmailAddress())) {
             throw new ResourceNotFoundException("User with email " + requestDto.getEmailAddress() + " does not exist!");
         }
         String emailAddress = requestDto.getEmailAddress();
-        int otp = otpService.generateOTP(emailAddress);
-        emailSender.sendOtpMessage(emailAddress, "SAMPER Reset Password Request", String.valueOf(otp));
+        int otpCode = otpService.generateOTP(emailAddress);
+        EmailTemplate emailTemplate = emailTemplateService.getByName("RESET_PASSWORD_OTP");
+        Map<String, String> emailTemplateParams = new HashMap<>();
+        emailTemplateParams.put("otp_code", String.valueOf(otpCode));
+        emailSender.sendEmailWithTemplate(emailAddress, emailTemplate, emailTemplateParams);
     }
 
     

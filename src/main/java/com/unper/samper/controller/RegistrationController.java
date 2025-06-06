@@ -19,6 +19,7 @@ import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.TemplateNotFoundException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.constant.EResponseMessage;
@@ -66,7 +67,7 @@ public class RegistrationController {
 
     @Operation(summary = "Send OTP for validate email address of new registered user")
     @PostMapping("/send-otp")
-    public ResponseEntity<?> sendRegistrationOTP(@RequestBody SendEmailOTPRequestDto requestDto) throws MessagingException, ResourceNotFoundException, ResourceAlreadyExistException{
+    public ResponseEntity<?> sendRegistrationOTP(@RequestBody SendEmailOTPRequestDto requestDto) throws MessagingException, ResourceNotFoundException, ResourceAlreadyExistException, TemplateNotFoundException{
         registrationService.sendRegistrationOTP(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.SUCCESS_SEND_EMAIL_OTP.getMessage(), null);
     }

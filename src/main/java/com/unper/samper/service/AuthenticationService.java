@@ -13,6 +13,7 @@ import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
+import com.unper.samper.exception.TemplateNotFoundException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.model.User;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
@@ -28,7 +29,7 @@ public interface AuthenticationService {
 
     String refreshAuthToken(String refreshToken) throws ExpiredTokenException;
 
-    void sendChangePasswordOTP(SendEmailOTPRequestDto requestDto) throws ResourceNotFoundException, MessagingException;
+    void sendChangePasswordOTP(SendEmailOTPRequestDto requestDto) throws ResourceNotFoundException, MessagingException, TemplateNotFoundException;
 
     ConfirmOTPResponseDto confirmResetPasswordOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException;
     
