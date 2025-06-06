@@ -52,7 +52,7 @@ public class AdminServiceImpl implements AdminService {
         // Set<Privilage> previllageSet = previllageServiceImpl.getAllById(requestDto.getPrevillagesId());
         Admin admin = Admin.builder()
             .user(requestDto.getUser())
-            .NIP(requestDto.getNIP())
+            .NIP(requestDto.getNip())
             .previllages(null)
             .build();
         Admin newAdmin = adminRepository.save(admin);

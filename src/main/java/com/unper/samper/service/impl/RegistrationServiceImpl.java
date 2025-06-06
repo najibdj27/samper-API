@@ -151,7 +151,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         User newUser = authenticationService.registerUser(signUpRequestDto);
 
         AddLectureRequestDto addLectureRequestDto = AddLectureRequestDto.builder()
-            .NIP(requestDto.getNIP())
+            .NIP(requestDto.getNip())
             .user(newUser)
             .build();
         lectureService.add(addLectureRequestDto);
@@ -177,7 +177,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         AddAdminRequestDto addAdminRequestDto = AddAdminRequestDto.builder()
             .user(newUser)
-            .NIP(requestDto.getNip())
+            .nip(requestDto.getNip())
             .previllagesId(requestDto.getPrevillages())
             .build();
         adminService.add(addAdminRequestDto);

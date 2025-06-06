@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class AddAdminRequestDto {
     private User user; 
     
-    private String NIP;
+    private String nip;
 
     private Set<Integer> previllagesId;
 }
