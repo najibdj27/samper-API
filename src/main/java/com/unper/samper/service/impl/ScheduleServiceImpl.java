@@ -2,21 +2,31 @@ package com.unper.samper.service.impl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.unper.samper.model.Schedule;
+import com.unper.samper.model.ScheduleHistory;
 import com.unper.samper.model.Student;
 import com.unper.samper.model.Subject;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.constant.ERole;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.unper.samper.exception.ExternalAPIException;
+import com.unper.samper.exception.FaceNotMatchedException;
+import com.unper.samper.exception.GeolocationException;
 import com.unper.samper.exception.NoAccessException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
@@ -25,15 +35,21 @@ import com.unper.samper.model.Class;
 import com.unper.samper.model.Lecture;
 import com.unper.samper.model.LectureSubject;
 import com.unper.samper.model.Role;
+import com.unper.samper.model.dto.ActionScheduleRequestDto;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
 import com.unper.samper.model.dto.RescheduleRequestDto;
+import com.unper.samper.model.dto.ScheduleHistoryReqeustDto;
 import com.unper.samper.repository.ScheduleRepository;
 import com.unper.samper.service.ScheduleSercvice;
+import com.unper.samper.util.GeoUtils;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleSercvice {
     @Autowired
     ScheduleRepository scheduleRepository;
+
+    @Autowired
+    ScheduleHistoryServiceImpl scheduleHistoryServiceImpl;
 
     @Autowired
     ClassServiceImpl classServiceImpl;
@@ -56,8 +72,11 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     @Autowired
     LectureSubjectServiceImpl lectureSubjectServiceImpl;
 
-    @Value("${com.unper.samper.credithour}")
-    Short creditHour;
+    @Autowired
+    ExternalAPIServiceImpl externalAPIServiceImpl;
+
+    @Value("${com.unper.samper.credit-minutes}")
+    Short creditMinutes;
 
     @Override
     public List<Schedule> getAllByLecture(String filterDateFrom, String filterDateTo) throws ResourceNotFoundException {
@@ -142,7 +161,9 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
             timeEnd.setTime(simpleDateFormat.parse(requestDto.getDateStart() + " " + requestDto.getTimeStart()));
             timeStart.add(Calendar.DAY_OF_MONTH, 7*i); 
             timeEnd.add(Calendar.DAY_OF_MONTH, 7*i);
-            timeEnd.add(Calendar.MINUTE, requestDto.getCreditAmount()*creditHour);
+            double minutes = (requestDto.getCreditAmount()*creditMinutes)/requestDto.getNumberOfMeetings();
+            int roundedUpMinutes = (int) Math.ceil(minutes);
+            timeEnd.add(Calendar.MINUTE, roundedUpMinutes);
              
             Schedule schedule = Schedule.builder()
                 .kelas(kelas)
@@ -152,6 +173,7 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
                 .timeEnd(timeEnd)
                 .creditAmount(requestDto.getCreditAmount())
                 .isActive(false)
+                .geolocationFlag(null)
                 .build();
             scheduleList.add(schedule);
         }
@@ -166,28 +188,52 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
     }
 
     @Override
-    public Schedule activate(Long id) throws ResourceNotFoundException, NoAccessException, ScheduleUnavailableException {
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+    public Schedule activate(ActionScheduleRequestDto requestDto) throws ResourceNotFoundException, NoAccessException, ScheduleUnavailableException, ExternalAPIException, JsonMappingException, JsonProcessingException, FaceNotMatchedException {
+        Schedule schedule = scheduleRepository.findById(requestDto.getScheduleId()).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
         Lecture lecture = schedule.getKelas().getLecture();
         Lecture currentLecture = lectureServiceImpl.getCurrentLecture();
         if (!currentLecture.equals(lecture)) {
             throw new NoAccessException(EResponseMessage.ILLEGAL_ACCESS.getMessage());
         }
-        if (Boolean.FALSE == scheduleRepository.isAvailable(id)) {
+        if (Boolean.FALSE == scheduleRepository.isAvailable(requestDto.getScheduleId())) {
             throw new ScheduleUnavailableException(EResponseMessage.SCHEDULE_UNAVAILABLE.getMessage());
         }
         if (Boolean.TRUE.equals(schedule.getIsActive())) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+
+        String userFaceToken = lecture.getUser().getFaceToken();
+      
+        Map<?,?> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
+
+        Double faceCompareScore = (Double) faceCompareRespone.get("confidence");
+
+        if (faceCompareScore < 80) {
+            throw new FaceNotMatchedException(EResponseMessage.FACE_NOT_MATCH.getMessage());
+        }
+
+        ScheduleHistoryReqeustDto scheduleHistoryReqeustDto = ScheduleHistoryReqeustDto.builder()
+            .scheduleId(schedule.getId())
+            .time(calendar)
+            .longitude(requestDto.getLongitude())
+            .latitude(requestDto.getLatitude())
+            .build();
+
+        scheduleHistoryServiceImpl.create(scheduleHistoryReqeustDto);
+
         schedule.setIsActive(Boolean.TRUE);
+        schedule.setGeolocationFlag(requestDto.getGeolocationFlag());
         Schedule activatedSchedule = scheduleRepository.save(schedule);
         
         return activatedSchedule;
     }
 
     @Override
-    public Schedule deactivate(Long id) throws NoAccessException, ResourceNotFoundException {
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
+    public Schedule deactivate(ActionScheduleRequestDto requestDto) throws NoAccessException, ResourceNotFoundException, GeolocationException, ExternalAPIException, JsonMappingException, JsonProcessingException, FaceNotMatchedException {
+        Schedule schedule = scheduleRepository.findById(requestDto.getScheduleId()).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
         Lecture lecture = schedule.getKelas().getLecture();
         Lecture currentLecture = lectureServiceImpl.getCurrentLecture();
         if (!currentLecture.equals(lecture)) {
@@ -196,6 +242,33 @@ public class ScheduleServiceImpl implements ScheduleSercvice {
         if (Boolean.FALSE.equals(schedule.getIsActive())) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+
+        ScheduleHistory scheduleHistory = scheduleHistoryServiceImpl.getByScheduleId(requestDto.getScheduleId());
+        if (Boolean.TRUE.equals(schedule.getGeolocationFlag()) && Boolean.FALSE.equals(GeoUtils.isWithinRadius(scheduleHistory.getOpenLatitude(), scheduleHistory.getOpenLongitude(), requestDto.getLatitude(), requestDto.getLongitude(), Double.valueOf(0.1)))) {
+            throw new GeolocationException("You are out of the class location");
+        }
+
+        String userFaceToken = lecture.getUser().getFaceToken();
+        
+        Map<?,?> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
+
+        Double faceCompareScore = (Double) faceCompareRespone.get("confidence");
+
+        if (faceCompareScore < 80) {
+            throw new FaceNotMatchedException(EResponseMessage.FACE_NOT_MATCH.getMessage());
+        }
+
+        ScheduleHistoryReqeustDto scheduleHistoryReqeustDto = ScheduleHistoryReqeustDto.builder()
+            .scheduleId(schedule.getId())
+            .time(calendar)
+            .longitude(requestDto.getLongitude())
+            .latitude(requestDto.getLatitude())
+            .build();
+
+        scheduleHistoryServiceImpl.update(scheduleHistoryReqeustDto);
         schedule.setIsActive(Boolean.FALSE);
         Schedule deactivatedSchedule = scheduleRepository.save(schedule);
         return deactivatedSchedule;

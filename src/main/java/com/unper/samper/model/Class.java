@@ -28,7 +28,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "class", schema = "public")
+@Table(name = "class", schema = "common")
 @SQLDelete(sql = "UPDATE pyblic.class SET is_deleted = true WHERE id=?")
 @FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
 @Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
@@ -42,6 +42,8 @@ public class Class extends Audit {
     private Lecture lecture;
 
     private String name;
+
+    private String year;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Major.class)
     @JoinColumn(name = "major_id")

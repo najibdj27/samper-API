@@ -32,7 +32,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "permission", schema = "public")
+@Table(name = "permission", schema = "schedule")
 @SQLDelete(sql = "UPDATE public.permission SET is_deleted = true WHERE id=?")
 @FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
 @Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")

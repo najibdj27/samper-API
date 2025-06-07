@@ -6,11 +6,13 @@ public enum EStatus {
     REJECTED('R'),
     ACTIVE('A'),
     INACTIVE('I'),
-    EXPIRED('E'),
+    EXPIRED('X'),
     SENT('S'),
     READ('D'),
     OPENED('O'),
-    CLOSED('C');
+    CLOSED('C'),
+    ELIGIBLE('Y'),
+    NOT_ELIGIBLE('N');
 
     private final char code;
 

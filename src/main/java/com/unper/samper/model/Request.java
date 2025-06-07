@@ -30,10 +30,10 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
-@Table(name = "request", schema = "public")
+@Table(name = "request", schema = "schedule")
 public class Request extends Audit{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String reason;

@@ -4,6 +4,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
+import com.unper.samper.model.constant.EType;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -13,16 +15,20 @@ import java.util.UUID;
 @Setter
 @Builder
 @Entity
-public class ResetPasswordToken {
+@Table(name = "token", schema = "token")
+public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false)
-    private String emailAddress;
+    private String key;
 
     @Column(nullable = false, unique = true)
     private UUID token;
+
+    @Enumerated(EnumType.STRING)
+    private EType type;
 
     private Date expiredDate;
 

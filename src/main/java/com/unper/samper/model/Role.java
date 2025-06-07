@@ -17,7 +17,7 @@ import com.unper.samper.model.constant.ERole;
 @Getter
 @Setter
 @Entity
-@Table(name = "role", schema = "public")
+@Table(name = "role", schema = "auth")
 public class Role extends Audit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

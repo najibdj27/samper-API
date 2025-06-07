@@ -1,6 +1,6 @@
 package com.unper.samper.model.dto;
 
-import com.unper.samper.model.BasePrevillage;
+import com.unper.samper.model.BasePrivilage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class PrevilllageResponseDto {
     private Integer id;
 
-    private BasePrevillage basePrevillage;
+    private BasePrivilage basePrevillage;
 
     private String url;
 

@@ -16,7 +16,7 @@ public class ConfirmOTPRequestDto {
     @NotBlank
     @Size(max = 50)
     @Email
-    private String emailAddress;
+    private String key;
 
     @NotNull
     private int otp;

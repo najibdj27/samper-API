@@ -36,5 +36,5 @@ public class RequestResponseDto {
 
     private UserResponseDto receiver;
 
-    private Map<String, Object> requsetData;
+    private Map<String, Object> requestData;
 }

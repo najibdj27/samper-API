@@ -12,15 +12,15 @@ import com.unper.samper.model.User;
 
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
     @Override
-    @Query(value = "SELECT l.* FROM public.lecture l JOIN public.user u ON l.user_id = u.id WHERE u.is_deleted IS false", nativeQuery = true)
+    @Query(value = "SELECT l.* FROM common.lecture l JOIN auth.user u ON l.user_id = u.id WHERE u.is_deleted IS false", nativeQuery = true)
     List<Lecture> findAll();
 
     @Override
-    @Query(value = "SELECT l.* FROM public.lecture l JOIN public.user u ON l.user_id = u.id WHERE l.id = :lectureId AND u.is_deleted IS false", nativeQuery = true)
+    @Query(value = "SELECT l.* FROM common.lecture l JOIN auth.user u ON l.user_id = u.id WHERE l.id = :lectureId AND u.is_deleted IS false", nativeQuery = true)
     Optional<Lecture> findById(@Param("lectureId") Long id);
 
     @Override
-    @Query(value = "SELECT l.* FROM public.lecture l JOIN public.user u ON l.user_id = u.id WHERE l.id in (:lectureIds) AND u.is_deleted IS false", nativeQuery = true)
+    @Query(value = "SELECT l.* FROM common.lecture l JOIN auth.user u ON l.user_id = u.id WHERE l.id in (:lectureIds) AND u.is_deleted IS false", nativeQuery = true)
     List<Lecture> findAllById(@Param("lectureIds") Iterable<Long> ids);
 
     Boolean existsByNIP(String NIP);

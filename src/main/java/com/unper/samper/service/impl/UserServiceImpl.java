@@ -26,8 +26,6 @@ public class UserServiceImpl implements UserService {
         if (userList.isEmpty()) {
             throw new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
         }
-
-        
         
         return userList;
     }
@@ -37,6 +35,26 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage()));
         
         return user;
+    }
+
+    @Override
+    public User getByEmail(String emailAddress) throws ResourceNotFoundException {
+        return userRepository.findByEmail(emailAddress).orElseThrow(() -> new ResourceNotFoundException(emailAddress));
+    }
+
+    @Override
+    public boolean existsUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String emailAddress) {
+        return userRepository.existsByEmail(emailAddress);
+    }
+
+    @Override
+    public boolean existByPhoneNumber(String phoneNumber) {
+        return userRepository.existsByPhoneNumber(phoneNumber);
     }
 
     @Override

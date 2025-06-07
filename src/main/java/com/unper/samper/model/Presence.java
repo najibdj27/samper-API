@@ -1,6 +1,6 @@
 package com.unper.samper.model;
 
-import java.time.LocalDateTime;
+import java.util.Calendar;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +17,6 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
-import org.springframework.data.geo.Point;
 
 import com.unper.samper.model.common.Audit;
 
@@ -33,7 +32,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "presence", schema = "public")
+@Table(name = "presence", schema = "schedule")
 @SQLDelete(sql = "UPDATE public.presence SET is_deleted = true WHERE id=?")
 @FilterDef(name = "deletedProductFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
 @Filter(name = "deletedProductFilter", condition = "isDeleted = :isDeleted")
@@ -52,11 +51,13 @@ public class Presence extends Audit {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime time;
+    private Calendar time;
 
-    private Character status;
+    private Character type;
 
-    private Point location;
+    private Double longitude;
+    
+    private Double latitude;
 
     @Builder.Default
     private Boolean isDeleted = Boolean.FALSE;

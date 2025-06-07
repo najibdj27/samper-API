@@ -29,7 +29,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
-@Table(name = "lecture_subject", schema= "public")
+@Table(name = "lecture_subject", schema= "common")
 public class LectureSubject extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +45,6 @@ public class LectureSubject extends Audit {
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "LectureSubjectClass", joinColumns = @JoinColumn(name = "lecture_subject_id"), inverseJoinColumns = @JoinColumn(name = "class_id"))
+    @JoinTable(name = "lecture_subject_class", joinColumns = @JoinColumn(name = "lecture_subject_id"), inverseJoinColumns = @JoinColumn(name = "class_id"), schema="common")
     private Set<Class> classes = new HashSet<>();
 }

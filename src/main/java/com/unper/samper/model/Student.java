@@ -12,7 +12,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@Table(name = "student", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "NIM")})
+@Table(name = "student", schema = "profile", uniqueConstraints = {@UniqueConstraint(columnNames = "NIM")})
 public class Student extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -20,6 +20,8 @@ public interface LectureService {
 
     Lecture getCurrentLecture() throws ResourceNotFoundException;
 
+    Boolean existsByNIP(String nip);
+
     Lecture add(AddLectureRequestDto requestDto) throws ResourceAlreadyExistException;
 
     Lecture addSubject(AddLectureSubjectRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException;

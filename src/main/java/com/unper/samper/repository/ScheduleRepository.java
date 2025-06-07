@@ -17,7 +17,7 @@ import com.unper.samper.model.Schedule;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long>{
     
     @Query(
-        value = "SELECT * FROM public.schedule s " + "\n" + 
+        value = "SELECT * FROM schedule.schedule s " + "\n" + 
         "WHERE s.class_id = :classId" + "\n" + 
         "AND (:filterDateFrom is null or s.time_start >= to_date(:filterDateFrom, 'YYYY-MM-DD')) " + "\n" + 
         "AND (:filterDateTo is null or s.time_start <= to_date(:filterDateTo, 'YYYY-MM-DD'))", 
@@ -26,13 +26,13 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>{
     List<Schedule> findAllByStudent(@Param("filterDateFrom") String filterDateFrom, @Param("filterDateTo") String filterDateTo, @Param("classId") Long classId);
 
     @Query(
-        value = "SELECT s.* FROM public.schedule s" + "\n" +
-        "JOIN public.lecture_subject ls ON ls.subject_id = s.subject_id" + "\n" +
-        "JOIN public.lecture_subject_class lsc ON lsc.lecture_subject_id = ls.id " + "\n" +
-        "WHERE lsc.lecture_subject_id IN (SELECT id FROM lecture_subject WHERE lecture_id = :lectureId)" + "\n" +
+        value = "SELECT s.* FROM schedule.schedule s" + "\n" +
+        "JOIN common.lecture_subject ls ON ls.subject_id = s.subject_id" + "\n" +
+        "JOIN common.lecture_subject_class lsc ON lsc.lecture_subject_id = ls.id " + "\n" +
+        "WHERE lsc.lecture_subject_id IN (SELECT id FROM common.lecture_subject WHERE lecture_id = :lectureId)" + "\n" +
         "AND s.class_id = lsc.class_id" + "\n" +
         "AND (:filterDateFrom IS null OR s.time_start >= to_date(:filterDateFrom, 'YYYY-MM-DD'))" + "\n" +
-        "AND (:filterDateTo IS null OR s.time_start <= to_date(:filterDateTo, 'YYYY-MM-DD'))",
+        "AND (:filterDateTo IS null OR s.time_end <= to_date(:filterDateTo, 'YYYY-MM-DD'))",
         nativeQuery = true
     )
     List<Schedule> findAllByLecture(@Param("filterDateFrom") String filterDateFrom, @Param("filterDateTo") String filterDateTo, @Param("lectureId") Long lectureId);
@@ -48,14 +48,14 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>{
     Boolean isAvailable(@Param("id") Long id);
 
     @Override
-    @Query(value = "SELECT * FROM public.schedule" + "\n" + 
+    @Query(value = "SELECT * FROM schedule.schedule" + "\n" + 
         "WHERE is_deleted = false", 
         nativeQuery = true
     )
     List<Schedule> findAll();
 
     @Override
-    @Query(value = "SELECT * FROM public.schedule"+ "\n" + 
+    @Query(value = "SELECT * FROM schedule.schedule"+ "\n" + 
         "WHERE is_deleted = false AND id = :id", 
         nativeQuery = true
     )
@@ -64,7 +64,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>{
     @Override
     @Modifying
     @Transactional
-    @Query(value = "UPDATE public.schedule SET is_deleted = true" + "\n" + 
+    @Query(value = "UPDATE schedule.schedule SET is_deleted = true" + "\n" + 
         "WHERE id = :id", 
         nativeQuery = true
     )

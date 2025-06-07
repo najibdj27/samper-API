@@ -30,15 +30,15 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
-@Table(name = "previllage", schema = "public")
-public class Previllage extends Audit {
+@Table(name = "privillage", schema = "portal")
+public class Privilage extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = BasePrevillage.class)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = BasePrivilage.class)
     @JoinColumn(name = "base_previllage_id")
-    private BasePrevillage basePrevillage;
+    private BasePrivilage basePrevillage;
 
     private String url;
 

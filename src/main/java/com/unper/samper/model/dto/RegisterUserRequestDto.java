@@ -16,7 +16,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class SignUpRequestDto {
+public class RegisterUserRequestDto {
     @NotBlank
     @Size(min = 2, max = 20)
     @Pattern(regexp = "[a-zA-Z]+", message = "can only contain letters with no whitespace")
@@ -54,6 +54,8 @@ public class SignUpRequestDto {
     @Pattern(regexp = "(?=.*[0-9].*[0-9]).+", message = "must at least have 2 numbers")
     @Pattern(regexp = "(?=.*[!@#$&*]).+", message = "must at least have 1 special character '!@#$&*'")
     private String password;
+
+    private String faceData;
 
     private List<ERole> roles;
 }

@@ -20,19 +20,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
+import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.SignInFailException;
+import com.unper.samper.exception.TemplateNotFoundException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.CheckExpiredJwtTokenResponseDto;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
-import com.unper.samper.model.dto.ForgetPasswordRequestDto;
 import com.unper.samper.model.dto.JwtResponseDto;
 import com.unper.samper.model.dto.RefreshTokenRequestDto;
 import com.unper.samper.model.dto.RefreshTokenResponseDto;
 import com.unper.samper.model.dto.ResetPasswordRequestDto;
+import com.unper.samper.model.dto.SendEmailOTPRequestDto;
 import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.service.impl.AuthenticationServiceImpl;
 
@@ -67,11 +69,12 @@ public class AuthenticationController {
      * @return
      * @throws ResourceNotFoundException
      * @throws InvalidTokenException
+     * @throws ExpiredTokenException 
      */
     @Operation(summary = "Refresh access token")
     @PostMapping("/refreshtoken")
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequestDto requestDto) throws ResourceNotFoundException, InvalidTokenException{
-        RefreshTokenResponseDto responseDto = authenticationServiceImpl.refreshAuthToken(requestDto);
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequestDto requestDto) throws ExpiredTokenException{
+        RefreshTokenResponseDto responseDto = new RefreshTokenResponseDto(authenticationServiceImpl.refreshAuthToken(requestDto.getRefreshToken()));
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully refresh token!", responseDto);
     }
     
@@ -81,11 +84,12 @@ public class AuthenticationController {
      * @return
      * @throws ResourceNotFoundException
      * @throws MessagingException
+     * @throws TemplateNotFoundException 
      */
     @Operation(summary = "Get OTP to reset password")
-    @PostMapping("/forgetpassword")
-    public ResponseEntity<?> forgetPassword(@Valid @RequestBody ForgetPasswordRequestDto requestDto) throws ResourceNotFoundException, MessagingException {
-        authenticationServiceImpl.changePassword(requestDto);
+    @PostMapping("/forgetpassword/sendotp")
+    public ResponseEntity<?> forgetPassword(@Valid @RequestBody SendEmailOTPRequestDto requestDto) throws ResourceNotFoundException, MessagingException, TemplateNotFoundException {
+        authenticationServiceImpl.sendChangePasswordOTP(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been sent to your email!", null);
     }
 
@@ -95,11 +99,12 @@ public class AuthenticationController {
      * @return
      * @throws WrongOTPException
      * @throws ResourceNotFoundException
+     * @throws ResourceAlreadyExistException 
      */
     @Operation(summary = "Confirm OTP to get the token to reset the password")
-    @PostMapping("/confirmotp")
-    public ResponseEntity<?> confirmOTP(@Valid @RequestBody ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException {
-        ConfirmOTPResponseDto responseDto = authenticationServiceImpl.confirmOTP(requestDto);
+    @PostMapping("/forgetpassword/confirmotp")
+    public ResponseEntity<?> confirmOTP(@Valid @RequestBody ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException {
+        ConfirmOTPResponseDto responseDto = authenticationServiceImpl.confirmResetPasswordOTP(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "OTP has been confirmed!", responseDto);
     }
 
@@ -113,7 +118,7 @@ public class AuthenticationController {
      * @throws ExpiredTokenException
      */
     @Operation(summary = "Reset the password")
-    @PatchMapping("/reset_password")
+    @PatchMapping("/forgetpassword/resetpassword")
     public ResponseEntity<?> resetPassword(@RequestParam("token") UUID token, @Valid @RequestBody ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
         authenticationServiceImpl.resetPassword(token, requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Password has been reset successfully!", null);

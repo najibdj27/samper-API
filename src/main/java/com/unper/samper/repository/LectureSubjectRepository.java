@@ -17,11 +17,11 @@ public interface LectureSubjectRepository extends JpaRepository<LectureSubject, 
 
     Optional<LectureSubject> findBySubjectAndLecture(Subject subject, Lecture lecture);
 
-    @Query(value = "SELECT count(*)>0  FROM lecture_subject_class lsc WHERE lsc.lecture_subject_id = :lectureSubjectId AND lsc.class_id = :classId", nativeQuery = true)
+    @Query(value = "SELECT count(*)>0  FROM common.lecture_subject_class lsc WHERE lsc.lecture_subject_id = :lectureSubjectId AND lsc.class_id = :classId", nativeQuery = true)
     Boolean existsByLectureAndSubjectAndClasses(@Param("lectureSubjectId") Long lectureSubject, @Param("classId") Long classId);
 
     @Modifying
-    @Query(value = "INSERT INTO public.lecture_subject_class (lecture_subject_id, class_id) VALUES(:lectureSubjectId, :classId)", nativeQuery = true)
+    @Query(value = "INSERT INTO common.lecture_subject_class (lecture_subject_id, class_id) VALUES(:lectureSubjectId, :classId)", nativeQuery = true)
     void addLectureSubjectClass(@Param("lectureSubjectId") Long lectureSubjectId, @Param("classId") Long classId);
 
 }

@@ -12,6 +12,8 @@ public enum EResponseMessage {
     USERNAME_ALREADY_TAKEN("Username is already exists!"),
     EMAIL_ALREADY_EXIST("Email is already exists!"),
     PHONE_NUMBER_ALREADY_EXIST("Phone number is already exists!"),
+    NIM_ALREADY_EXIST("NIM is already exists!"),
+    NIP_ALREADY_EXIST("NIP is already exists!"),
     REGISTRATION_SUCCESS("Registration success!"),
     MISSING_PARAM("Missing parameter, check again your request!"),
     PRESENCE_DIFFERENT_CLASS("Can't present in other class!"),
@@ -25,7 +27,12 @@ public enum EResponseMessage {
     DELETE_SUCCESS("Data deleted successfully!"),
     DELETE_NO_RESOURCE("Can't delete data!"),
     REFRESH_TOKEN_NOT_EXIST("Refresh token is not found!"),
-    REFRESH_TOKEN_EXPIRED("Refresh token is expired!");
+    FACE_NOT_MATCH("Face not matched!"),
+    REFRESH_TOKEN_EXPIRED("Refresh token is expired!"),
+    SUCCESS_SEND_EMAIL_OTP("OTP has been sent to your email!"),
+    SUCCESS_VALIDATE_OTP("Your OTP is Valid!"),
+    TOKEN_NOT_EXISST("Token not found or expired, kindly to try again!"),
+    TOKEN_INVALID("Token is not valid!");
 
     private final String message;
 

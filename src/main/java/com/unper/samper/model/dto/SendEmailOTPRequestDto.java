@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @Builder
-public class ForgetPasswordRequestDto {
+public class SendEmailOTPRequestDto {
     @NotBlank
     @Size(max = 50)
     @Email

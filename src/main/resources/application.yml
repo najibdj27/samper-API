@@ -39,14 +39,36 @@ com:
     unper:
         samper: 
             domain: samper-api-6bf01e4f0b51.herokuapp.com
-            cloud-name: dx1pjzkvf
-            api-key: 135717915924372
-            api-secret: 1WuBB8xMV8_QmFSGyV3DhDuR40g
-            jwt-secret: Kw0v7/HdetcXqaJuEzX2gNPesccuXr03qtL4ucPXLlM=
-            jwt-expiration-ms: 60000
-            refresh-token-expiration-ms: 86400000
             version: 1.0.0
             build: 001
-            credithour: 50
+            credit-minutes: 800
+            token-expiration-ms: 180000 
+            otp-expiration-ms: 1800000 
+            security: 
+                jwt: 
+                    secret: Kw0v7/HdetcXqaJuEzX2gNPesccuXr03qtL4ucPXLlM=
+                    access-token-expiration-ms: 60000
+                    refresh-token-expiration-ms: 86400000
 
-
+external-api:
+    faceplusplus:
+        base-url: https://api-us.faceplusplus.com
+        api-key: WMyGjFJxOgnWFxQWL_-HC6ledbbod4lK
+        api-secret: ZYJYDVy-96Ylx338z5eNCYdJ28Aku3om
+        tomeout: 60000
+        end-point:
+            CREATE_FACESET: /facepp/v3/faceset/create
+            ADD_FACE_FACESET: /facepp/v3/faceset/addface
+            UPDATE_FACESET: /facepp/v3/faceset/update
+            DELETE_FACESET: /facepp/v3/faceset/delete
+            REMMOVE_FACESET: /facepp/v3/faceset/removeface
+            GET_DETAIL_FACESET: /facepp/v3/faceset/getdetail
+            ADD_USER_ID_FACE: /facepp/v3/face/setuserid
+            GET_DETAIL_FACE: /facepp/v3/face/getdetail
+            ANALYZE_FACE: /facepp/v3/face/analyze
+            FACE_COMPARE: /facepp/v3/compare
+            FACE_DETECT: /facepp/v3/detect
+    cloudinary:
+        cloud-name: dx1pjzkvf
+        api-key: 274874634654542
+        api-secret: 9WLF-E7wh6GhUdimL9Mt4Sxcci4

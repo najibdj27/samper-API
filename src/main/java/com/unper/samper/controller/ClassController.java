@@ -41,7 +41,6 @@ public class ClassController {
     ClassServiceImpl classServiceImpl;
 
     @Operation(summary = "Get all data of classes")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<?> getAll() throws ResourceNotFoundException{
         List<Class> classList = classServiceImpl.getAll();
@@ -77,6 +76,7 @@ public class ClassController {
                 .id(kelas.getId())
                 .lecture(lectureResponseDto)
                 .name(kelas.getName())
+                .year(kelas.getYear())
                 .major(majorResponseDto)
                 .build();
             responseDtoList.add(responseDto);

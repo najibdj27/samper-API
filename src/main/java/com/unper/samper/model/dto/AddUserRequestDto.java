@@ -25,4 +25,6 @@ public class AddUserRequestDto {
     private String phoneNumber;
 
     private String password;
+
+    private String faceSetToken;
 }

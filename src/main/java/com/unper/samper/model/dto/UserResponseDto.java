@@ -32,5 +32,7 @@ public class UserResponseDto {
 
     private String phoneNumber;
 
+    private String faceSetToken;
+
     private List<String> roles;
 }

@@ -36,7 +36,11 @@ public class UserDetailsImpl implements UserDetails {
 
     @JsonIgnore
     private String password;
+    
+    private String faceToken;
 
+    private String registeredFaceUrl;
+    
     private Boolean isDeleted;
 
     public Collection<? extends GrantedAuthority> authorities;
@@ -45,7 +49,7 @@ public class UserDetailsImpl implements UserDetails {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
-        return new UserDetailsImpl(user.getId(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPhoneNumber(), user.getPassword(), user.getIsDeleted(), authorities);
+        return new UserDetailsImpl(user.getId(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPhoneNumber(), user.getPassword(), user.getFaceToken(), user.getRegisteredFaceUrl(), user.getIsDeleted(), authorities);
     }
 
     @Override

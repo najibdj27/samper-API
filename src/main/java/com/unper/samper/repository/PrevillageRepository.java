@@ -2,8 +2,8 @@ package com.unper.samper.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.unper.samper.model.Previllage;
+import com.unper.samper.model.Privilage;
 
-public interface PrevillageRepository extends JpaRepository<Previllage, Integer> {
+public interface PrevillageRepository extends JpaRepository<Privilage, Integer> {
     
 }

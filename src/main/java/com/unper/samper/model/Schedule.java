@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "schedule", schema = "public")
+@Table(name = "schedule", schema = "schedule")
 public class Schedule extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,6 +48,8 @@ public class Schedule extends Audit {
     private Short creditAmount; 
 
     private Boolean isActive;
+
+    private Boolean geolocationFlag;
 
     @Builder.Default
     private Boolean isDeleted = Boolean.FALSE;

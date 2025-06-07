@@ -1,8 +1,6 @@
 package com.unper.samper.model.dto;
 
-import java.time.LocalDateTime;
-
-import org.springframework.data.geo.Point;
+import java.util.Calendar;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -23,9 +21,11 @@ public class PresenceResponseDto {
     private ScheduleResponseDto schedule;
 
     @JsonFormat(pattern = "YYYY-MM-DD HH:mm")
-    private LocalDateTime time;
+    private Calendar time;
 
-    private Character status;
+    private Character type;
 
-    private Point location;
+    private Double longitude;
+
+    private Double latitude;
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.handler.ResponseHandler;
-import com.unper.samper.model.Previllage;
+import com.unper.samper.model.Privilage;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.GetAllPrevillageByAdminResponseDto;
 import com.unper.samper.service.impl.AdminPrevillageServiceImpl;
@@ -36,7 +36,7 @@ public class AdminPrevillageController {
     @GetMapping("/getbycurrentadmin")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> getAllByCurrentAdmin(@RequestParam(value = "name", required = false) String name) throws ResourceNotFoundException {
-        List<Previllage> previllageList = adminPrevillageServiceImpl.getAllByCurrentAdmin(name);
+        List<Privilage> previllageList = adminPrevillageServiceImpl.getAllByCurrentAdmin(name);
         List<GetAllPrevillageByAdminResponseDto> responseDtoList = new ArrayList<>();
         previllageList.forEach(previllage -> {
             Set<String> previllageNameSet = new HashSet<>();

@@ -28,6 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Override
     @Modifying
     @Transactional
-    @Query(value = "UPDATE public.user SET is_deleted = true WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE auth.user SET is_deleted = true WHERE id = :id", nativeQuery = true)
     void deleteById(@Param("id")Long id);
 }

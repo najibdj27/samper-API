@@ -32,7 +32,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
-@Table(name = "major", schema = "public", uniqueConstraints = {@UniqueConstraint(columnNames = "majorCode")})
+@Table(name = "major", schema = "common", uniqueConstraints = {@UniqueConstraint(columnNames = "majorCode")})
 public class Major extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

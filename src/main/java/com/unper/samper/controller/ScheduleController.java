@@ -26,26 +26,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.unper.samper.exception.ExternalAPIException;
+import com.unper.samper.exception.FaceNotMatchedException;
+import com.unper.samper.exception.GeolocationException;
 import com.unper.samper.exception.NoAccessException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleUnavailableException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Schedule;
+import com.unper.samper.model.ScheduleHistory;
 import com.unper.samper.model.Subject;
 import com.unper.samper.model.Class;
 import com.unper.samper.model.LectureSubject;
+import com.unper.samper.model.Presence;
 import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.dto.ActionScheduleRequestDto;
 import com.unper.samper.model.dto.AddScheduleRequestDto;
 import com.unper.samper.model.dto.ClassResponseDto;
 import com.unper.samper.model.dto.LectureResponseDto;
 import com.unper.samper.model.dto.RescheduleRequestDto;
+import com.unper.samper.model.dto.ScheduleHistoryResponseDto;
 import com.unper.samper.model.dto.ScheduleResponseDto;
 import com.unper.samper.model.dto.SubjectResponseDto;
 import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.impl.ClassServiceImpl;
 import com.unper.samper.service.impl.LectureServiceImpl;
 import com.unper.samper.service.impl.LectureSubjectServiceImpl;
+import com.unper.samper.service.impl.PresenceServiceImpl;
+import com.unper.samper.service.impl.ScheduleHistoryServiceImpl;
 import com.unper.samper.service.impl.ScheduleServiceImpl;
 import com.unper.samper.service.impl.SubjectServiceImpl;
 
@@ -62,6 +73,9 @@ public class ScheduleController {
     ScheduleServiceImpl scheduleServiceImpl;
 
     @Autowired
+    ScheduleHistoryServiceImpl scheduleHistoryServiceImpl;
+
+    @Autowired
     ClassServiceImpl classServiceImpl;
 
     @Autowired
@@ -73,6 +87,9 @@ public class ScheduleController {
     @Autowired
     LectureSubjectServiceImpl lectureSubjectServiceImpl;
 
+    @Autowired
+    PresenceServiceImpl presenceServiceImpl;
+
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT') or hasAuthority('LECTURE')")
     @GetMapping("/allbystudent")
@@ -80,7 +97,7 @@ public class ScheduleController {
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
         List<Schedule> scheduleList = scheduleServiceImpl.getAllByStudent(filterDateFrom, filterDateTo);
-        List<ScheduleResponseDto> responseDtoList = new LinkedList<>();
+        List<ScheduleHistoryResponseDto> responseDtoList = new LinkedList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
             try {
@@ -118,26 +135,49 @@ public class ScheduleController {
             try {
                 subject = subjectServiceImpl.getById(schedule.getSubject().getId());
             } catch (ResourceNotFoundException e) {}
+            
             SubjectResponseDto subjectResponseDto = SubjectResponseDto.builder()
                 .id(subject.getId())
                 .lecture(null)
                 .name(subject.getName())
-                .build();
+                .build();                
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
+            Presence clockInPresence = new Presence();
+            String clockInTime = null;
+            try {
+                clockInPresence = presenceServiceImpl.getByCurrentStudentAndScheduleAndType(schedule, 'I');
+                if (clockInPresence != null) {
+                    clockInTime = dateFormat.format(clockInPresence.getTime().getTime());
+                }
+            } catch (ResourceNotFoundException e) {}
+            
+            
+            Presence clockOutPresence = new Presence();
+            String clockOutTime = null;
+            try {
+                clockOutPresence = presenceServiceImpl.getByCurrentStudentAndScheduleAndType(schedule, 'O');
+                if (clockOutPresence != null) {
+                   clockOutTime = dateFormat.format(clockOutPresence.getTime().getTime()); 
+                }
+            } catch (ResourceNotFoundException e) {}
+            
+            ScheduleHistoryResponseDto scheduleHistoryResponseDto = ScheduleHistoryResponseDto.builder()
                 .id(schedule.getId())
                 .kelas(classResponseDto)
                 .subject(subjectResponseDto)
                 .lecture(lectureResponseDto)
                 .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
                 .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+                .clockIn(clockInTime)
+                .clockOut(clockOutTime)
                 .creditAmount(schedule.getCreditAmount())
                 .meetingOrder(schedule.getMeetingOrder())
                 .isActive(schedule.getIsActive())
+                .geolocationFlag(schedule.getGeolocationFlag())
                 .build();
-            responseDtoList.add(scheduleResponseDto);
+            responseDtoList.add(scheduleHistoryResponseDto);
         });
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList);
     }
@@ -149,7 +189,7 @@ public class ScheduleController {
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
         List<Schedule> scheduleList = scheduleServiceImpl.getAllByLecture(filterDateFrom, filterDateTo);
-        List<ScheduleResponseDto> responseDtoList = new ArrayList<>();
+        List<ScheduleHistoryResponseDto> responseDtoList = new ArrayList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
             try {
@@ -191,10 +231,25 @@ public class ScheduleController {
                 .lecture(null)
                 .name(subject.getName())
                 .build();
-
+                
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
+            ScheduleHistory scheduleHistory = new ScheduleHistory();
+            String openTime = null;
+            String closedTime = null;
+            try {
+                scheduleHistory = scheduleHistoryServiceImpl.getByScheduleId(schedule.getId());
+                if (scheduleHistory != null) {
+                    openTime = dateFormat.format(scheduleHistory.getOpenTime().getTime());
+                    if (scheduleHistory.getCloseTime() != null) {
+                        closedTime = dateFormat.format(scheduleHistory.getCloseTime().getTime());
+                    }
+                }
+            } catch (ResourceNotFoundException e) {
+            }
+
+
+            ScheduleHistoryResponseDto scheduleResponseDto = ScheduleHistoryResponseDto.builder()
                 .id(schedule.getId())
                 .kelas(classResponseDto)
                 .subject(subjectResponseDto)
@@ -202,9 +257,12 @@ public class ScheduleController {
                 .meetingOrder(schedule.getMeetingOrder())
                 .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
                 .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+                .openTime(openTime)
+                .closeTime(closedTime)
                 .creditAmount(schedule.getCreditAmount())
                 .meetingOrder(schedule.getMeetingOrder())
                 .isActive(schedule.getIsActive())
+                .geolocationFlag(schedule.getGeolocationFlag())
                 .build();
             responseDtoList.add(scheduleResponseDto);
         });
@@ -378,6 +436,7 @@ public class ScheduleController {
             .creditAmount(schedule.getCreditAmount())
             .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
+            .geolocationFlag(schedule.getGeolocationFlag())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), scheduleResponseDto);
     }
@@ -393,8 +452,8 @@ public class ScheduleController {
     @Operation(summary = "Activate schedule")
     @PreAuthorize("hasAuthority('LECTURE')")
     @PatchMapping("/activate")
-    public ResponseEntity<?> activate(Long id) throws ResourceNotFoundException, NoAccessException, ScheduleUnavailableException {
-        Schedule schedule = scheduleServiceImpl.activate(id);
+    public ResponseEntity<?> activate(@RequestBody ActionScheduleRequestDto requestDto) throws ResourceNotFoundException, NoAccessException, ScheduleUnavailableException, JsonMappingException, JsonProcessingException, ExternalAPIException, FaceNotMatchedException {
+        Schedule schedule = scheduleServiceImpl.activate(requestDto);
         Class kelas = new Class();
         try {
             kelas = classServiceImpl.getById(schedule.getKelas().getId());
@@ -425,6 +484,7 @@ public class ScheduleController {
             .creditAmount(schedule.getCreditAmount())
             .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
+            .geolocationFlag(schedule.getGeolocationFlag())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.ACTIVATE_SCHEDULE_SUCCESS.getMessage(), responseDto);
     }
@@ -432,8 +492,8 @@ public class ScheduleController {
     @Operation(summary = "Deactivate shedule")
     @PreAuthorize("hasAuthority('LECTURE')")
     @PatchMapping("/deactivate")
-    public ResponseEntity<?> deactivate(Long id) throws ResourceNotFoundException, NoAccessException, ScheduleUnavailableException {
-        Schedule schedule = scheduleServiceImpl.deactivate(id);
+    public ResponseEntity<?> deactivate(@RequestBody ActionScheduleRequestDto requestDto) throws ResourceNotFoundException, NoAccessException, ScheduleUnavailableException, GeolocationException, JsonMappingException, JsonProcessingException, ExternalAPIException, FaceNotMatchedException {
+        Schedule schedule = scheduleServiceImpl.deactivate(requestDto);
         Class kelas = new Class();
         try {
             kelas = classServiceImpl.getById(schedule.getKelas().getId());
@@ -464,6 +524,7 @@ public class ScheduleController {
             .creditAmount(schedule.getCreditAmount())
             .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
+            .geolocationFlag(schedule.getGeolocationFlag())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.DEACTIVATE_SCHEDULE.getMessage(), responseDto);
     }
@@ -503,6 +564,7 @@ public class ScheduleController {
             .creditAmount(schedule.getCreditAmount())
             .meetingOrder(schedule.getMeetingOrder())
             .isActive(schedule.getIsActive())
+            .geolocationFlag(schedule.getGeolocationFlag())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.EDIT_DATA_SUCCESS.getMessage(), responseDto);
     }

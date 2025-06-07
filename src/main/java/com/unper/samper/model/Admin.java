@@ -29,7 +29,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
-@Table(name = "admin", schema = "public")
+@Table(name = "admin", schema = "profile")
 public class Admin extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +43,6 @@ public class Admin extends Audit {
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "admin_previllage", joinColumns = @JoinColumn(name = "admin_id"), inverseJoinColumns = @JoinColumn(name = "previllage_id"))
-    private Set<Previllage> previllages = new HashSet<>();
+    @JoinTable(name = "admin_privilage", joinColumns = @JoinColumn(name = "admin_id"), inverseJoinColumns = @JoinColumn(name = "privilage_id"), schema = "portal")
+    private Set<Privilage> previllages = new HashSet<>();
 }
