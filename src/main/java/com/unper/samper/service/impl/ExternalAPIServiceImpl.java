@@ -3,6 +3,8 @@ package com.unper.samper.service.impl;
 import java.io.IOException;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -60,6 +62,9 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
 
     RestTemplate restTemplate = new RestTemplate();
 
+    private static final Logger logger = LoggerFactory.getLogger(ExternalAPIServiceImpl.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public Map<?,?> faceplusplusFaceCompare(String faceToken1, String imageBase64_2) throws ExternalAPIException, JsonMappingException, JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
@@ -77,7 +82,10 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         ObjectMapper mapper = new ObjectMapper();
         String responseBody = response.getBody();
         Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
+        logger.info("[EXTERNAL API URI] {}", objectMapper.writeValueAsString(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_FACE_COMPARE));
         if (response.getStatusCode().equals(HttpStatus.OK)) {
+            logger.info("[EXTERNAL API RESPONSE STATUS] {}", response.getStatusCode());
+            logger.info("[EXTERNAL API RESPONSE BODY] {}", objectMapper.writeValueAsString(responseMap));
             return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus face compare API.");
@@ -102,7 +110,10 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         ObjectMapper mapper = new ObjectMapper();
         String responseBody = response.getBody();
         Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
+        logger.info("[EXTERNAL API URI] {}", objectMapper.writeValueAsString(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_FACE_DETECT));
         if (response.getStatusCode().equals(HttpStatus.OK)) {
+            logger.info("[EXTERNAL API RESPONSE STATUS] {}", response.getStatusCode());
+            logger.info("[EXTERNAL API RESPONSE BODY] {}", objectMapper.writeValueAsString(responseMap));
             return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus face detect API.");
@@ -127,7 +138,10 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         ObjectMapper mapper = new ObjectMapper();
         String responseBody = response.getBody();
         Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
+        logger.info("[EXTERNAL API URI] {}", objectMapper.writeValueAsString(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_FACESET_CREATE));
         if (response.getStatusCode().equals(HttpStatus.OK)) {
+            logger.info("[EXTERNAL API RESPONSE STATUS] {}", response.getStatusCode());
+            logger.info("[EXTERNAL API RESPONSE BODY] {}", objectMapper.writeValueAsString(responseMap));
             return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus faceset create API.");
@@ -150,7 +164,10 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         ObjectMapper mapper = new ObjectMapper();
         String responseBody = response.getBody();
         Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
+        logger.info("[EXTERNAL API URI] {}", objectMapper.writeValueAsString(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_GET_DETAIL_FACESET));
         if (response.getStatusCode().equals(HttpStatus.OK)) {
+            logger.info("[EXTERNAL API RESPONSE STATUS] {}", response.getStatusCode());
+            logger.info("[EXTERNAL API RESPONSE BODY] {}", objectMapper.writeValueAsString(responseMap));
             return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus get detail API.");
@@ -174,7 +191,10 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         ObjectMapper mapper = new ObjectMapper();
         String responseBody = response.getBody();
         Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
+        logger.info("[EXTERNAL API URI] {}", objectMapper.writeValueAsString(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_ADD_USER_ID));
         if (response.getStatusCode().equals(HttpStatus.OK)) {
+            logger.info("[EXTERNAL API RESPONSE STATUS] {}", response.getStatusCode());
+            logger.info("[EXTERNAL API RESPONSE BODY] {}", objectMapper.writeValueAsString(responseMap));
             return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus set user id API.");
@@ -197,7 +217,10 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         ObjectMapper mapper = new ObjectMapper();
         String responseBody = response.getBody();
         Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
+        logger.info("[EXTERNAL API URI] {}", objectMapper.writeValueAsString(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_GET_FACE_DETAIL));
         if (response.getStatusCode().equals(HttpStatus.OK)) {
+            logger.info("[EXTERNAL API RESPONSE STATUS] {}", response.getStatusCode());
+            logger.info("[EXTERNAL API RESPONSE BODY] {}", objectMapper.writeValueAsString(responseMap));
             return responseMap;
         } else {
             throw new ExternalAPIException("Failed when calling faceplusplus set user id API.");
