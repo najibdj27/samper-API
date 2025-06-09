@@ -26,11 +26,11 @@ import com.unper.samper.model.dto.SendEmailOTPRequestDto;
 
 @Service
 public interface RegistrationService {
-    void registerStudent(UUID requestToken, RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, InvalidTokenException, IOException;
+    void registerStudent(UUID requestToken, RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, InvalidTokenException, IOException, InterruptedException;
 
-    void registerLecture(UUID requestToken, RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, InvalidTokenException, IOException;
+    void registerLecture(UUID requestToken, RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, InvalidTokenException, IOException, InterruptedException;
 
-    void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, IOException;
+    void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, JsonMappingException, JsonProcessingException, ExternalAPIException, IOException, InterruptedException;
 
     void sendRegistrationOTP(SendEmailOTPRequestDto requestDto) throws MessagingException, ResourceNotFoundException, ResourceAlreadyExistException, TemplateNotFoundException;
 

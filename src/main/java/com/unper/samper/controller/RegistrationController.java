@@ -46,21 +46,21 @@ public class RegistrationController {
     
     @Operation(summary = "Register new student")
     @PostMapping("/registerstudent")
-    public ResponseEntity<?> registerStudent(@RequestParam("token") UUID requestToken, @RequestBody RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException{
+    public ResponseEntity<?> registerStudent(@RequestParam("token") UUID requestToken, @RequestBody RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException, InterruptedException{
         registrationService.registerStudent(requestToken, requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }
     
     @Operation(summary = "Register new lecture")
     @PostMapping("/registerlecture")
-    public ResponseEntity<?> registerLecture(@RequestParam("token") UUID requestToken, @RequestBody RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException{
+    public ResponseEntity<?> registerLecture(@RequestParam("token") UUID requestToken, @RequestBody RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException, InterruptedException{
         registrationService.registerLecture(requestToken, requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }
 
     @Operation(summary = "Register new admin")
     @PostMapping("/registeradmin")
-    public ResponseEntity<?> registerAdmin(@RequestBody RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, IOException{
+    public ResponseEntity<?> registerAdmin(@RequestBody RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, IOException, InterruptedException{
         registrationService.registerAdmin(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.CREATED, EResponseMessage.REGISTRATION_SUCCESS.getMessage(), null);
     }

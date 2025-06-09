@@ -35,7 +35,7 @@ public interface AuthenticationService {
     
     void resetPassword(UUID token, ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException;
     
-    User registerUser(RegisterUserRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, JsonMappingException, JsonProcessingException, IOException;
+    User registerUser(RegisterUserRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, JsonMappingException, JsonProcessingException, IOException, InterruptedException;
 
     User getCurrentUser() throws ResourceNotFoundException;
 

@@ -161,7 +161,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public User registerUser(RegisterUserRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, IOException {
+    public User registerUser(RegisterUserRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, IOException, InterruptedException {
         if (userRepository.existsByUsername(requestDto.getUsername())) {
             throw new ResourceAlreadyExistException(EResponseMessage.USERNAME_ALREADY_TAKEN.getMessage());
         }
@@ -198,6 +198,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (requestDto.getFaceData() != null && !requestDto.getRoles().contains(ERole.ADMIN)) {
             Map<?,?> faceDetectResponse = externalAPIService.faceplusplusDetect(requestDto.getFaceData());
             
+            Thread.sleep(1000);
             @SuppressWarnings("unchecked")
             List<Map<?,?>> faceList = (List<Map<?,?>>) faceDetectResponse.get("faces");
             
