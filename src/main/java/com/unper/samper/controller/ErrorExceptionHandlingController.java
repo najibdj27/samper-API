@@ -164,19 +164,19 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     }
     
     @ExceptionHandler(FaceNotMatchedException.class)
-    public ResponseEntity<?> handleFaceNotMatchedException(ExternalAPIException e) {
+    public ResponseEntity<?> handleFaceNotMatchedException(FaceNotMatchedException e) {
         var error = EErrorCode.FACE_NOT_MATCH;
         return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, e.getMessage(), error.getCode(), error.getDescription());
     }
    
     @ExceptionHandler(MissingFormatArgumentException.class)
-    public ResponseEntity<?> handleMissingFormatArgumentException(ExternalAPIException e) {
+    public ResponseEntity<?> handleMissingFormatArgumentException(MissingFormatArgumentException e) {
         var error = EErrorCode.MISSING_PARAM;
         return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
     }
    
     @ExceptionHandler(GeolocationException.class)
-    public ResponseEntity<?> handleGeolocationException(ExternalAPIException e) {
+    public ResponseEntity<?> handleGeolocationException(GeolocationException e) {
         var error = EErrorCode.LOCATION_NOT_IN_RANGE;
         return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, e.getMessage(), error.getCode(), error.getDescription());
     }
