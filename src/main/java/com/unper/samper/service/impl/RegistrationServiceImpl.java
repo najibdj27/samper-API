@@ -90,7 +90,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public void registerStudent(UUID requestToken, RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException {
+    public void registerStudent(UUID requestToken, RegisterStudentRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException, InterruptedException {
         if (requestDto.getFaceData().isEmpty()) {
             throw new MissingFormatArgumentException("Face data is null");
         }
@@ -131,7 +131,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class})
-    public void registerLecture(UUID requestToken, RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException {
+    public void registerLecture(UUID requestToken, RegisterLectureRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, InvalidTokenException, IOException, InterruptedException {
         if (requestDto.getFaceData().isEmpty()) {
             throw new MissingFormatArgumentException("Face data is null");
         }
@@ -165,7 +165,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = {ResourceAlreadyExistException.class, ResourceNotFoundException.class, ExternalAPIException.class, IOException.class})
-    public void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, IOException {
+    public void registerAdmin(RegisterAdminRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, IOException, InterruptedException {
         List<ERole> eRoleList = new ArrayList<>();
         eRoleList.add(ERole.ADMIN);
         RegisterUserRequestDto signUpRequestDto = RegisterUserRequestDto.builder()
