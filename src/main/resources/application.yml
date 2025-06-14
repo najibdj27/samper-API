@@ -47,8 +47,8 @@ com:
             security: 
                 jwt: 
                     secret: Kw0v7/HdetcXqaJuEzX2gNPesccuXr03qtL4ucPXLlM=
-                    access-token-expiration-ms: 60000
-                    refresh-token-expiration-ms: 86400000
+                    access-token-expiration-ms: 900000
+                    refresh-token-expiration-ms: 7776000000
 
 external-api:
     faceplusplus:
