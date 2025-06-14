@@ -12,6 +12,10 @@ import lombok.*;
 @Setter
 @Builder
 public class ResetPasswordRequestDto {
+
+
+    @NotBlank
+    private String emailAddress;
     
     @NotBlank
     @Size(min = 6, max = 40)

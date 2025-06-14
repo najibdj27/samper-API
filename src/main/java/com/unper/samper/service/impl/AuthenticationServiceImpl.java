@@ -1,8 +1,6 @@
 package com.unper.samper.service.impl;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +24,7 @@ import org.springframework.stereotype.Service;
 import com.unper.samper.config.JwtUtils;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.ExternalAPIException;
+import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
@@ -140,11 +139,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void resetPassword(UUID token , ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
-        Date now = Calendar.getInstance().getTime();
-        Token resetPasswordToken = tokenServiceImpl.getByKey(token.toString());
-        if (Boolean.TRUE.equals(tokenServiceImpl.isExpired(resetPasswordToken.getId(), now))) {
-            throw new ExpiredTokenException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+    public void resetPassword(UUID token , ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException, InvalidTokenException {
+        Token resetPasswordToken = tokenServiceImpl.getByKeyAndType(requestDto.getEmailAddress(), EType.RESET_PASSWORD);
+        if (!resetPasswordToken.getToken().equals(token)){
+            throw new InvalidTokenException(EResponseMessage.TOKEN_INVALID.getMessage());
         }
         Optional<User> optionalUser = userRepository.findByEmail(resetPasswordToken.getKey());
         User user = optionalUser.get();

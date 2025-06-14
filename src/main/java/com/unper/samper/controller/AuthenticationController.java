@@ -116,10 +116,11 @@ public class AuthenticationController {
      * @throws PasswordNotMatchException
      * @throws ResourceNotFoundException
      * @throws ExpiredTokenException
+     * @throws InvalidTokenException 
      */
     @Operation(summary = "Reset the password")
     @PatchMapping("/forgetpassword/resetpassword")
-    public ResponseEntity<?> resetPassword(@RequestParam("token") UUID token, @Valid @RequestBody ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
+    public ResponseEntity<?> resetPassword(@RequestParam("token") UUID token, @Valid @RequestBody ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException, InvalidTokenException {
         authenticationServiceImpl.resetPassword(token, requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Password has been reset successfully!", null);
     }
