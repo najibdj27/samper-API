@@ -36,6 +36,8 @@ import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.constant.EErrorCode;
 
+import io.jsonwebtoken.ExpiredJwtException;
+
 
 @ControllerAdvice
 public class ErrorExceptionHandlingController extends ResponseEntityExceptionHandler {
@@ -107,6 +109,12 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     public ResponseEntity<?> handleExpiredTokenException(ExpiredTokenException e) {
         var error = EErrorCode.TOKEN_INVALID;
         return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+    
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> handleExpiredJwtException(ExpiredJwtException e) {
+        var error = EErrorCode.TOKEN_INVALID;
+        return ResponseHandler.generateErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage(), error.getCode(), error.getDescription());
     }
 
     @ExceptionHandler(ScheduleNotActiveException.class)

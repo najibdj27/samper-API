@@ -77,16 +77,15 @@ public class JwtUtils {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
-
+            return false;
         } catch (MalformedJwtException e) {
-
+            return false;
         } catch (ExpiredJwtException e) {
-
+            return false;
         } catch (UnsupportedJwtException e) {
-
+            return false;
         } catch (IllegalArgumentException e) {
-
+            return false;
         }
-        return false;
     }
 }
