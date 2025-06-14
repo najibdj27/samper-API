@@ -65,7 +65,7 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {
         var error = EErrorCode.NOT_FOUND;
-        return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, e.getMessage(), error.getCode(), error.getDescription());
+        return ResponseHandler.generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), error.getCode(), error.getDescription());
     }
 
     @ExceptionHandler(SizeLimitExceededException.class)

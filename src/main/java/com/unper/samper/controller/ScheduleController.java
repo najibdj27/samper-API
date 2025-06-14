@@ -49,14 +49,16 @@ import com.unper.samper.model.dto.ClassResponseDto;
 import com.unper.samper.model.dto.LectureResponseDto;
 import com.unper.samper.model.dto.RescheduleRequestDto;
 import com.unper.samper.model.dto.ScheduleHistoryResponseDto;
+import com.unper.samper.model.dto.ScheduleLectureResponseDto;
+import com.unper.samper.model.dto.ScheduleStudentResponseDto;
 import com.unper.samper.model.dto.ScheduleResponseDto;
 import com.unper.samper.model.dto.SubjectResponseDto;
 import com.unper.samper.model.dto.UserResponseDto;
+import com.unper.samper.service.ScheduleHistoryService;
 import com.unper.samper.service.impl.ClassServiceImpl;
 import com.unper.samper.service.impl.LectureServiceImpl;
 import com.unper.samper.service.impl.LectureSubjectServiceImpl;
 import com.unper.samper.service.impl.PresenceServiceImpl;
-import com.unper.samper.service.impl.ScheduleHistoryServiceImpl;
 import com.unper.samper.service.impl.ScheduleServiceImpl;
 import com.unper.samper.service.impl.SubjectServiceImpl;
 
@@ -73,7 +75,7 @@ public class ScheduleController {
     ScheduleServiceImpl scheduleServiceImpl;
 
     @Autowired
-    ScheduleHistoryServiceImpl scheduleHistoryServiceImpl;
+    ScheduleHistoryService scheduleHistoryService;
 
     @Autowired
     ClassServiceImpl classServiceImpl;
@@ -90,6 +92,8 @@ public class ScheduleController {
     @Autowired
     PresenceServiceImpl presenceServiceImpl;
 
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     @Operation(summary = "Get all data of schedules")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('STUDENT') or hasAuthority('LECTURE')")
     @GetMapping("/allbystudent")
@@ -97,7 +101,7 @@ public class ScheduleController {
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
         List<Schedule> scheduleList = scheduleServiceImpl.getAllByStudent(filterDateFrom, filterDateTo);
-        List<ScheduleHistoryResponseDto> responseDtoList = new LinkedList<>();
+        List<ScheduleStudentResponseDto> responseDtoList = new LinkedList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
             try {
@@ -142,8 +146,6 @@ public class ScheduleController {
                 .name(subject.getName())
                 .build();                
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
             Presence clockInPresence = new Presence();
             String clockInTime = null;
             try {
@@ -163,7 +165,7 @@ public class ScheduleController {
                 }
             } catch (ResourceNotFoundException e) {}
             
-            ScheduleHistoryResponseDto scheduleHistoryResponseDto = ScheduleHistoryResponseDto.builder()
+            ScheduleStudentResponseDto scheduleStudentResponseDto = ScheduleStudentResponseDto.builder()
                 .id(schedule.getId())
                 .kelas(classResponseDto)
                 .subject(subjectResponseDto)
@@ -177,7 +179,7 @@ public class ScheduleController {
                 .isActive(schedule.getIsActive())
                 .geolocationFlag(schedule.getGeolocationFlag())
                 .build();
-            responseDtoList.add(scheduleHistoryResponseDto);
+            responseDtoList.add(scheduleStudentResponseDto);
         });
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList);
     }
@@ -189,7 +191,7 @@ public class ScheduleController {
         @RequestParam(value = "dateFrom", required = false) String filterDateFrom, 
         @RequestParam(value = "dateTo", required = false) String filterDateTo) throws ResourceNotFoundException {
         List<Schedule> scheduleList = scheduleServiceImpl.getAllByLecture(filterDateFrom, filterDateTo);
-        List<ScheduleHistoryResponseDto> responseDtoList = new ArrayList<>();
+        List<ScheduleLectureResponseDto> responseDtoList = new ArrayList<>();
         scheduleList.forEach(schedule -> {
             Class kelas = new Class();
             try {
@@ -232,13 +234,11 @@ public class ScheduleController {
                 .name(subject.getName())
                 .build();
                 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
             ScheduleHistory scheduleHistory = new ScheduleHistory();
             String openTime = null;
             String closedTime = null;
             try {
-                scheduleHistory = scheduleHistoryServiceImpl.getByScheduleId(schedule.getId());
+                scheduleHistory = scheduleHistoryService.getByScheduleId(schedule.getId());
                 if (scheduleHistory != null) {
                     openTime = dateFormat.format(scheduleHistory.getOpenTime().getTime());
                     if (scheduleHistory.getCloseTime() != null) {
@@ -249,7 +249,7 @@ public class ScheduleController {
             }
 
 
-            ScheduleHistoryResponseDto scheduleResponseDto = ScheduleHistoryResponseDto.builder()
+            ScheduleLectureResponseDto scheduleLectureResponseDto = ScheduleLectureResponseDto.builder()
                 .id(schedule.getId())
                 .kelas(classResponseDto)
                 .subject(subjectResponseDto)
@@ -264,7 +264,7 @@ public class ScheduleController {
                 .isActive(schedule.getIsActive())
                 .geolocationFlag(schedule.getGeolocationFlag())
                 .build();
-            responseDtoList.add(scheduleResponseDto);
+            responseDtoList.add(scheduleLectureResponseDto);
         });
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDtoList); 
     }
@@ -335,7 +335,6 @@ public class ScheduleController {
                         .name(subject.getName())
                         .build();
                         
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
                         .id(schedule.getId())
                         .kelas(classResponseDto)
@@ -413,17 +412,12 @@ public class ScheduleController {
             .user(userResponseDto)
             .build();
         
-        Subject subject = new Subject();
-        try {
-            subject = subjectServiceImpl.getById(schedule.getSubject().getId());
-        } catch (ResourceNotFoundException e) {}
+        Subject subject = schedule.getSubject();
         SubjectResponseDto subjectResponseDto = SubjectResponseDto.builder()
             .id(subject.getId())
             .lecture(null)
             .name(subject.getName())
             .build();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
             .id(schedule.getId())
@@ -439,6 +433,67 @@ public class ScheduleController {
             .geolocationFlag(schedule.getGeolocationFlag())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), scheduleResponseDto);
+    }
+
+    @Operation(summary = "Get schedule history")
+    @PreAuthorize("hasAuthority('LECTURE') or hasAuthority('ADMIN')")
+    @GetMapping("/history")
+    public ResponseEntity<?> history() throws ResourceNotFoundException{
+        List<ScheduleHistory> scheduleHistoryList = scheduleHistoryService.getByLecture();
+        List<ScheduleHistoryResponseDto> responseDtoList = new ArrayList<>();
+        scheduleHistoryList.forEach(scheduleHistory -> {
+            Schedule schedule = scheduleHistory.getSchedule();
+            Subject subject = schedule.getSubject();
+            Class kelas = schedule.getKelas();
+            
+            ClassResponseDto classResponseDto = ClassResponseDto.builder()
+                .id(kelas.getId())
+                .lecture(null)
+                .name(kelas.getName())
+                .build();
+            
+            SubjectResponseDto subjectResponseDto = SubjectResponseDto.builder()
+                .id(subject.getId())
+                .lecture(null)
+                .name(subject.getName())
+                .build();
+
+            ScheduleResponseDto scheduleResponseDto = ScheduleResponseDto.builder()
+                .id(schedule.getId())
+                .kelas(classResponseDto)
+                .subject(subjectResponseDto)
+                .lecture(null)
+                .meetingOrder(schedule.getMeetingOrder())
+                .timeStart(dateFormat.format(schedule.getTimeStart().getTime()))
+                .timeEnd(dateFormat.format(schedule.getTimeEnd().getTime()))
+                .creditAmount(schedule.getCreditAmount())
+                .isActive(schedule.getIsActive())
+                .geolocationFlag(schedule.getGeolocationFlag())
+                .build();
+
+            String openTime = null;
+            String closeTime = null;
+            if (scheduleHistory.getOpenTime() != null) {
+                openTime = dateFormat.format(scheduleHistory.getOpenTime().getTime());
+            }
+            if (scheduleHistory.getCloseTime() != null) {
+                closeTime = dateFormat.format(scheduleHistory.getCloseTime().getTime());
+            }
+
+            ScheduleHistoryResponseDto scheduleHistoryResponseDto = ScheduleHistoryResponseDto.builder()
+                .id(scheduleHistory.getId())
+                .schedule(scheduleResponseDto)
+                .openTime(openTime)
+                .openLongitude(scheduleHistory.getOpenLongitude())
+                .openLatitue(scheduleHistory.getCloseLongitude())
+                .closeTime(closeTime)
+                .closeLongitude(scheduleHistory.getCloseLongitude())
+                .closeLatitude(scheduleHistory.getCloseLatitude())
+                .build();
+
+            responseDtoList.add(scheduleHistoryResponseDto);
+        });
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, null, responseDtoList);
     }
 
     @Operation(summary = "Add new schedule")
@@ -472,8 +527,6 @@ public class ScheduleController {
             .lecture(null)
             .name(subject.getName())
             .build();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         ScheduleResponseDto responseDto = ScheduleResponseDto.builder()
             .id(schedule.getId())
@@ -513,8 +566,6 @@ public class ScheduleController {
             .name(subject.getName())
             .build();
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        
         ScheduleResponseDto responseDto = ScheduleResponseDto.builder()
             .id(schedule.getId())
             .kelas(classResponseDto)
@@ -553,7 +604,6 @@ public class ScheduleController {
             .name(subject.getName())
             .build();
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         ScheduleResponseDto responseDto = ScheduleResponseDto.builder()
             .id(schedule.getId())
