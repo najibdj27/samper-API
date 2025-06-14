@@ -24,10 +24,10 @@ public class JwtUtils {
     private String jwtSecret;
 
     @Value("${com.unper.samper.security.jwt.access-token-expiration-ms}")
-    private int accessTokenExpirationMs;
+    private long accessTokenExpirationMs;
    
     @Value("${com.unper.samper.security.jwt.refresh-token-expiration-ms}")
-    private int refreshTokenExpirationMs;
+    private long refreshTokenExpirationMs;
 
     public Map<String, String> generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
