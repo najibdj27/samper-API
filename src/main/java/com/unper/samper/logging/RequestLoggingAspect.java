@@ -69,8 +69,8 @@ public class RequestLoggingAspect {
             }
         }
         
-        logger.info("[HTTP REQUEST] {} {}", httpMethod, uri);
         if (EXCLUDED_URIS.contains(uri)) return;
+        logger.info("[HTTP REQUEST] {} {}", httpMethod, uri);
 
         if (!paramMap.isEmpty()) {
             logger.info("[REQUEST PARAMS] {}", objectMapper.writeValueAsString(paramMap));

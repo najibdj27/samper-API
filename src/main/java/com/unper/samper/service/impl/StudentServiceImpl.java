@@ -6,11 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.model.Class;
+import com.unper.samper.model.Lecture;
 import com.unper.samper.model.Student;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddStudentRequestDto;
 import com.unper.samper.repository.StudentRepository;
+import com.unper.samper.service.ClassService;
+import com.unper.samper.service.LectureService;
 import com.unper.samper.service.StudentService;
 
 @Service
@@ -20,6 +24,12 @@ public class StudentServiceImpl implements StudentService {
 
     @Autowired
     UserServiceImpl userServiceImpl;
+
+    @Autowired
+    ClassService classService;
+
+    @Autowired
+    LectureService lectureService;
 
     @Autowired
     StudentRepository studentRepository;
@@ -34,6 +44,20 @@ public class StudentServiceImpl implements StudentService {
         }
         
         return studentList;
+    }
+
+    @Override
+    public List<Student> getAllByClass(Long classId) throws ResourceNotFoundException {
+        Class kelas = classService.getById(classId); 
+        return studentRepository.findAllByClass(kelas);
+    }
+
+    
+    @Override
+    public List<Student> getAllByLectureAndClass(Long lectureId, Long classId) throws ResourceNotFoundException {
+        Lecture lecture = lectureService.getById(lectureId);
+        Class kelas = classService.getById(classId);
+        return studentRepository.findAllByLectureAndClass(lecture, kelas);
     }
 
     @Override
