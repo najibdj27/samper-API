@@ -77,6 +77,8 @@ public class StudentController {
                 .username(student.getUser().getUsername())
                 .email(student.getUser().getEmail())
                 .phoneNumber(student.getUser().getPhoneNumber())
+                .registeredFaceUrl(student.getUser().getRegisteredFaceUrl())
+                .status(student.getUser().getStatus().name())
                 .roles(roleList)
                 .build();
             ClassResponseDto classResponseDto = ClassResponseDto.builder()
@@ -90,6 +92,7 @@ public class StudentController {
                 .user(userResponseDto)
                 .kelas(classResponseDto)
                 .isLeader(student.getIsLeader())
+                .isActive(student.getIsActive())
                 .build();
             responseDtoList.add(responseDto);
         });
@@ -134,6 +137,7 @@ public class StudentController {
                         .email(student.getUser().getEmail())
                         .phoneNumber(student.getUser().getPhoneNumber())
                         .registeredFaceUrl(student.getUser().getRegisteredFaceUrl())
+                        .status(student.getUser().getStatus().name())
                         .roles(roleList)
                         .build();
                     ClassResponseDto classResponseDto = ClassResponseDto.builder()
@@ -148,6 +152,7 @@ public class StudentController {
                         .user(userResponseDto)
                         .kelas(classResponseDto)
                         .isLeader(student.getIsLeader())
+                        .isActive(student.getIsActive())
                         .build();
                     responseDtoList.add(responseDto);
                 });
@@ -188,6 +193,7 @@ public class StudentController {
             .username(student.getUser().getUsername())
             .email(student.getUser().getEmail())
             .phoneNumber(student.getUser().getPhoneNumber())
+            .status(student.getUser().getStatus().name())
             .roles(roleList)
             .build();
         ClassResponseDto classResponseDto = ClassResponseDto.builder()
@@ -201,6 +207,7 @@ public class StudentController {
             .user(userResponseDto)
             .kelas(classResponseDto)
             .isLeader(student.getIsLeader())
+            .isActive(student.getIsActive())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
     }
@@ -225,6 +232,7 @@ public class StudentController {
             .email(student.getUser().getEmail())
             .phoneNumber(student.getUser().getPhoneNumber())
             .registeredFaceUrl(student.getUser().getRegisteredFaceUrl())
+            .status(student.getUser().getStatus().name())
             .roles(roleList)
             .build();
         ClassResponseDto classResponseDto = ClassResponseDto.builder()
@@ -239,6 +247,7 @@ public class StudentController {
             .user(userResponseDto)
             .kelas(classResponseDto)
             .isLeader(student.getIsLeader())
+            .isActive(student.getIsActive())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.EDIT_DATA_SUCCESS.getMessage(), responseDto);
     }

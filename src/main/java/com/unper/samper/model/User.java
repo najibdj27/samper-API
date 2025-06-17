@@ -7,6 +7,7 @@ import java.util.HashSet;
 import javax.persistence.*;
 
 import com.unper.samper.model.common.Audit;
+import com.unper.samper.model.constant.EUserStatus;
 
 import lombok.*;
 
@@ -39,6 +40,9 @@ public class User extends Audit {
     private String faceToken;
 
     private String registeredFaceUrl;
+
+    @Enumerated(EnumType.STRING)
+    private EUserStatus status;
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)

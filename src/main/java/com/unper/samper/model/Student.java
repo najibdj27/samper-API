@@ -29,4 +29,6 @@ public class Student extends Audit {
     private Class kelas;
 
     private Boolean isLeader;
+
+    private Boolean isActive;
 }

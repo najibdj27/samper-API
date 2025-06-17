@@ -21,4 +21,6 @@ public class StudentResponseDto {
     private ClassResponseDto kelas;
 
     private Boolean isLeader;
+
+    private Boolean isActive;
 }

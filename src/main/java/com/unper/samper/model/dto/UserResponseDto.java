@@ -36,5 +36,7 @@ public class UserResponseDto {
 
     private String registeredFaceUrl;
 
+    private String status;
+
     private List<String> roles;
 }
