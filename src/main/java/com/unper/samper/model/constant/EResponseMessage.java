@@ -33,7 +33,9 @@ public enum EResponseMessage {
     SUCCESS_VALIDATE_OTP("Your OTP is Valid!"),
     TOKEN_NOT_EXISST("Token not found or expired, kindly to try again!"),
     TOKEN_INVALID("Token is not valid!"),
-    CHANGE_USER_STATUS_SUCCESS("Success change user status!");
+    CHANGE_USER_STATUS_SUCCESS("Success change user status!"),
+    FAILED_LOGIN_USER_INACTIVE("Your account is inactive, contact admin for more information!"),
+    FAILED_LOGIN_USER_SUSPEND("Your account is suspend, contact admin for more information!");
 
     private final String message;
 

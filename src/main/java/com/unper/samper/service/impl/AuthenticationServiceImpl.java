@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.config.JwtUtils;
+import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.InvalidTokenException;
@@ -91,8 +92,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     String domain;
 
     @Override
-    public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException {
+    public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException, ActivityNotAllowedException {
         User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
+        if (user.getStatus() == EUserStatus.INACTIVE) {
+            throw new ActivityNotAllowedException(EResponseMessage.FAILED_LOGIN_USER_INACTIVE.getMessage());
+        }
+        if (user.getStatus() == EUserStatus.SUSPEND) {
+            throw new ActivityNotAllowedException(EResponseMessage.FAILED_LOGIN_USER_SUSPEND.getMessage());
+        }
         Boolean isPasswordCorrect = encoder.matches(requestDto.getPassword(), user.getPassword());
         if (Boolean.FALSE.equals(userRepository.existsByUsername(requestDto.getUsername()))) {
             throw new SignInFailException("Username or password is wrong!");

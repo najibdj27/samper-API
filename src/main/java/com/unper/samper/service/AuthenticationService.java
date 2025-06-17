@@ -7,6 +7,7 @@ import javax.mail.MessagingException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.ExternalAPIException;
 import com.unper.samper.exception.InvalidTokenException;
@@ -26,7 +27,7 @@ import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.model.dto.RegisterUserRequestDto;
 
 public interface AuthenticationService {
-    JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException;
+    JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException, ActivityNotAllowedException;
 
     String refreshAuthToken(String refreshToken) throws ExpiredTokenException;
 

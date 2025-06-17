@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
@@ -55,10 +56,11 @@ public class AuthenticationController {
      * @return
      * @throws SignInFailException
      * @throws ResourceNotFoundException 
+     * @throws ActivityNotAllowedException 
      */
     @Operation(summary = "Sign in and get the token for access")
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException {
+    public ResponseEntity<?> authenticate(@Valid @RequestBody SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException, ActivityNotAllowedException {
         JwtResponseDto responseDto = authenticationServiceImpl.authenticateUser(requestDto);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, "Successfully generate token!", responseDto);
     }
