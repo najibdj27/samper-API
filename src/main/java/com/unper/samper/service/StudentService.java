@@ -24,6 +24,8 @@ public interface StudentService {
 
     Boolean existsByNIM(String nim);
 
+    Student setAsLeader(Long studentId) throws ResourceNotFoundException;
+
     Student add(AddStudentRequestDto requestDto);
 
     void delete(Long id) throws ResourceNotFoundException;

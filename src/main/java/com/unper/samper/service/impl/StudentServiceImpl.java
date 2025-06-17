@@ -1,6 +1,7 @@
 package com.unper.samper.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,6 +96,20 @@ public class StudentServiceImpl implements StudentService {
         Student newStudent = studentRepository.save(student);
         return newStudent;
     }
+
+    @Override
+    public Student setAsLeader(Long studentId) throws ResourceNotFoundException {
+        Student student = getById(studentId);
+        List<Student> studentList = getAllByClass(student.getKelas().getId());
+        Optional<Student> currentLeader = Optional.ofNullable(studentList.stream().filter(s -> Boolean.TRUE.equals(s.getIsLeader())).findFirst().orElse(null));
+        if (currentLeader != null) {
+            currentLeader.get().setIsLeader(false);
+            studentRepository.save(currentLeader.get());
+        }
+        student.setIsLeader(true);
+        
+        return studentRepository.save(student);
+    }   
 
     @Override
     public void delete(Long id) throws ResourceNotFoundException {

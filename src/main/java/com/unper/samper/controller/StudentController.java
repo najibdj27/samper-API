@@ -32,6 +32,7 @@ import com.unper.samper.service.ClassService;
 import com.unper.samper.service.impl.StudentServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -202,6 +203,44 @@ public class StudentController {
             .isLeader(student.getIsLeader())
             .build();
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
+    }
+
+    public ResponseEntity<?> setAsLeader(@RequestBody Long studentId) throws ResourceNotFoundException{
+        Student student = studentServiceImpl.setAsLeader(studentId);
+        List<String> roleList = new ArrayList<>();
+        for (Role role : student.getUser().getRoles()) {
+            roleList.add(role.getName().toString());
+        }
+        Major major = student.getKelas().getMajor();
+        MajorResponseDto majorResponseDto = MajorResponseDto.builder()
+            .majorCode(major.getMajorCode())
+            .name(major.getName())
+            .build();
+        UserResponseDto userResponseDto = UserResponseDto.builder()
+            .id(student.getUser().getId())
+            .firstName(student.getUser().getFirstName())
+            .lastName(student.getUser().getLastName())
+            .dateOfBirth(student.getUser().getDateOfBirth())
+            .username(student.getUser().getUsername())
+            .email(student.getUser().getEmail())
+            .phoneNumber(student.getUser().getPhoneNumber())
+            .registeredFaceUrl(student.getUser().getRegisteredFaceUrl())
+            .roles(roleList)
+            .build();
+        ClassResponseDto classResponseDto = ClassResponseDto.builder()
+            .id(student.getKelas().getId())
+            .lecture(null)
+            .name(student.getKelas().getName())
+            .major(majorResponseDto)
+            .build(); 
+        StudentResponseDto responseDto = StudentResponseDto.builder()
+            .id(student.getId())
+            .NIM(student.getNIM())
+            .user(userResponseDto)
+            .kelas(classResponseDto)
+            .isLeader(student.getIsLeader())
+            .build();
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.EDIT_DATA_SUCCESS.getMessage(), responseDto);
     }
 
     /***
