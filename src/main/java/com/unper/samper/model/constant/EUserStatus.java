@@ -3,7 +3,7 @@ package com.unper.samper.model.constant;
 public enum EUserStatus {
     ACTIVE('A'),
     INACTIVE('I'),
-    LEAVE('L');
+    SUSPEND('S');
 
     private final Character code;
 
