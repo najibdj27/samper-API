@@ -10,11 +10,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.StatusNotFoundException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Lecture;
 import com.unper.samper.model.Role;
@@ -140,5 +143,13 @@ public class UserController {
                 .build();
             } 
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
+    }
+
+    @Operation(summary =  "Change user status")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
+    @PostMapping("/change-status")
+    public ResponseEntity<?> activateUser(@RequestBody Long userId, String status) throws ResourceNotFoundException, StatusNotFoundException{
+        userServiceImpl.changeStatus(userId, status);
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.CHANGE_USER_STATUS_SUCCESS.getMessage(), null);
     }
 }
