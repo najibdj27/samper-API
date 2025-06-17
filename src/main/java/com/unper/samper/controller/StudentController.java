@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Class;
+import com.unper.samper.model.Major;
 import com.unper.samper.model.Role;
 import com.unper.samper.model.Student;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.ClassResponseDto;
+import com.unper.samper.model.dto.MajorResponseDto;
 import com.unper.samper.model.dto.StudentResponseDto;
 import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.ClassService;
@@ -117,6 +119,11 @@ public class StudentController {
                     for (Role role : student.getUser().getRoles()) {
                         roleList.add(role.getName().toString());
                     }
+                    Major major = student.getKelas().getMajor();
+                    MajorResponseDto majorResponseDto = MajorResponseDto.builder()
+                        .majorCode(major.getMajorCode())
+                        .name(major.getName())
+                        .build();
                     UserResponseDto userResponseDto = UserResponseDto.builder()
                         .id(student.getUser().getId())
                         .firstName(student.getUser().getFirstName())
@@ -125,12 +132,14 @@ public class StudentController {
                         .username(student.getUser().getUsername())
                         .email(student.getUser().getEmail())
                         .phoneNumber(student.getUser().getPhoneNumber())
+                        .registeredFaceUrl(student.getUser().getRegisteredFaceUrl())
                         .roles(roleList)
                         .build();
                     ClassResponseDto classResponseDto = ClassResponseDto.builder()
                         .id(student.getKelas().getId())
                         .lecture(null)
                         .name(student.getKelas().getName())
+                        .major(majorResponseDto)
                         .build(); 
                     StudentResponseDto responseDto = StudentResponseDto.builder()
                         .id(student.getId())

@@ -32,7 +32,9 @@ public class UserResponseDto {
 
     private String phoneNumber;
 
-    private String faceSetToken;
+    private String faceToken;
+
+    private String registeredFaceUrl;
 
     private List<String> roles;
 }
