@@ -39,6 +39,7 @@ import com.unper.samper.model.common.UserDetailsImpl;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.constant.ERole;
 import com.unper.samper.model.constant.EType;
+import com.unper.samper.model.constant.EUserStatus;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
 import com.unper.samper.model.dto.JwtResponseDto;
@@ -192,6 +193,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             roleSet.add(roles);
         });
         user.setRoles(roleSet);
+        if (roleSet.contains(roleRepository.findByName(ERole.STUDENT).get())) {
+            user.setStatus(EUserStatus.INACTIVE);
+        } else {
+            user.setStatus(EUserStatus.ACTIVE);
+        }
         
         if (requestDto.getFaceData() != null && !requestDto.getRoles().contains(ERole.ADMIN)) {
             Map<?,?> faceDetectResponse = externalAPIService.faceplusplusDetect(requestDto.getFaceData());
