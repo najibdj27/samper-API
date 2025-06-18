@@ -3,9 +3,6 @@ spring:
         url: ${DB_URL}
         username: ${DATABASE_USER}
         password: ${DATABASE_PASSWORD}
-        # url: jdbc:postgresql://localhost:5432/samper_api
-        # username: postgres
-        # password: Doyouknow.p0stgr3s
     jpa:
         properties:
             hibernate:
