@@ -218,6 +218,15 @@ public class StudentController {
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
     }
 
+    /***
+     * Set a student as class leader
+     * @param id
+     * @return
+     * @throws ResourceNotFoundException
+     */
+    @Operation(summary = "Set a student as class leader")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
+    @PatchMapping("/set-leader")
     public ResponseEntity<?> setAsLeader(@RequestBody Long studentId) throws ResourceNotFoundException{
         Student student = studentServiceImpl.setAsLeader(studentId);
         List<String> roleList = new ArrayList<>();
