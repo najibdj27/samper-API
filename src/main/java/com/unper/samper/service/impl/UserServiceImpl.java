@@ -93,14 +93,17 @@ public class UserServiceImpl implements UserService {
             case "ACTIVE":
                 activateUser(userId);
                 break;
-            
+                
             case "INACTIVE":
                 deactivateUser(userId);
-            
+                break;
+                
             case "SUSPEND":
                 suspendUser(userId);
+                break;
+
             default:
-                throw new StatusNotFoundException(status);
+                throw new StatusNotFoundException("Status " + status + " is invalid!");
         }
     }
     
