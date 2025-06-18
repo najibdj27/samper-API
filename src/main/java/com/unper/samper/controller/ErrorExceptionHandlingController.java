@@ -32,6 +32,7 @@ import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleNotActiveException;
 import com.unper.samper.exception.ScheduleUnavailableException;
 import com.unper.samper.exception.SignInFailException;
+import com.unper.samper.exception.StatusNotFoundException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.constant.EErrorCode;
@@ -186,6 +187,12 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     @ExceptionHandler(GeolocationException.class)
     public ResponseEntity<?> handleGeolocationException(GeolocationException e) {
         var error = EErrorCode.LOCATION_NOT_IN_RANGE;
+        return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, e.getMessage(), error.getCode(), error.getDescription());
+    }
+    
+    @ExceptionHandler(StatusNotFoundException.class)
+    public ResponseEntity<?> handleStatusNotFoundException(StatusNotFoundException e) {
+        var error = EErrorCode.STATUS_NOT_FOUND;
         return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, e.getMessage(), error.getCode(), error.getDescription());
     }
 

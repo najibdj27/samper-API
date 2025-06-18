@@ -28,9 +28,10 @@ public enum EErrorCode {
     DIFFERENT_CLASS(1400, "Not allowed"),
     SCHEDULE_NOT_ACTIVE(1401, "Schedule not active"),
     SCHEDULE_UNAVAILABLE(1402, "Schedule unavailable"),
-    ON_SCHEDULE(1402, "Student on schedule"),
-    FACE_NOT_MATCH(1403, "Face not match"),
-    LOCATION_NOT_IN_RANGE(1403, "Location not in range"),
+    ON_SCHEDULE(1403, "Student on schedule"),
+    FACE_NOT_MATCH(1404, "Face not match"),
+    LOCATION_NOT_IN_RANGE(1405, "Location not in range"),
+    STATUS_NOT_FOUND(1406, "Invalid status"),
     EXT_API_ERR(2001, "Failed when calling external API");
 
 
