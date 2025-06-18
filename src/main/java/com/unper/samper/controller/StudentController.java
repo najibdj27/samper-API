@@ -185,6 +185,11 @@ public class StudentController {
         for (Role role : student.getUser().getRoles()) {
             roleList.add(role.getName().toString());
         }
+        Major major = student.getKelas().getMajor();
+        MajorResponseDto majorResponseDto = MajorResponseDto.builder()
+            .majorCode(major.getMajorCode())
+            .name(major.getName())
+            .build();
         UserResponseDto userResponseDto = UserResponseDto.builder()
             .id(student.getUser().getId())
             .firstName(student.getUser().getFirstName())
@@ -200,6 +205,7 @@ public class StudentController {
             .id(student.getKelas().getId())
             .lecture(null)
             .name(student.getKelas().getName())
+            .major(majorResponseDto)
             .build(); 
         StudentResponseDto responseDto = StudentResponseDto.builder()
             .id(student.getId())
