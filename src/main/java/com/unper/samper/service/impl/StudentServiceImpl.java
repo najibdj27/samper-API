@@ -102,7 +102,7 @@ public class StudentServiceImpl implements StudentService {
         Student student = getById(studentId);
         List<Student> studentList = getAllByClass(student.getKelas().getId());
         Optional<Student> currentLeader = Optional.ofNullable(studentList.stream().filter(s -> Boolean.TRUE.equals(s.getIsLeader())).findFirst().orElse(null));
-        if (currentLeader != null) {
+        if (currentLeader.isPresent()) {
             currentLeader.get().setIsLeader(false);
             studentRepository.save(currentLeader.get());
         }
