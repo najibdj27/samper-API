@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -147,7 +147,7 @@ public class UserController {
 
     @Operation(summary =  "Change user status")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
-    @PostMapping("/change-status")
+    @PatchMapping("/change-status")
     public ResponseEntity<?> activateUser(@RequestBody Long userId, String status) throws ResourceNotFoundException, StatusNotFoundException{
         userServiceImpl.changeStatus(userId, status);
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.CHANGE_USER_STATUS_SUCCESS.getMessage(), null);
