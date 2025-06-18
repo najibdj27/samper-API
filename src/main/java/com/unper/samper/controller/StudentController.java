@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,13 +27,13 @@ import com.unper.samper.model.Student;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.ClassResponseDto;
 import com.unper.samper.model.dto.MajorResponseDto;
+import com.unper.samper.model.dto.SetLeaderStudentRequestDto;
 import com.unper.samper.model.dto.StudentResponseDto;
 import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.service.ClassService;
 import com.unper.samper.service.impl.StudentServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -227,8 +228,8 @@ public class StudentController {
     @Operation(summary = "Set a student as class leader")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
     @PatchMapping("/set-leader")
-    public ResponseEntity<?> setAsLeader(@RequestBody Long studentId) throws ResourceNotFoundException{
-        Student student = studentServiceImpl.setAsLeader(studentId);
+    public ResponseEntity<?> setAsLeader(@RequestBody SetLeaderStudentRequestDto requestDto) throws ResourceNotFoundException{
+        Student student = studentServiceImpl.setAsLeader(requestDto.getStudentId());
         List<String> roleList = new ArrayList<>();
         for (Role role : student.getUser().getRoles()) {
             roleList.add(role.getName().toString());
