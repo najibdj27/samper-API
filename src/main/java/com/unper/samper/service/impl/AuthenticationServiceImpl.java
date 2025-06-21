@@ -93,7 +93,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException, ActivityNotAllowedException {
-        User user = userRepository.findByUsernameOrEmail(requestDto.getUsernameOrEmail()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
+        User user = userRepository.findByUsernameOrEmail(requestDto.getUsernameOrEmail().toLowerCase()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
         if (user.getStatus() == EUserStatus.INACTIVE) {
             throw new ActivityNotAllowedException(EResponseMessage.FAILED_LOGIN_USER_INACTIVE.getMessage());
         }
