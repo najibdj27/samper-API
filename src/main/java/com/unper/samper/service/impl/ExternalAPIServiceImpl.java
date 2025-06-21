@@ -121,7 +121,7 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
     }
 
     @Override
-    public Map<?,?> faceplusplusCreateFaceSet(Long outerId, String displayName, String faceToken) throws ExternalAPIException, JsonMappingException, JsonProcessingException{
+    public Map<?,?> faceplusplusCreateFaceSet(String outerId, String displayName) throws ExternalAPIException, JsonMappingException, JsonProcessingException{
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         
@@ -129,8 +129,7 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
         params.add("api_key", FACEPLUSPLUS_API_KEY);
         params.add("api_secret", FACEPLUSPLUS_API_SECRET);
         params.add("display_name", displayName);
-        params.add("outer_id", Long.toString(outerId));
-        params.add("face_token", faceToken);
+        params.add("outer_id", outerId);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
@@ -147,16 +146,43 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
             throw new ExternalAPIException("Failed when calling faceplusplus faceset create API.");
         }
     }
-
+    
     @Override
-    public Map<?,?> faceplusplusGetDetail(String facesetToken) throws ExternalAPIException, JsonMappingException, JsonProcessingException {
+    public Map<?, ?> faceplusplusAddFaceToFaceSet(String outerId, String faceToken) throws ExternalAPIException, JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("api_key", FACEPLUSPLUS_API_KEY);
         params.add("api_secret", FACEPLUSPLUS_API_SECRET);
-        params.add("faceset_token", facesetToken);
+        params.add("outer_id", outerId);
+        params.add("face_tokens", faceToken);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_FACESET_CREATE, request, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        String responseBody = response.getBody();
+        Map<?,?> responseMap = mapper.readValue(responseBody, Map.class);
+        logger.info("[EXTERNAL API URI] {}", objectMapper.writeValueAsString(FACEPLUSPLUS_BASE_URL+FACEPLUSPLUS_FACESET_CREATE));
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            logger.info("[EXTERNAL API RESPONSE STATUS] {}", response.getStatusCode());
+            logger.info("[EXTERNAL API RESPONSE BODY] {}", objectMapper.writeValueAsString(responseMap));
+            return responseMap;
+        } else {
+            throw new ExternalAPIException("Failed when calling faceplusplus set user id API.");
+        }
+    }
+
+    @Override
+    public Map<?,?> faceplusplusGetDetail(String outerId) throws ExternalAPIException, JsonMappingException, JsonProcessingException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("api_key", FACEPLUSPLUS_API_KEY);
+        params.add("api_secret", FACEPLUSPLUS_API_SECRET);
+        params.add("outer_id", outerId);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
@@ -170,6 +196,9 @@ public class ExternalAPIServiceImpl implements ExternalAPIService {
             logger.info("[EXTERNAL API RESPONSE BODY] {}", objectMapper.writeValueAsString(responseMap));
             return responseMap;
         } else {
+            if (response.getStatusCode().equals(HttpStatus.BAD_REQUEST) && responseMap.get("error_message") == "INVALID_OUTER_ID") {
+                return  responseMap;
+            }
             throw new ExternalAPIException("Failed when calling faceplusplus get detail API.");
         }
     }
