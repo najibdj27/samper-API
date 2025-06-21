@@ -93,7 +93,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException, ActivityNotAllowedException {
-        User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
+        User user = userRepository.findByUsernameOrEmail(requestDto.getUsernameOrEmail()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
         if (user.getStatus() == EUserStatus.INACTIVE) {
             throw new ActivityNotAllowedException(EResponseMessage.FAILED_LOGIN_USER_INACTIVE.getMessage());
         }
@@ -101,13 +101,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new ActivityNotAllowedException(EResponseMessage.FAILED_LOGIN_USER_SUSPEND.getMessage());
         }
         Boolean isPasswordCorrect = encoder.matches(requestDto.getPassword(), user.getPassword());
-        if (Boolean.FALSE.equals(userRepository.existsByUsername(requestDto.getUsername()))) {
-            throw new SignInFailException("Username or password is wrong!");
-        }
         if (Boolean.FALSE.equals(isPasswordCorrect)) {
             throw new SignInFailException("Username or password is wrong!");
         }
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestDto.getUsername(), requestDto.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), requestDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Map<String,String> jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
