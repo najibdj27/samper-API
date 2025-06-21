@@ -122,7 +122,7 @@ public class PresenceServiceImpl implements PresenceService {
       
         Map<?,?> faceCompareRespone =  externalAPIServiceImpl.faceplusplusFaceCompare(userFaceToken, requestDto.getImageBase64());
 
-        Double faceCompareScore = (Double) faceCompareRespone.get("confience");
+        Double faceCompareScore = (Double) faceCompareRespone.get("confidence");
 
         if (faceCompareScore < 80) {
             throw new FaceNotMatchedException(EResponseMessage.FACE_NOT_MATCH.getMessage());

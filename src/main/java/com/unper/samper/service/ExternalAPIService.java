@@ -12,9 +12,7 @@ public interface ExternalAPIService {
 
     Map<?,?> faceplusplusDetect(String imageBase64) throws ExternalAPIException, JsonMappingException, JsonProcessingException;
 
-    Map<?,?> faceplusplusCreateFaceSet(String outerId, String displayName) throws ExternalAPIException, JsonMappingException, JsonProcessingException;
-
-    Map<?,?> faceplusplusAddFaceToFaceSet(String outerId, String faceToken) throws ExternalAPIException, JsonProcessingException;
+    Map<?,?> faceplusplusCreateFaceSet(Long outerId, String displayName, String faceToken) throws ExternalAPIException, JsonMappingException, JsonProcessingException;
 
     Map<?,?> faceplusplusGetDetail(String facesetToken) throws ExternalAPIException, JsonMappingException, JsonProcessingException;
 
