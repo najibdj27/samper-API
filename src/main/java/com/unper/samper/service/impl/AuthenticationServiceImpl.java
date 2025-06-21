@@ -197,14 +197,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             roleSet.add(roles);
         });
         user.setRoles(roleSet);
-        String facesetOuterId = null;
-
         if (roleSet.contains(roleRepository.findByName(ERole.STUDENT).get())) {
             user.setStatus(EUserStatus.INACTIVE);
-            facesetOuterId = "student";
         } else {
             user.setStatus(EUserStatus.ACTIVE);
-            facesetOuterId = "lecture";
         }
         
         if (requestDto.getFaceData() != null && !requestDto.getRoles().contains(ERole.ADMIN)) {
@@ -213,20 +209,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Thread.sleep(1000);
             @SuppressWarnings("unchecked")
             List<Map<?,?>> faceList = (List<Map<?,?>>) faceDetectResponse.get("faces");
-
+            
             if (faceList.size() == 1) {
                 String faceToken = (String) faceList.get(0).get("face_token");
                 externalAPIService.faceplusplusSetUserId(faceToken, user.getUsername());
                 user.setFaceToken(faceToken);
                 
-                Thread.sleep(1000);
-                Map<?,?> getDetailFaceSetResponse = externalAPIService.faceplusplusGetDetail(facesetOuterId);
-                if (getDetailFaceSetResponse.get("error_message") == "INVALID_OUTER_ID") {
-                    Thread.sleep(1000);
-                    externalAPIService.faceplusplusCreateFaceSet(facesetOuterId, facesetOuterId.toUpperCase());    
-                }
-                Thread.sleep(1000);
-                externalAPIService.faceplusplusAddFaceToFaceSet(facesetOuterId, faceToken);
                 Map<?,?> uploadBase64Image = externalAPIService.cloudinaryUploadBase64Image(requestDto.getFaceData(), "user/registration");
                 String registeredFaceUrl = uploadBase64Image.get("secure_url").toString();
                 user.setRegisteredFaceUrl(registeredFaceUrl);
