@@ -1,16 +1,21 @@
 package com.unper.samper.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.model.Class;
+import com.unper.samper.model.Lecture;
 import com.unper.samper.model.Student;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddStudentRequestDto;
 import com.unper.samper.repository.StudentRepository;
+import com.unper.samper.service.ClassService;
+import com.unper.samper.service.LectureService;
 import com.unper.samper.service.StudentService;
 
 @Service
@@ -20,6 +25,12 @@ public class StudentServiceImpl implements StudentService {
 
     @Autowired
     UserServiceImpl userServiceImpl;
+
+    @Autowired
+    ClassService classService;
+
+    @Autowired
+    LectureService lectureService;
 
     @Autowired
     StudentRepository studentRepository;
@@ -34,6 +45,20 @@ public class StudentServiceImpl implements StudentService {
         }
         
         return studentList;
+    }
+
+    @Override
+    public List<Student> getAllByClass(Long classId) throws ResourceNotFoundException {
+        Class kelas = classService.getById(classId); 
+        return studentRepository.findAllByClass(kelas);
+    }
+
+    
+    @Override
+    public List<Student> getAllByLectureAndClass(Long lectureId, Long classId) throws ResourceNotFoundException {
+        Lecture lecture = lectureService.getById(lectureId);
+        Class kelas = classService.getById(classId);
+        return studentRepository.findAllByLectureAndClass(lecture, kelas);
     }
 
     @Override
@@ -71,6 +96,20 @@ public class StudentServiceImpl implements StudentService {
         Student newStudent = studentRepository.save(student);
         return newStudent;
     }
+
+    @Override
+    public Student setAsLeader(Long studentId) throws ResourceNotFoundException {
+        Student student = getById(studentId);
+        List<Student> studentList = getAllByClass(student.getKelas().getId());
+        Optional<Student> currentLeader = Optional.ofNullable(studentList.stream().filter(s -> Boolean.TRUE.equals(s.getIsLeader())).findFirst().orElse(null));
+        if (currentLeader.isPresent()) {
+            currentLeader.get().setIsLeader(false);
+            studentRepository.save(currentLeader.get());
+        }
+        student.setIsLeader(true);
+        
+        return studentRepository.save(student);
+    }   
 
     @Override
     public void delete(Long id) throws ResourceNotFoundException {

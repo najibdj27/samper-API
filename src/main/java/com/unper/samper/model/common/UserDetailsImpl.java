@@ -3,6 +3,7 @@ package com.unper.samper.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unper.samper.model.User;
+import com.unper.samper.model.constant.EUserStatus;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,6 +41,8 @@ public class UserDetailsImpl implements UserDetails {
     private String faceToken;
 
     private String registeredFaceUrl;
+
+    private EUserStatus status;
     
     private Boolean isDeleted;
 
@@ -49,7 +52,7 @@ public class UserDetailsImpl implements UserDetails {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
-        return new UserDetailsImpl(user.getId(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPhoneNumber(), user.getPassword(), user.getFaceToken(), user.getRegisteredFaceUrl(), user.getIsDeleted(), authorities);
+        return new UserDetailsImpl(user.getId(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPhoneNumber(), user.getPassword(), user.getFaceToken(), user.getRegisteredFaceUrl(), user.getStatus(), user.getIsDeleted(), authorities);
     }
 
     @Override

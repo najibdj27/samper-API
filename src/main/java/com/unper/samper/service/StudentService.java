@@ -10,6 +10,10 @@ import com.unper.samper.model.dto.AddStudentRequestDto;
 public interface StudentService {
     List<Student> getAll() throws ResourceNotFoundException;
 
+    List<Student> getAllByClass(Long classId) throws ResourceNotFoundException;
+
+    List<Student> getAllByLectureAndClass(Long lectureId, Long classId) throws ResourceNotFoundException;
+
     Student getById(Long id) throws ResourceNotFoundException;
 
     Student getByUser(User user) throws ResourceNotFoundException;
@@ -19,6 +23,8 @@ public interface StudentService {
     Student getStudentLeaderByClass(Long classId) throws ResourceNotFoundException;
 
     Boolean existsByNIM(String nim);
+
+    Student setAsLeader(Long studentId) throws ResourceNotFoundException;
 
     Student add(AddStudentRequestDto requestDto);
 

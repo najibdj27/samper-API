@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.StatusNotFoundException;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.constant.EUserStatus;
 import com.unper.samper.model.dto.EditUserRequestDto;
 import com.unper.samper.model.dto.UserResponseDto;
 import com.unper.samper.repository.UserRepository;
@@ -86,9 +88,50 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void changeStatus(Long userId, String status) throws ResourceNotFoundException, StatusNotFoundException {
+        switch (status) {
+            case "ACTIVE":
+                activateUser(userId);
+                break;
+                
+            case "INACTIVE":
+                deactivateUser(userId);
+                break;
+                
+            case "SUSPEND":
+                suspendUser(userId);
+                break;
+
+            default:
+                throw new StatusNotFoundException("Status " + status + " is invalid!");
+        }
+    }
+    
+    @Override
+    public void activateUser(Long userId) throws ResourceNotFoundException {
+        User user =  getById(userId);
+        user.setStatus(EUserStatus.ACTIVE);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deactivateUser(Long userId) throws ResourceNotFoundException {
+        User user =  getById(userId);
+        user.setStatus(EUserStatus.INACTIVE);
+        userRepository.save(user);
+    }
+    
+    @Override
+    public void suspendUser(Long userId) throws ResourceNotFoundException {
+        User user =  getById(userId);
+        user.setStatus(EUserStatus.SUSPEND);
+        userRepository.save(user);
+    }
+
+    @Override
     public void delete(Long id) throws ResourceNotFoundException {
         getById(id);
         userRepository.deleteById(id);
     }
-    
+
 }

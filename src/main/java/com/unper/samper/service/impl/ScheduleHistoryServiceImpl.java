@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.model.Lecture;
 import com.unper.samper.model.Schedule;
 import com.unper.samper.model.ScheduleHistory;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.ScheduleHistoryReqeustDto;
 import com.unper.samper.repository.ScheduleHistoryRepository;
 import com.unper.samper.repository.ScheduleRepository;
+import com.unper.samper.service.LectureService;
 import com.unper.samper.service.ScheduleHistoryService;
 
 @Service
@@ -22,6 +24,9 @@ public class ScheduleHistoryServiceImpl implements ScheduleHistoryService {
     
     @Autowired 
     private ScheduleRepository scheduleRepository;
+
+    @Autowired
+    private LectureService lectureService;
 
     @Override
     public List<ScheduleHistory> getAll() throws ResourceNotFoundException {
@@ -36,6 +41,12 @@ public class ScheduleHistoryServiceImpl implements ScheduleHistoryService {
     public ScheduleHistory getById(Long id) throws ResourceNotFoundException {
         ScheduleHistory scheduleHistory = scheduleHistoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("null"));
         return scheduleHistory;
+    }
+
+    @Override
+    public List<ScheduleHistory> getByLecture() throws ResourceNotFoundException {
+        Lecture lecture = lectureService.getCurrentLecture();
+        return scheduleHistoryRepository.getByLecture(lecture.getId());
     }
 
     @Override

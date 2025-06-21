@@ -2,39 +2,29 @@ package com.unper.samper.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class ScheduleHistoryResponseDto {
     private Long id;
 
-    private ClassResponseDto kelas;
-
-    private SubjectResponseDto subject;
-
-    private LectureResponseDto lecture;
-
-    private String meetingOrder;
-
-    private String timeStart;
-
-    private String timeEnd;
+    private ScheduleResponseDto schedule;
 
     private String openTime;
 
+    private Double openLongitude;
+    
+    private Double openLatitue;
+    
     private String closeTime;
 
-    private String clockIn;
-
-    private String clockOut;
-
-    private Short creditAmount;
-
-    private Boolean isActive;
-
-    private Boolean geolocationFlag;
+    private Double closeLongitude;
+    
+    private Double closeLatitude;
 }

@@ -18,7 +18,7 @@ public class SignInRequestDto {
     @Pattern(regexp = "(?![_.]).+", message = "can't contain '_' at the beginning")
     @Pattern(regexp = "(?!.*[_.]{2}).+", message = "can't contain double '_'")
     @Pattern(regexp = "[a-zA-Z0-9._]+(?<![.])", message = "can only contain letters, numbers and underscore")
-    private String username;
+    private String usernameOrEmail;
     
     @NotBlank
     private String password;

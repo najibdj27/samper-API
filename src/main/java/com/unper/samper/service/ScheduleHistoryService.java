@@ -11,6 +11,8 @@ public interface ScheduleHistoryService {
     
     public ScheduleHistory getById(Long id) throws ResourceNotFoundException;
 
+    public List<ScheduleHistory> getByLecture() throws ResourceNotFoundException;
+
     public ScheduleHistory getByScheduleId(Long scheduleId) throws ResourceNotFoundException;
 
     public ScheduleHistory create(ScheduleHistoryReqeustDto scheduleHistoryReqeustDto) throws ResourceNotFoundException;

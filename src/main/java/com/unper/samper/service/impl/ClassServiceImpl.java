@@ -15,6 +15,7 @@ import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.dto.AddClassRequestDto;
 import com.unper.samper.repository.ClassRepository;
 import com.unper.samper.service.ClassService;
+import com.unper.samper.service.LectureService;
 
 @Service
 public class ClassServiceImpl implements ClassService {
@@ -22,7 +23,7 @@ public class ClassServiceImpl implements ClassService {
     ClassRepository classRepository;
 
     @Autowired
-    LectureServiceImpl lectureServiceImpl;
+    LectureService lectureService;
 
     @Autowired
     MajorServiceImpl majorServiceImpl;
@@ -36,6 +37,13 @@ public class ClassServiceImpl implements ClassService {
 
         return classlList;
     }
+
+    @Override
+    public List<Class> getAllByLecture(Long lectureId) throws ResourceNotFoundException {
+        Lecture lecture = lectureService.getById(lectureId);
+        return classRepository.getAllByLecture(lecture);
+    }
+
 
     @Override
     public Class getById(Long id) throws ResourceNotFoundException {
@@ -54,7 +62,7 @@ public class ClassServiceImpl implements ClassService {
             throw new ResourceAlreadyExistException(EResponseMessage.INSERT_DATA_ALREADY_EXIST.getMessage());
         }
 
-        Lecture lecture = lectureServiceImpl.getById(requestDto.getLectureId());
+        Lecture lecture = lectureService.getById(requestDto.getLectureId());
         Major major = majorServiceImpl.getById(requestDto.getMajorId());
         Class kelas = Class.builder()
             .lecture(lecture)

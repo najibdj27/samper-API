@@ -10,17 +10,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unper.samper.exception.ResourceNotFoundException;
+import com.unper.samper.exception.StatusNotFoundException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.Lecture;
 import com.unper.samper.model.Role;
 import com.unper.samper.model.Student;
 import com.unper.samper.model.User;
 import com.unper.samper.model.constant.EResponseMessage;
+import com.unper.samper.model.dto.ChangeUserStatusRequestDto;
 import com.unper.samper.model.dto.ClassResponseDto;
 import com.unper.samper.model.dto.LectureResponseDto;
 import com.unper.samper.model.dto.StudentResponseDto;
@@ -140,5 +144,13 @@ public class UserController {
                 .build();
             } 
         return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseDto);
+    }
+
+    @Operation(summary =  "Change user status")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LECTURE')")
+    @PatchMapping("/change-status")
+    public ResponseEntity<?> activateUser(@RequestBody ChangeUserStatusRequestDto requestDto) throws ResourceNotFoundException, StatusNotFoundException{
+        userServiceImpl.changeStatus(requestDto.getUserId(), requestDto.getStatus());
+        return ResponseHandler.generateSuccessResponse(HttpStatus.OK, EResponseMessage.CHANGE_USER_STATUS_SUCCESS.getMessage(), null);
     }
 }

@@ -24,10 +24,10 @@ public class JwtUtils {
     private String jwtSecret;
 
     @Value("${com.unper.samper.security.jwt.access-token-expiration-ms}")
-    private int accessTokenExpirationMs;
+    private long accessTokenExpirationMs;
    
     @Value("${com.unper.samper.security.jwt.refresh-token-expiration-ms}")
-    private int refreshTokenExpirationMs;
+    private long refreshTokenExpirationMs;
 
     public Map<String, String> generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
@@ -77,16 +77,15 @@ public class JwtUtils {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
-
+            return false;
         } catch (MalformedJwtException e) {
-
+            return false;
         } catch (ExpiredJwtException e) {
-
+            return false;
         } catch (UnsupportedJwtException e) {
-
+            return false;
         } catch (IllegalArgumentException e) {
-
+            return false;
         }
-        return false;
     }
 }

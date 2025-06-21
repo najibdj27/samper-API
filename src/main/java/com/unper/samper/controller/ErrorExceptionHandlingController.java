@@ -32,9 +32,12 @@ import com.unper.samper.exception.ResourceNotFoundException;
 import com.unper.samper.exception.ScheduleNotActiveException;
 import com.unper.samper.exception.ScheduleUnavailableException;
 import com.unper.samper.exception.SignInFailException;
+import com.unper.samper.exception.StatusNotFoundException;
 import com.unper.samper.exception.WrongOTPException;
 import com.unper.samper.handler.ResponseHandler;
 import com.unper.samper.model.constant.EErrorCode;
+
+import io.jsonwebtoken.ExpiredJwtException;
 
 
 @ControllerAdvice
@@ -65,7 +68,7 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {
         var error = EErrorCode.NOT_FOUND;
-        return ResponseHandler.generateErrorResponse(HttpStatus.NOT_FOUND, e.getMessage(), error.getCode(), error.getDescription());
+        return ResponseHandler.generateErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), error.getCode(), error.getDescription());
     }
 
     @ExceptionHandler(SizeLimitExceededException.class)
@@ -107,6 +110,12 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     public ResponseEntity<?> handleExpiredTokenException(ExpiredTokenException e) {
         var error = EErrorCode.TOKEN_INVALID;
         return ResponseHandler.generateErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), error.getCode(), error.getDescription());
+    }
+    
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> handleExpiredJwtException(ExpiredJwtException e) {
+        var error = EErrorCode.TOKEN_INVALID;
+        return ResponseHandler.generateErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage(), error.getCode(), error.getDescription());
     }
 
     @ExceptionHandler(ScheduleNotActiveException.class)
@@ -178,6 +187,12 @@ public class ErrorExceptionHandlingController extends ResponseEntityExceptionHan
     @ExceptionHandler(GeolocationException.class)
     public ResponseEntity<?> handleGeolocationException(GeolocationException e) {
         var error = EErrorCode.LOCATION_NOT_IN_RANGE;
+        return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, e.getMessage(), error.getCode(), error.getDescription());
+    }
+    
+    @ExceptionHandler(StatusNotFoundException.class)
+    public ResponseEntity<?> handleStatusNotFoundException(StatusNotFoundException e) {
+        var error = EErrorCode.STATUS_NOT_FOUND;
         return ResponseHandler.generateErrorResponse(HttpStatus.NOT_ACCEPTABLE, e.getMessage(), error.getCode(), error.getDescription());
     }
 

@@ -7,8 +7,10 @@ import javax.mail.MessagingException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.ExternalAPIException;
+import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
@@ -25,7 +27,7 @@ import com.unper.samper.model.dto.SignInRequestDto;
 import com.unper.samper.model.dto.RegisterUserRequestDto;
 
 public interface AuthenticationService {
-    JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException;
+    JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException, ActivityNotAllowedException;
 
     String refreshAuthToken(String refreshToken) throws ExpiredTokenException;
 
@@ -33,7 +35,7 @@ public interface AuthenticationService {
 
     ConfirmOTPResponseDto confirmResetPasswordOTP(ConfirmOTPRequestDto requestDto) throws WrongOTPException, ResourceNotFoundException, ResourceAlreadyExistException;
     
-    void resetPassword(UUID token, ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException;
+    void resetPassword(UUID token, ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException, InvalidTokenException;
     
     User registerUser(RegisterUserRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException, ExternalAPIException, JsonMappingException, JsonProcessingException, IOException, InterruptedException;
 

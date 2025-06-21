@@ -3,9 +3,6 @@ spring:
         url: ${DB_URL}
         username: ${DATABASE_USER}
         password: ${DATABASE_PASSWORD}
-        # url: jdbc:postgresql://localhost:5432/samper_api
-        # username: postgres
-        # password: Doyouknow.p0stgr3s
     jpa:
         properties:
             hibernate:
@@ -17,10 +14,10 @@ spring:
             ddl-auto: none
         generate-ddl: false
     mail:
-        host: smtp.gmail.com
-        port: 587
-        username: najib.djulfikar@gmail.com
-        password: vccwrwpklsaqhskl
+        host: ${MAIL_HOST}
+        port: ${MAIL_PORT}
+        username: ${MAIL_USERNAME}
+        password: ${MAIL_PASSWORD}
         properties:
             mail: 
                 smtp:
@@ -46,15 +43,15 @@ com:
             otp-expiration-ms: 1800000 
             security: 
                 jwt: 
-                    secret: Kw0v7/HdetcXqaJuEzX2gNPesccuXr03qtL4ucPXLlM=
-                    access-token-expiration-ms: 60000
-                    refresh-token-expiration-ms: 86400000
+                    secret: ${JWT_SECRET}
+                    access-token-expiration-ms: 900000
+                    refresh-token-expiration-ms: 7776000000
 
 external-api:
     faceplusplus:
-        base-url: https://api-us.faceplusplus.com
-        api-key: WMyGjFJxOgnWFxQWL_-HC6ledbbod4lK
-        api-secret: ZYJYDVy-96Ylx338z5eNCYdJ28Aku3om
+        base-url: ${FPP_BASE_URL}
+        api-key: ${FPP_API_KEY}
+        api-secret: ${FPP_SECRET_KEY}
         tomeout: 60000
         end-point:
             CREATE_FACESET: /facepp/v3/faceset/create
@@ -69,6 +66,6 @@ external-api:
             FACE_COMPARE: /facepp/v3/compare
             FACE_DETECT: /facepp/v3/detect
     cloudinary:
-        cloud-name: dx1pjzkvf
-        api-key: 274874634654542
-        api-secret: 9WLF-E7wh6GhUdimL9Mt4Sxcci4
+        cloud-name: ${CDN_CLOUD_NAME}
+        api-key: ${CDN_API_KEY}
+        api-secret: ${CDN_API_SECRET}

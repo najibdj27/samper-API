@@ -10,6 +10,8 @@ import com.unper.samper.model.dto.AddClassRequestDto;
 public interface ClassService {
     List<Class> getAll() throws ResourceNotFoundException;
 
+    List<Class> getAllByLecture(Long lectureId) throws ResourceNotFoundException;
+    
     Class getById(Long id) throws ResourceNotFoundException;
 
     Class addClass(AddClassRequestDto requestDto) throws ResourceAlreadyExistException, ResourceNotFoundException;

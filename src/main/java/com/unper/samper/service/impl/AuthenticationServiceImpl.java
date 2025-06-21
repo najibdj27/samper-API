@@ -1,8 +1,6 @@
 package com.unper.samper.service.impl;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,8 +22,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.unper.samper.config.JwtUtils;
+import com.unper.samper.exception.ActivityNotAllowedException;
 import com.unper.samper.exception.ExpiredTokenException;
 import com.unper.samper.exception.ExternalAPIException;
+import com.unper.samper.exception.InvalidTokenException;
 import com.unper.samper.exception.PasswordNotMatchException;
 import com.unper.samper.exception.ResourceAlreadyExistException;
 import com.unper.samper.exception.ResourceNotFoundException;
@@ -40,6 +40,7 @@ import com.unper.samper.model.common.UserDetailsImpl;
 import com.unper.samper.model.constant.EResponseMessage;
 import com.unper.samper.model.constant.ERole;
 import com.unper.samper.model.constant.EType;
+import com.unper.samper.model.constant.EUserStatus;
 import com.unper.samper.model.dto.ConfirmOTPRequestDto;
 import com.unper.samper.model.dto.ConfirmOTPResponseDto;
 import com.unper.samper.model.dto.JwtResponseDto;
@@ -91,16 +92,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     String domain;
 
     @Override
-    public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException {
-        User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
-        Boolean isPasswordCorrect = encoder.matches(requestDto.getPassword(), user.getPassword());
-        if (Boolean.FALSE.equals(userRepository.existsByUsername(requestDto.getUsername()))) {
-            throw new SignInFailException("Username or password is wrong!");
+    public JwtResponseDto authenticateUser(SignInRequestDto requestDto) throws SignInFailException, ResourceNotFoundException, ActivityNotAllowedException {
+        User user = userRepository.findByUsernameOrEmail(requestDto.getUsernameOrEmail().toLowerCase()).orElseThrow(() -> new SignInFailException("Username or password is wrong!"));
+        if (user.getStatus() == EUserStatus.INACTIVE) {
+            throw new ActivityNotAllowedException(EResponseMessage.FAILED_LOGIN_USER_INACTIVE.getMessage());
         }
+        if (user.getStatus() == EUserStatus.SUSPEND) {
+            throw new ActivityNotAllowedException(EResponseMessage.FAILED_LOGIN_USER_SUSPEND.getMessage());
+        }
+        Boolean isPasswordCorrect = encoder.matches(requestDto.getPassword(), user.getPassword());
         if (Boolean.FALSE.equals(isPasswordCorrect)) {
             throw new SignInFailException("Username or password is wrong!");
         }
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestDto.getUsername(), requestDto.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), requestDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Map<String,String> jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -140,11 +144,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void resetPassword(UUID token , ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException {
-        Date now = Calendar.getInstance().getTime();
-        Token resetPasswordToken = tokenServiceImpl.getByKey(token.toString());
-        if (Boolean.TRUE.equals(tokenServiceImpl.isExpired(resetPasswordToken.getId(), now))) {
-            throw new ExpiredTokenException(EResponseMessage.GET_DATA_NO_RESOURCE.getMessage());
+    public void resetPassword(UUID token , ResetPasswordRequestDto requestDto) throws PasswordNotMatchException, ResourceNotFoundException, ExpiredTokenException, InvalidTokenException {
+        Token resetPasswordToken = tokenServiceImpl.getByKeyAndType(requestDto.getEmailAddress(), EType.RESET_PASSWORD);
+        if (!resetPasswordToken.getToken().equals(token)){
+            throw new InvalidTokenException(EResponseMessage.TOKEN_INVALID.getMessage());
         }
         Optional<User> optionalUser = userRepository.findByEmail(resetPasswordToken.getKey());
         User user = optionalUser.get();
@@ -194,6 +197,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             roleSet.add(roles);
         });
         user.setRoles(roleSet);
+        if (roleSet.contains(roleRepository.findByName(ERole.STUDENT).get())) {
+            user.setStatus(EUserStatus.INACTIVE);
+        } else {
+            user.setStatus(EUserStatus.ACTIVE);
+        }
         
         if (requestDto.getFaceData() != null && !requestDto.getRoles().contains(ERole.ADMIN)) {
             Map<?,?> faceDetectResponse = externalAPIService.faceplusplusDetect(requestDto.getFaceData());
