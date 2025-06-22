@@ -23,4 +23,6 @@ public class AddStudentRequestDto {
     private Class kelas;
 
     private Boolean isLeader;
+
+    private Boolean isActive;
 }

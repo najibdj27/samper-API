@@ -125,6 +125,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             .kelas(kelas)
             .NIM(requestDto.getNim())
             .isLeader(false)
+            .isActive(true)
             .build();
         studentService.add(addStudentRequestDto);
     }
