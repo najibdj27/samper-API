@@ -167,6 +167,7 @@ public class StudentController {
         Map<String, Object> metaData = new HashMap<>();
         metaData.put("_totalClass", responseMap.size());
         metaData.put("_totalStudent", responseMap.values().stream().mapToInt(List::size).sum());
+        metaData.put("_totalActiveStudent", responseMap.values().stream().flatMap(List::stream).filter(StudentResponseDto::getIsActive).count());
 
         return ResponseHandler.generateSuccessResponseWithMeta(HttpStatus.OK, EResponseMessage.GET_DATA_SUCCESS.getMessage(), responseMap, metaData);
     }
