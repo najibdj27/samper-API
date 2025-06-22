@@ -92,6 +92,7 @@ public class StudentServiceImpl implements StudentService {
             .kelas(requestDto.getKelas())
             .user(requestDto.getUser())
             .isLeader(requestDto.getIsLeader())
+            .isActive(requestDto.getIsActive())
             .build();
         Student newStudent = studentRepository.save(student);
         return newStudent;
