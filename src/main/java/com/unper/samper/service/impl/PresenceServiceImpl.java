@@ -169,7 +169,7 @@ public class PresenceServiceImpl implements PresenceService {
         calendar.setTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 
         ScheduleHistory scheduleHistory = scheduleHistoryServiceImpl.getByScheduleId(requestDto.getScheduleId());
-        if (Boolean.TRUE.equals(schedule.getGeolocationFlag()) && GeoUtils.isWithinRadius(scheduleHistory.getCloseLatitude(), scheduleHistory.getCloseLongitude(), requestDto.getLatitude(), requestDto.getLongitude(), Double.valueOf(0.1))) {
+        if (Boolean.TRUE.equals(schedule.getGeolocationFlag()) && Boolean.FALSE.equals(GeoUtils.isWithinRadius(scheduleHistory.getOpenLatitude(), scheduleHistory.getOpenLongitude(), requestDto.getLatitude(), requestDto.getLongitude(), Double.valueOf(0.1)))) {
             throw new GeolocationException("You are out of the class location");
         }
 
