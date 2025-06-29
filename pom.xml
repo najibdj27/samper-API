@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.unper</groupId>
 	<artifactId>samper</artifactId>
-	<version>1.0.1-SANNPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>samper</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
